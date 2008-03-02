@@ -188,6 +188,9 @@ def GetJulianDay(utc_datetime):	# based on NREL/TP-560-34302 by Andreas and Reda
 		return julian_day + gregorian_offset # after October 5, 1852
 
 def GetJulianEphemerisDay(julian_day, delta_seconds):
+	"""delta_seconds is value referred to by astronomers as Delta-T, defined as the difference between
+	Dynamical Time (TD) and Universal Time (UT). In 2007, it's around 65 seconds.
+	A list of values for Delta-T can be found here: ftp://maia.usno.navy.mil/ser7/deltat.data"""
 	return julian_day + (delta_seconds / 86400.0)
 
 def GetJulianEphemerisMillenium(julian_ephemeris_century):
