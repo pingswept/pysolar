@@ -23,6 +23,7 @@ import math
 import datetime
 import constants
 import sys
+import poly
 
 #if __name__ == "__main__":
 def SolarTest():
@@ -73,9 +74,6 @@ def GetApparentSiderealTime(julian_day, jme, nutation):
 
 def GetApparentSunLongitude(geocentric_longitude, nutation, ab_correction):
 	return geocentric_longitude + nutation['longitude'] + ab_correction
-
-def GetArgumentOfLatitudeOfMoon(jce):
-	return 93.27191 + 483202.017538 * jce - 0.0036825 * jce ** 2 + jce ** 3 / 327270.0
 
 def GetAzimuth(latitude_deg, longitude_deg, utc_datetime):
 # expect -50 degrees for solar.GetAzimuth(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
@@ -197,20 +195,8 @@ def GetJulianEphemerisDay(julian_day, delta_seconds):
 def GetJulianEphemerisMillenium(julian_ephemeris_century):
 	return (julian_ephemeris_century / 10.0)
 
-def GetLongitudeOfAscendingNode(jce):
-	return 125.04452 - (1934.136261 * jce) + (0.0020708 * jce ** 2) + (jce ** 3 / 450000.0)
-
 def GetLocalHourAngle(apparent_sidereal_time, longitude, geocentric_sun_right_ascension):
 	return (apparent_sidereal_time + longitude - geocentric_sun_right_ascension) % 360
-
-def GetMeanElongationOfMoon(jce):
-	return 297.85036 + (445267.111480 * jce) - (0.0019142 * jce ** 2) + (jce ** 3 / 189474.0)
-
-def GetMeanAnomalyOfMoon(jce):
-	return 134.96298 + (477198.867398 * jce) + (0.0086972 * jce ** 2) + (jce ** 3 / 56250.0)
-
-def GetMeanAnomalyOfSun(jce):
-	return 357.52772 + (35999.050340 * jce) - (0.0001603 * jce ** 2) - (jce ** 3 / 300000.0)
 
 def GetMeanSiderealTime(julian_day):
 	# This function doesn't agree with Andreas and Reda as well as it should. Works to ~5 sig figs in current unit test
@@ -221,12 +207,13 @@ def GetMeanSiderealTime(julian_day):
 def GetNutationAberrationXY(jce, i):
 	y = constants.aberration_sin_terms
 	x = []
+	p = poly.buildPolyDict()
 	# order of 5 x.append lines below is important
-	x.append(GetMeanElongationOfMoon(jce))
-	x.append(GetMeanAnomalyOfSun(jce))
-	x.append(GetMeanAnomalyOfMoon(jce))
-	x.append(GetArgumentOfLatitudeOfMoon(jce))
-	x.append(GetLongitudeOfAscendingNode(jce))
+	x.append(p['MeanElongationOfMoon'](jce))
+	x.append(p['MeanAnomalyOfSun'](jce))
+	x.append(p['MeanAnomalyOfMoon'](jce))
+	x.append(p['ArgumentOfLatitudeOfMoon'](jce))
+	x.append(p['LongitudeOfAscendingNode'](jce))
 	sigmaxy = 0.0
 	for j in range(len(x)):
 		sigmaxy += x[j] * y[i][j]
