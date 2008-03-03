@@ -75,7 +75,7 @@ def GetApparentSunLongitude(geocentric_longitude, nutation, ab_correction):
 	return geocentric_longitude + nutation['longitude'] + ab_correction
 
 def GetArgumentOfLatitudeOfMoon(jce):
-	return 93.27191 + (483202.017538 * jce) - (0.0036825 * pow(jce, 2)) + (pow(jce, 3) / 327270.0)
+	return 93.27191 + 483202.017538 * jce - 0.0036825 * jce ** 2 + jce ** 3 / 327270.0
 
 def GetAzimuth(latitude_deg, longitude_deg, utc_datetime):
 # expect -50 degrees for solar.GetAzimuth(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
@@ -153,7 +153,7 @@ def GetHeliocentricLongitude(jme):
 	l4 = GetCoefficient(jme, constants.L4)
 	l5 = GetCoefficient(jme, constants.L5)
 
-	l = (l0 + (l1 * jme) + (l2 * pow(jme, 2)) + (l3 * pow(jme, 3)) + (l4 * pow(jme, 4)) + (l5 * pow(jme, 5))) / pow(10, 8)
+	l = (l0 + l1 * jme + l2 * jme ** 2 + l3 * jme ** 3 + l4 * jme ** 4 + l5 * jme ** 5) / 10 ** 8
 	return math.degrees(l) % 360
 
 def GetHourAngle(utc_datetime, longitude_deg):
@@ -168,12 +168,10 @@ def GetIncidenceAngle(topocentric_zenith_angle, slope, slope_orientation, topoce
     return math.degrees(math.acos(math.cos(tza_rad) * math.cos(slope_rad) + math.sin(slope_rad) * math.sin(tza_rad) * math.cos(taa_rad - math.pi - so_rad)))
 
 def GetJulianCentury(julian_day):
-	"""You get the Julian century or Julian ephemeris century back, depending on whether you supply
-	the Julian day or the Julian ephemeris day."""
 	return (julian_day - 2451545.0) / 36525.0
 
 def GetJulianDay(utc_datetime):	# based on NREL/TP-560-34302 by Andreas and Reda
-				# does not accept years before 0 because of bounds check on Python's datetime.year field
+								# does not accept years before 0 because of bounds check on Python's datetime.year field
 	year = utc_datetime.year
 	month = utc_datetime.month
 	if(month <= 2):		# shift to accomodate leap years?
@@ -187,6 +185,9 @@ def GetJulianDay(utc_datetime):	# based on NREL/TP-560-34302 by Andreas and Reda
 	else:
 		return julian_day + gregorian_offset # after October 5, 1852
 
+def GetJulianEphemerisCentury(julian_ephemeris_day):
+	return (julian_ephemeris_day - 2451545.0) / 36525.0
+
 def GetJulianEphemerisDay(julian_day, delta_seconds):
 	"""delta_seconds is value referred to by astronomers as Delta-T, defined as the difference between
 	Dynamical Time (TD) and Universal Time (UT). In 2007, it's around 65 seconds.
@@ -197,27 +198,27 @@ def GetJulianEphemerisMillenium(julian_ephemeris_century):
 	return (julian_ephemeris_century / 10.0)
 
 def GetLongitudeOfAscendingNode(jce):
-	return 125.04452 - (1934.136261 * jce) + (0.0020708 * pow(jce, 2)) + (pow(jce, 3) / 450000.0)
+	return 125.04452 - (1934.136261 * jce) + (0.0020708 * jce ** 2) + (jce ** 3 / 450000.0)
 
 def GetLocalHourAngle(apparent_sidereal_time, longitude, geocentric_sun_right_ascension):
 	return (apparent_sidereal_time + longitude - geocentric_sun_right_ascension) % 360
 
 def GetMeanElongationOfMoon(jce):
-	return 297.85036 + (445267.111480 * jce) - (0.0019142 * pow(jce, 2)) + (pow(jce, 3) / 189474.0)
+	return 297.85036 + (445267.111480 * jce) - (0.0019142 * jce ** 2) + (jce ** 3 / 189474.0)
 
 def GetMeanAnomalyOfMoon(jce):
-	return 134.96298 + (477198.867398 * jce) + (0.0086972 * pow(jce, 2)) + (pow(jce, 3) / 56250.0)
+	return 134.96298 + (477198.867398 * jce) + (0.0086972 * jce ** 2) + (jce ** 3 / 56250.0)
 
 def GetMeanAnomalyOfSun(jce):
-	return 357.52772 + (35999.050340 * jce) - (0.0001603 * pow(jce, 2)) - (pow(jce, 3) / 300000.0)
+	return 357.52772 + (35999.050340 * jce) - (0.0001603 * jce ** 2) - (jce ** 3 / 300000.0)
 
 def GetMeanSiderealTime(julian_day):
+	# This function doesn't agree with Andreas and Reda as well as it should. Works to ~5 sig figs in current unit test
 	jc = GetJulianCentury(julian_day)
-	sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * pow(jc, 2)) \
-	- (pow(jc, 3) / 38710000)
+	sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
 	return sidereal_time % 360
 
-def GetNutationAberrationXY(jce):
+def GetNutationAberrationXY(jce, i):
 	y = constants.aberration_sin_terms
 	x = []
 	# order of 5 x.append lines below is important
@@ -228,17 +229,17 @@ def GetNutationAberrationXY(jce):
 	x.append(GetLongitudeOfAscendingNode(jce))
 	sigmaxy = 0.0
 	for j in range(len(x)):
-		sigmaxy += x[j] * y[0][j]
+		sigmaxy += x[j] * y[i][j]
 	return sigmaxy
 
 def GetNutation(jde):
 	abcd = constants.nutation_coefficients
-	jce = GetJulianCentury(jde)
-	sigmaxy = GetNutationAberrationXY(jce)
+	jce = GetJulianEphemerisCentury(jde)
 	nutation_long = []
 	nutation_oblique = []
 
 	for i in range(len(abcd)):
+		sigmaxy = GetNutationAberrationXY(jce, i)
 		nutation_long.append((abcd[i][0] + (abcd[i][1] * jce)) * math.sin(math.radians(sigmaxy)))
 		nutation_oblique.append((abcd[i][2] + (abcd[i][3] * jce)) * math.cos(math.radians(sigmaxy)))
 
@@ -287,7 +288,7 @@ def GetRadiusVector(jme):
 	r3 = GetCoefficient(jme, constants.R3)
 	r4 = GetCoefficient(jme, constants.R4)
 
-	return (r0 + (r1 * jme) + (r2 * pow(jme, 2)) + (r3 * pow(jme, 3)) + (r4 * pow(jme, 4))) / pow(10, 8)
+	return (r0 + r1 * jme + r2 * jme ** 2 + r3 * jme ** 3 + r4 * jme ** 4) / 10 ** 8
 
 def GetRefractionCorrection(pressure_millibars, temperature_celsius, topocentric_elevation_angle):
     tea = topocentric_elevation_angle
