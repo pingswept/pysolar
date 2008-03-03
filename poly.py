@@ -12,7 +12,4 @@ def buildPolyFit((a, b, c, d)):
 	return (lambda x: a + b * x + c * x ** 2 + (x ** 3) / d)
 
 def buildPolyDict():
-	d = {}
-	polys = [(name, buildPolyFit(coeffs)) for (name, coeffs) in coeff_list]
-	d = dict(polys)
-	return d
+	return dict([(name, buildPolyFit(coeffs)) for (name, coeffs) in coeff_list])
