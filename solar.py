@@ -141,7 +141,7 @@ def GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliqui
 def GetHeliocentricLatitude(jme):
 	b0 = GetCoefficient(jme, constants.B0)
 	b1 = GetCoefficient(jme, constants.B1)
-	return math.degrees((b0 + (b1 * jme)) / pow(10, 8))
+	return math.degrees((b0 + (b1 * jme)) / 10 ** 8)
 
 def GetHeliocentricLongitude(jme):
 	l0 = GetCoefficient(jme, constants.L0)
@@ -326,8 +326,8 @@ def GetTopocentricZenithAngle(latitude, topocentric_sun_declination, topocentric
 
 def GetTrueEclipticObliquity(jme, nutation):
 	u = jme/10.0
-	mean_obliquity = 84381.448 - (4680.93 * u) - (1.55 * pow(u, 2)) + (1999.25 * pow(u, 3)) \
-	- (51.38 * pow(u, 4)) -(249.67 * pow(u, 5)) - (39.05 * pow(u, 6)) + (7.12 * pow(u, 7)) \
-	+ (27.87 * pow(u, 8)) + (5.79 * pow(u, 9)) + (2.45 * pow(u, 10))
+	mean_obliquity = 84381.448 - (4680.93 * u) - (1.55 * u ** 2) + (1999.25 * u ** 3) \
+	- (51.38 * u ** 4) -(249.67 * u ** 5) - (39.05 * u ** 6) + (7.12 * u ** 7) \
+	+ (27.87 * u ** 8) + (5.79 * u ** 9) + (2.45 * u ** 10)
 	return (mean_obliquity / 3600.0) + nutation['obliquity']
 
