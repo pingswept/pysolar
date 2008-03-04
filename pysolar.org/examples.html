@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us">
+<head>
+<title>Pysolar: staring directly at the sun since 2007</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="all.css" media="all" />
+</head>
+
+<body>
+<div id="layout">
+
+<h1><a href="index.html"><img src="logo.png" alt="Pysolar logo" /></a></h1>
+
+<ul id="navigation">
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=193466">Download from SF.net</a></li>
+</ul>
+
+<h2>Location calculation<a name="location"></a></h2>
+<a href="examples.html"></a>
+You can figure out your latitude and longitude from the URL from the "Link to this page" link 
+on <a href="http://maps.google.com/">Google maps</a>. Find your location on the map, click on 
+the "Link to this page" link, and then look at the URL in the address bar of your browser. In 
+between ampersands, you should see something like ll=89.123456,-78.912345. The first number 
+is your latitude; the second is your longitude.<br />
+<br />
+The reference frame for Pysolar is shown in the figure below. Altitude is reckoned with zero 
+at the horizon. The altitude is positive when the sun is above the horizon. Azimuth is 
+reckoned with zero corresponding to south. Positive azimuth estimates correspond to estimates 
+east of south; negative estimates are west of south. In the northern hemisphere, if we speak 
+in terms of (altitude, azimuth), the sun comes up around (0, 90), reaches (70, 0) around 
+noon, and sets around (0, -90).<br />
+<br />
+<img src="pysolar_reference_frame.png" alt="Diagram showing reference frames for altitude 
+and azimuth." /><br />
+Then, use the solar.GetAltitude() function to calculate the angle between the sun and a plane 
+tangent to the earth where you are. The result is returned in degrees.<br />
+<br />
+<pre>
+host:~/pysolar$ python
+Python 2.5.1 (r251:54863, May  2 2007, 16:56:35) 
+[GCC 4.1.2 (Ubuntu 4.1.2-0ubuntu4)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import solar
+>>> import datetime
+>>> d = datetime.datetime.utcnow() # create a datetime object for now
+>>> solar.GetAltitude(42.206, -71.382, d)
+-20.453156227223857
+>>> d = datetime.datetime(2007, 2, 18, 20, 13, 1, 130320) # try another date
+>>> solar.GetAltitude(42.206, -71.382, d)
+19.551710266768644
+</pre>
+<br />
+You can also calculate the azimuth of the sun, as shown below.<br />
+<br />
+<pre>
+>>> solar.GetAzimuth(42.206, -71.382, datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
+-51.622484299859529
+</pre>
+
+<h2>Estimate of clear-sky radiation<a name="power"></a></h2>
+Once you calculate azimuth and altitude of the sun, you can predict the direct irradiation from 
+the sun using solar.GetRadiationDirect(), which returns a value in watts per square meter. As of 
+version 0.2, the function is *not* smart enough to return zeros at night (thus the crazy 1814 
+W/m^2 output below). It does account for the scattering of light by the atmosphere, though it uses 
+an atmospheric model based on data taken in the United States.<br />
+<br />
+<pre>
+>>> latitude_deg = 42.3 # positive in the northern hemisphere
+>>> longitude_deg = -71.4 # negative reckoning west from prime meridian in Greenwich, England
+>>> altitude_deg = solar.GetAltitude(latitude_deg, longitude_deg, d)
+>>> azimuth_deg = solar.GetAzimuth(latitude_deg, longitude_deg, d)
+>>> solar.GetRadiationDirect(d, altitude_deg)
+1814.2039909409739
+</pre>
+<br />
+<h2>Shading calculation<a name="shading"></a></h2>
+For a row of rectangular photovoltaic panels that track the sun, adjacent panels will shade each 
+other in the morning and afternoon, reducing power output. You can create a power estimate that 
+takes into account the shading of adjacent panels.<br />
+<br />
+<pre>
+>>> import shade
+>>> width = 100
+>>> height = 200
+>>> x_spacing = 120
+>>> y_spacing = 120
+>>> xs = shade.GetXShade(width, x_spacing, azimuth_deg)
+>>> ys = shade.GetYShade(height, y_spacing, altitude_deg)
+>>> shaded_area = xs * ys
+>>> shaded_percentage = shaded_area/(width * height)
+</pre>
+
+<img alt="Graph of power vs. time" width="609px" src="power_vs_time.png" /><br />
+
+The graph above was created by calculating the power, including attenuation due to shading, at an
+interval of 30 minutes. The attenuation is assumed to be linearly proportional to area, which is
+probably optimistic, even if bypass diodes are used. The graph was created with <a
+href="http://matplotlib.sourceforge.net/">matplotlib</a>; see <a
+href="http://pysolar.svn.sourceforge.net/viewvc/pysolar/shade_test.py?view=markup">shade_test.py</a>
+for usage.
+
+<div id="footer">
+
+<a href="http://validator.w3.org/check/referer"><img src="http://www.w3.org/Icons/valid-xhtml10-blue" 
+alt="W3C valid XHTML 1.0 button" /></a>
+
+<a href="http://jigsaw.w3.org/css-validator/validator?uri=http://pysolar.sourceforge.net/">
+<img style="border:0;width:88px;height:31px" src="http://www.w3.org/Icons/valid-css-blue" alt="Valid CSS logo" />
+</a>
+
+<a href="http://sourceforge.net"><img 
+src="http://sflogo.sourceforge.net/sflogo.php?group_id=193466&amp;type=4" 
+width="125" height="37" alt="SourceForge.net logo" /></a>
+
+</div>
+
+</div>
+
+</body>
+</html>
