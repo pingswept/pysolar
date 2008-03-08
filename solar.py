@@ -22,7 +22,6 @@
 import math
 import datetime
 import constants
-import sys
 import poly
 
 #if __name__ == "__main__":
