@@ -101,9 +101,14 @@ def GetDayOfYear(utc_datetime):
 	return delta.days
 
 def GetDeclination(day):
+	"""The declination of the sun is the angle between
+	Earth's equatorial plane and a line between the Earth and the sun.
+	The declination of the sun varies between 23.45 degrees and -23.45 degrees,
+	hitting zero on the equinoxes and peaking on the solstices.
+	"""
 	return 23.45 * math.sin((2 * math.pi / 365.0) * (day - 81))
 
-def GetEquatorialHorizontalParallax(    radius_vector):
+def GetEquatorialHorizontalParallax(radius_vector):
 	return 8.794 / (3600 / radius_vector)
 
 def GetFlattenedLatitude(latitude):
