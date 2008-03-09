@@ -22,7 +22,9 @@
 import math
 import datetime
 import constants
+import julian
 import poly
+import radiation
 
 #if __name__ == "__main__":
 def SolarTest():
@@ -34,7 +36,7 @@ def SolarTest():
 		timestamp = d.ctime()
 		altitude_deg = GetAltitude(latitude_deg, longitude_deg, d)
 		azimuth_deg = GetAzimuth(latitude_deg, longitude_deg, d)
-		power = GetRadiationDirect(d, altitude_deg)
+		power = radiation.GetRadiationDirect(d, altitude_deg)
 		if (altitude_deg > 0):
 			print timestamp, "UTC", altitude_deg, azimuth_deg, power
 		d = d + thirty_minutes
@@ -45,11 +47,6 @@ def EquationOfTime(day):
 
 def GetAberrationCorrection(r): 	# r is earth radius vector [astronomical units]
 	return -20.4898/(3600.0 * r)
-
-def GetAirMassRatio(altitude_deg):
-	# from Masters, p. 412
-	# warning: pukes on input of zero
-	return (1/math.sin(math.radians(altitude_deg)))
 
 def GetAltitude(latitude_deg, longitude_deg, utc_datetime):
 
@@ -63,10 +60,6 @@ def GetAltitude(latitude_deg, longitude_deg, utc_datetime):
 	first_term = math.cos(latitude_rad) * math.cos(declination_rad) * math.cos(math.radians(hour_angle))
 	second_term = math.sin(latitude_rad) * math.sin(declination_rad)
 	return math.degrees(math.asin(first_term + second_term))
-
-def GetApparentExtraterrestrialFlux(day):
-	# from Masters, p. 412
-	return 1160 + (75 * math.sin((360/365) * (day - 275)))
 
 def GetApparentSiderealTime(julian_day, jme, nutation):
 	return GetMeanSiderealTime(julian_day) + nutation['longitude'] * math.cos(GetTrueEclipticObliquity(jme, nutation))
@@ -115,6 +108,8 @@ def GetFlattenedLatitude(latitude):
 	latitude_rad = math.radians(latitude)
 	return math.degrees(math.atan(0.99664719 * math.tan(latitude_rad)))
 
+# Geocentric functions calculate angles relative to the center of the earth.
+
 def GetGeocentricLatitude(jme):
 	return -1 * GetHeliocentricLatitude(jme)
 
@@ -141,6 +136,8 @@ def GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliqui
 	c = math.cos(apparent_sun_longitude_rad)
 	alpha = math.atan2((a - b),  c)
 	return math.degrees(alpha) % 360
+
+# Heliocentric functions calculate angles relative to the center of the sun.
 
 def GetHeliocentricLatitude(jme):
 	b0 = GetCoefficient(jme, constants.B0)
@@ -169,42 +166,12 @@ def GetIncidenceAngle(topocentric_zenith_angle, slope, slope_orientation, topoce
     taa_rad = math.radians(topocentric_azimuth_angle)
     return math.degrees(math.acos(math.cos(tza_rad) * math.cos(slope_rad) + math.sin(slope_rad) * math.sin(tza_rad) * math.cos(taa_rad - math.pi - so_rad)))
 
-def GetJulianCentury(julian_day):
-	return (julian_day - 2451545.0) / 36525.0
-
-def GetJulianDay(utc_datetime):	# based on NREL/TP-560-34302 by Andreas and Reda
-								# does not accept years before 0 because of bounds check on Python's datetime.year field
-	year = utc_datetime.year
-	month = utc_datetime.month
-	if(month <= 2):		# shift to accomodate leap years?
-		year = year - 1
-		month = month + 12
-	day = utc_datetime.day + (((utc_datetime.hour * 3600.0) + (utc_datetime.minute * 60.0) + utc_datetime.second) / 86400.0)
-	gregorian_offset = 2 - math.floor(year / 100) + math.floor(math.floor(year / 100) / 4)
-	julian_day = math.floor(365.25*(year + 4716)) + math.floor(30.6001 *(month + 1)) + day - 1524.5
-	if (julian_day <= 2299160):
-		return julian_day # before October 5, 1852
-	else:
-		return julian_day + gregorian_offset # after October 5, 1852
-
-def GetJulianEphemerisCentury(julian_ephemeris_day):
-	return (julian_ephemeris_day - 2451545.0) / 36525.0
-
-def GetJulianEphemerisDay(julian_day, delta_seconds):
-	"""delta_seconds is value referred to by astronomers as Delta-T, defined as the difference between
-	Dynamical Time (TD) and Universal Time (UT). In 2007, it's around 65 seconds.
-	A list of values for Delta-T can be found here: ftp://maia.usno.navy.mil/ser7/deltat.data"""
-	return julian_day + (delta_seconds / 86400.0)
-
-def GetJulianEphemerisMillenium(julian_ephemeris_century):
-	return (julian_ephemeris_century / 10.0)
-
 def GetLocalHourAngle(apparent_sidereal_time, longitude, geocentric_sun_right_ascension):
 	return (apparent_sidereal_time + longitude - geocentric_sun_right_ascension) % 360
 
 def GetMeanSiderealTime(julian_day):
 	# This function doesn't agree with Andreas and Reda as well as it should. Works to ~5 sig figs in current unit test
-	jc = GetJulianCentury(julian_day)
+	jc = julian.GetJulianCentury(julian_day)
 	sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
 	return sidereal_time % 360
 
@@ -225,7 +192,7 @@ def GetNutationAberrationXY(jce, i):
 
 def GetNutation(jde):
 	abcd = constants.nutation_coefficients
-	jce = GetJulianEphemerisCentury(jde)
+	jce = julian.GetJulianEphemerisCentury(jde)
 	nutation_long = []
 	nutation_oblique = []
 
@@ -238,10 +205,6 @@ def GetNutation(jde):
 	nutation = {'longitude' : sum(nutation_long)/36000000.0, 'obliquity' : sum(nutation_oblique)/36000000.0}
 
 	return nutation
-
-def GetOpticalDepth(day):
-	# from Masters, p. 412
-	return 0.174 + (0.035 * math.sin((360/365) * (day - 100)))
 
 def GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination, projected_axial_distance):
 	prd = projected_radial_distance
@@ -263,14 +226,6 @@ def GetProjectedAxialDistance(elevation, latitude):
 	flattened_latitude_rad = math.radians(GetFlattenedLatitude(latitude))
 	latitude_rad = math.radians(latitude)
 	return 0.99664719 * math.sin(flattened_latitude_rad) + (elevation * math.sin(latitude_rad) / constants.earth_radius)
-	
-def GetRadiationDirect(utc_datetime, altitude_deg):
-	# from Masters, p. 412
-	day = GetDayOfYear(utc_datetime)
-	flux = GetApparentExtraterrestrialFlux(day)
-	optical_depth = GetOpticalDepth(day)
-	air_mass_ratio = GetAirMassRatio(altitude_deg)
-	return flux * math.exp(-1 * optical_depth * air_mass_ratio)
 
 def GetRadiusVector(jme):
 	r0 = GetCoefficient(jme, constants.R0)
@@ -292,7 +247,10 @@ def GetSolarTime(longitude_deg, utc_datetime):
     day = GetDayOfYear(utc_datetime)
     return (((utc_datetime.hour * 60) + utc_datetime.minute + (4 * longitude_deg) + EquationOfTime(day))/60)
 
+# Topocentric functions calculate angles relative to a location on the surface of the earth.
+
 def GetTopocentricAzimuthAngle(topocentric_local_hour_angle, latitude, topocentric_sun_declination):
+	"""Measured eastward from north"""
     tlha_rad = math.radians(topocentric_local_hour_angle)
     latitude_rad = math.radians(latitude)
     tsd_rad = math.radians(topocentric_sun_declination)

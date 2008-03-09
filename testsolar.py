@@ -21,6 +21,7 @@
 
 import solar
 import constants
+import julian
 import datetime
 import unittest
 
@@ -35,11 +36,11 @@ class testSolar(unittest.TestCase):
 		self.temperature = 11.0 # degrees Celsius
 		self.slope = 30.0 # degrees
 		self.slope_orientation = -10.0 # degrees east from south
-		self.jd = solar.GetJulianDay(self.d)
-		self.jc = solar.GetJulianCentury(self.jd)
-		self.jde = solar.GetJulianEphemerisDay(self.jd, 67.0) #65.284)
-		self.jce = solar.GetJulianEphemerisCentury(self.jde)
-		self.jme = solar.GetJulianEphemerisMillenium(self.jce)
+		self.jd = julian.GetJulianDay(self.d)
+		self.jc = julian.GetJulianCentury(self.jd)
+		self.jde = julian.GetJulianEphemerisDay(self.jd, 67.0)
+		self.jce = julian.GetJulianEphemerisCentury(self.jde)
+		self.jme = julian.GetJulianEphemerisMillenium(self.jce)
 		self.geocentric_longitude = solar.GetGeocentricLongitude(self.jme)
 		self.geocentric_latitude = solar.GetGeocentricLatitude(self.jme)
 		self.nutation = solar.GetNutation(self.jde)
@@ -62,7 +63,7 @@ class testSolar(unittest.TestCase):
 		self.topocentric_zenith_angle = solar.GetTopocentricZenithAngle(self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle, self.pressure, self.temperature)
 		self.topocentric_azimuth_angle = solar.GetTopocentricAzimuthAngle(self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
 		self.incidence_angle = solar.GetIncidenceAngle(self.topocentric_zenith_angle, self.slope, self.slope_orientation, self.topocentric_azimuth_angle)
-		
+
 	def testGetJulianDay(self):
 		self.assertAlmostEqual(2452930.312847, self.jd, 6) # value from Reda and Andreas (2005)
 

@@ -2,7 +2,7 @@
 
 #    Constants for calculating the position of the sun relative to the earth
 
-#    Copyright 2007 Brandon Stafford
+#    Copyright 2008 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #

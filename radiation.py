@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#    Library for calculating location of the sun
+#    Functions for calculating the solar radiation hitting the earth
 
 #    Copyright 2008 Brandon Stafford
 #
@@ -19,16 +19,23 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-coeff_list = [
-		('ArgumentOfLatitudeOfMoon', (93.27191, 483202.017538, -0.0036825, 327270.0)),
-		('LongitudeOfAscendingNode', (125.04452, -1934.136261, 0.0020708, 450000.0)),
-		('MeanElongationOfMoon', (297.85036, 445267.111480, -0.0019142, 189474.0)),
-		('MeanAnomalyOfMoon', (134.96298, 477198.867398, 0.0086972, 56250.0)),
-		('MeanAnomalyOfSun', (357.52772, 35999.050340, -0.0001603, -300000.0))
-	]
+def GetAirMassRatio(altitude_deg):
+	# from Masters, p. 412
+	# warning: pukes on input of zero
+	return (1/math.sin(math.radians(altitude_deg)))
 
-def buildPolyFit((a, b, c, d)):
-	return (lambda x: a + b * x + c * x ** 2 + (x ** 3) / d)
+def GetApparentExtraterrestrialFlux(day):
+	# from Masters, p. 412
+	return 1160 + (75 * math.sin((360/365) * (day - 275)))
 
-def buildPolyDict():
-	return dict([(name, buildPolyFit(coeffs)) for (name, coeffs) in coeff_list])
+def GetOpticalDepth(day):
+	# from Masters, p. 412
+	return 0.174 + (0.035 * math.sin((360/365) * (day - 100)))
+
+def GetRadiationDirect(utc_datetime, altitude_deg):
+	# from Masters, p. 412
+	day = GetDayOfYear(utc_datetime)
+	flux = GetApparentExtraterrestrialFlux(day)
+	optical_depth = GetOpticalDepth(day)
+	air_mass_ratio = GetAirMassRatio(altitude_deg)
+	return flux * math.exp(-1 * optical_depth * air_mass_ratio)
