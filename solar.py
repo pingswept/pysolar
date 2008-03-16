@@ -45,10 +45,42 @@ def EquationOfTime(day):
 	b = (2 * math.pi / 364.0) * (day - 81)
 	return (9.87 * math.sin(2 *b)) - (7.53 * math.cos(b)) - (1.5 * math.sin(b))
 
-def GetAberrationCorrection(r): 	# r is earth radius vector [astronomical units]
-	return -20.4898/(3600.0 * r)
+def GetAberrationCorrection(radius_vector): 	# r is earth radius vector [astronomical units]
+	return -20.4898/(3600.0 * radius_vector)
 
-def GetAltitude(latitude_deg, longitude_deg, utc_datetime):
+def GetAltitude(latitude_deg, longitude_deg, utc_datetime, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
+	'''See also the faster, but less accurate, GetAltitudeFast()'''
+	# location-dependent calculations	
+	projected_radial_distance = GetProjectedRadialDistance(elevation, latitude_deg)
+	projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
+
+	# time-dependent calculations	
+	jd = julian.GetJulianDay(utc_datetime)
+	jde = julian.GetJulianEphemerisDay(jd, 65)
+	jce = julian.GetJulianEphemerisCentury(jde)
+	jme = julian.GetJulianEphemerisMillenium(jce)
+	geocentric_latitude = GetGeocentricLatitude(jme)
+	geocentric_longitude = GetGeocentricLongitude(jme)
+	radius_vector = GetRadiusVector(jme)
+	aberration_correction = GetAberrationCorrection(radius_vector)
+	equatorial_horizontal_parallax = GetEquatorialHorizontalParallax(radius_vector)
+	nutation = GetNutation(jde)
+	apparent_sidereal_time = GetApparentSiderealTime(jd, jme, nutation)
+	true_ecliptic_obliquity = GetTrueEclipticObliquity(jme, nutation)
+	
+	# calculations dependent on location and time
+	apparent_sun_longitude = GetApparentSunLongitude(geocentric_longitude, nutation, aberration_correction)
+	geocentric_sun_right_ascension = GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
+	geocentric_sun_declination = GetGeocentricSunDeclination(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
+	local_hour_angle = GetLocalHourAngle(apparent_sidereal_time, longitude_deg, geocentric_sun_right_ascension)
+	parallax_sun_right_ascension = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination, projected_axial_distance)
+	topocentric_local_hour_angle = GetTopocentricLocalHourAngle(local_hour_angle, parallax_sun_right_ascension)
+	topocentric_sun_declination = GetTopocentricSunDeclination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
+	topocentric_elevation_angle = GetTopocentricElevationAngle(latitude_deg, topocentric_sun_declination, topocentric_local_hour_angle)
+	refraction_correction = GetRefractionCorrection(pressure_millibars, temperature_celsius, topocentric_elevation_angle)
+	return topocentric_elevation_angle + refraction_correction
+
+def GetAltitudeFast(latitude_deg, longitude_deg, utc_datetime):
 
 # expect 19 degrees for solar.GetAltitude(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
 
@@ -67,7 +99,37 @@ def GetApparentSiderealTime(julian_day, jme, nutation):
 def GetApparentSunLongitude(geocentric_longitude, nutation, ab_correction):
 	return geocentric_longitude + nutation['longitude'] + ab_correction
 
-def GetAzimuth(latitude_deg, longitude_deg, utc_datetime):
+def GetAzimuth(latitude_deg, longitude_deg, utc_datetime, elevation = 0):
+
+	# location-dependent calculations	
+	projected_radial_distance = GetProjectedRadialDistance(elevation, latitude_deg)
+	projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
+
+	# time-dependent calculations	
+	jd = julian.GetJulianDay(utc_datetime)
+	jde = julian.GetJulianEphemerisDay(jd, 65)
+	jce = julian.GetJulianEphemerisCentury(jde)
+	jme = julian.GetJulianEphemerisMillenium(jce)
+	geocentric_latitude = GetGeocentricLatitude(jme)
+	geocentric_longitude = GetGeocentricLongitude(jme)
+	radius_vector = GetRadiusVector(jme)
+	aberration_correction = GetAberrationCorrection(radius_vector)
+	equatorial_horizontal_parallax = GetEquatorialHorizontalParallax(radius_vector)
+	nutation = GetNutation(jde)
+	apparent_sidereal_time = GetApparentSiderealTime(jd, jme, nutation)
+	true_ecliptic_obliquity = GetTrueEclipticObliquity(jme, nutation)
+	
+	# calculations dependent on location and time
+	apparent_sun_longitude = GetApparentSunLongitude(geocentric_longitude, nutation, aberration_correction)
+	geocentric_sun_right_ascension = GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
+	geocentric_sun_declination = GetGeocentricSunDeclination(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
+	local_hour_angle = GetLocalHourAngle(apparent_sidereal_time, longitude_deg, geocentric_sun_right_ascension)
+	parallax_sun_right_ascension = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination, projected_axial_distance)
+	topocentric_local_hour_angle = GetTopocentricLocalHourAngle(local_hour_angle, parallax_sun_right_ascension)
+	topocentric_sun_declination = GetTopocentricSunDeclination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
+	return 180 - GetTopocentricAzimuthAngle(topocentric_local_hour_angle, latitude_deg, topocentric_sun_declination)
+
+def GetAzimuthFast(latitude_deg, longitude_deg, utc_datetime):
 # expect -50 degrees for solar.GetAzimuth(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
 	day = GetDayOfYear(utc_datetime)
 	declination_rad = math.radians(GetDeclination(day))
@@ -94,11 +156,11 @@ def GetDayOfYear(utc_datetime):
 	return delta.days
 
 def GetDeclination(day):
-	"""The declination of the sun is the angle between
+	'''The declination of the sun is the angle between
 	Earth's equatorial plane and a line between the Earth and the sun.
 	The declination of the sun varies between 23.45 degrees and -23.45 degrees,
 	hitting zero on the equinoxes and peaking on the solstices.
-	"""
+	'''
 	return 23.45 * math.sin((2 * math.pi / 365.0) * (day - 81))
 
 def GetEquatorialHorizontalParallax(radius_vector):

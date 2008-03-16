@@ -19,6 +19,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+import solar
+import math
+
 def GetAirMassRatio(altitude_deg):
 	# from Masters, p. 412
 	# warning: pukes on input of zero
@@ -34,8 +37,12 @@ def GetOpticalDepth(day):
 
 def GetRadiationDirect(utc_datetime, altitude_deg):
 	# from Masters, p. 412
-	day = GetDayOfYear(utc_datetime)
-	flux = GetApparentExtraterrestrialFlux(day)
-	optical_depth = GetOpticalDepth(day)
-	air_mass_ratio = GetAirMassRatio(altitude_deg)
-	return flux * math.exp(-1 * optical_depth * air_mass_ratio)
+	
+	if(altitude_deg > 0):
+		day = solar.GetDayOfYear(utc_datetime)
+		flux = GetApparentExtraterrestrialFlux(day)
+		optical_depth = GetOpticalDepth(day)
+		air_mass_ratio = GetAirMassRatio(altitude_deg)
+		return flux * math.exp(-1 * optical_depth * air_mass_ratio)
+	else:
+		return 0.0

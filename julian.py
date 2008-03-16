@@ -1,4 +1,4 @@
-#!/usr/bin/python
+	#!/usr/bin/python
 
 #    Julian calendar calculations for calculating the position of the sun relative to the earth
 
@@ -42,7 +42,7 @@ def GetJulianDay(utc_datetime):	# based on NREL/TP-560-34302 by Andreas and Reda
 def GetJulianEphemerisCentury(julian_ephemeris_day):
 	return (julian_ephemeris_day - 2451545.0) / 36525.0
 
-def GetJulianEphemerisDay(julian_day, delta_seconds):
+def GetJulianEphemerisDay(julian_day, delta_seconds = 66.0):
 	"""delta_seconds is value referred to by astronomers as Delta-T, defined as the difference between
 	Dynamical Time (TD) and Universal Time (UT). In 2007, it's around 65 seconds.
 	A list of values for Delta-T can be found here: ftp://maia.usno.navy.mil/ser7/deltat.data"""
