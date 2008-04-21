@@ -23,4 +23,4 @@ measure sun location with great precision, but I'd love to hear reports of
 "Yeah, it worked to within a degree over the course of an afternoon in Spain."
 
 Brandon Stafford
-<first_name> @ pingswept org
+first_name @ pingswept org

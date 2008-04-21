@@ -1,10 +1,31 @@
-import urllib, urllib2, datetime
+#!/usr/bin/python
+ 
+# Tool for requesting data from US Naval Observatory
+ 
+# Copyright 2007 Brandon Stafford
+#
+# This file is part of Pysolar.
+#
+# Pysolar is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Pysolar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-def EncodeRequest(timestamp, longitude, latitude, height):
+import urllib, urllib2, datetime, solar
+
+def EncodeRequest(latitude, longitude, timestamp, elevation):
 	params = {}
 	params['FFX'] = '2' # use worldwide locations script
 	params['ID'] = 'Pysolar'
-	params['pos'] = '8'
+	params['pos'] = '9'
 	params['obj'] = '10' # Sun
 	params['xxy'] = str(timestamp.year)
 	params['xxm'] = str(timestamp.month)
@@ -14,7 +35,7 @@ def EncodeRequest(timestamp, longitude, latitude, height):
 	params['t3'] = str(timestamp.second)
 	params['intd'] = '1.0'
 	params['unit'] = '1'
-	params['rep'] = '5'
+	params['rep'] = '1'
 	params['place'] = 'Name omitted'
 
 	(deg, rem) = divmod(longitude, 1)
@@ -31,21 +52,43 @@ def EncodeRequest(timestamp, longitude, latitude, height):
 	params['yy2'] = str(min) # minutes
 	params['yy3'] = str(sec) # seconds
 	
-	params['hh1'] = str(height) # height above sea level in meters
+	params['hh1'] = str(elevation) # height above sea level in meters
 	params['ZZZ'] = 'END'
 	data = urllib.urlencode(params)
 	return data
 
+latitude = 70
+longitude = 42
 d = datetime.datetime.utcnow()
-data = EncodeRequest(d,2,3,0)
+elevation = 100.0
+data = EncodeRequest(latitude, longitude, d, elevation)
 url = 'http://aa.usno.navy.mil/cgi-bin/aa_topocentric2.pl'
 req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
 
 lines = response.readlines()
-for line in lines:
-	print line
-
-the_page = response.read()
 response.close()
-# FFX=1&ID=AA&pos=8&obj=10&xxy=2008&xxm=4&xxd=19&t1=0&t2=0&t3=0.0&intd=1.0&unit=1&rep=5&st=MA&place=Boston&hh1=0&ZZZ=END
+
+print lines[21]
+result = lines[21]
+tokens = result.split(' ')
+print tokens
+
+usno_alt = float(tokens[9]) + float(tokens[10])/60.0 + float(tokens[11])/3600.0
+usno_az = float(tokens[16]) + float(tokens[17])/60.0 + float(tokens[18])/3600.0
+print usno_alt
+print usno_az
+
+alt = solar.GetAltitude(latitude, longitude, d, elevation)
+pysolar_alt = (90.0 - alt)
+az = solar.GetAzimuth(latitude, longitude, d, elevation)
+pysolar_az = (180.0 - az)%360.0
+
+print pysolar_alt
+print pysolar_az
+
+alt_delta = usno_alt - pysolar_alt
+az_delta = usno_az - pysolar_az
+
+print alt_delta
+print az_delta
