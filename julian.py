@@ -28,13 +28,13 @@ def GetJulianDay(utc_datetime):	# based on NREL/TP-560-34302 by Andreas and Reda
 								# does not accept years before 0 because of bounds check on Python's datetime.year field
 	year = utc_datetime.year
 	month = utc_datetime.month
-	if(month <= 2):		# shift to accomodate leap years?
-		year = year - 1
-		month = month + 12
-	day = utc_datetime.day + (((utc_datetime.hour * 3600.0) + (utc_datetime.minute * 60.0) + utc_datetime.second) / 86400.0)
-	gregorian_offset = 2 - math.floor(year / 100) + math.floor(math.floor(year / 100) / 4)
-	julian_day = math.floor(365.25*(year + 4716)) + math.floor(30.6001 *(month + 1)) + day - 1524.5
-	if (julian_day <= 2299160):
+	if(month <= 2.0):		# shift to accomodate leap years?
+		year = year - 1.0
+		month = month + 12.0
+	day = utc_datetime.day + (((utc_datetime.hour * 3600.0) + (utc_datetime.minute * 60.0) + utc_datetime.second + utc_datetime.microsecond) / 86400.0)
+	gregorian_offset = 2.0 - (year // 100.0) + ((year // 100.0) // 4.0)
+	julian_day = math.floor(365.25 * (year + 4716.0)) + math.floor(30.6001 * (month + 1.0)) + day - 1524.5
+	if (julian_day <= 2299160.0):
 		return julian_day # before October 5, 1852
 	else:
 		return julian_day + gregorian_offset # after October 5, 1852

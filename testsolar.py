@@ -77,7 +77,7 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(0.0037927819922933584, self.jme, 12) # value not validated
 
 	def testGetGeocentricLongitude(self):
-		self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 4) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 10) # value from Reda and Andreas (2005)
 
 	def testGetGeocentricLatitude(self):
 		self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9) # value from Reda and Andreas (2005)
@@ -96,7 +96,7 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
 
 	def testGetApparentSunLongitude(self):
-		self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10) # value from Reda and Andreas (2005)
 
 	def testGetApparentSiderealTime(self):
 		self.assertAlmostEqual(318.5119, self.apparent_sidereal_time, 2) # value derived from Reda and Andreas (2005)
