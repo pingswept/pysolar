@@ -2,7 +2,7 @@
  
 # Tool for requesting data from US Naval Observatory
  
-# Copyright 2007 Brandon Stafford
+# Copyright 2007, 2008 Brandon Stafford
 #
 # This file is part of Pysolar.
 #
@@ -19,9 +19,73 @@
 # You should have received a copy of the GNU General Public License along
 # with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib, urllib2, datetime, solar
+import datetime, random, solar, time, urllib, urllib2
+
+class Ephemeris:
+	def __init__(self, timestamp, latitude, longitude, elevation, azimuth=0, altitude=0):
+		self.timestamp = timestamp
+		self.latitude = latitude
+		self.longitude = longitude
+		self.elevation = float(elevation)
+		self.azimuth = float(azimuth)
+		self.altitude = float(altitude)
+
+class EphemerisComparison:
+	def __init__(self, name1, eph1, name2, eph2):
+		self.timestamp = eph1.timestamp
+		self.latitude = eph1.latitude
+		self.longitude = eph1.longitude
+		self.elevation = eph1.elevation
+		self.name1 = name1
+		self.alt1 = eph1.altitude
+		self.az1 = eph1.azimuth
+		self.name2 = name2
+		self.alt2 = eph2.altitude
+		self.az2 = eph2.azimuth
+		self.alt_error = abs(eph1.altitude - eph2.altitude)
+		self.az_error = abs(eph1.azimuth - eph2.azimuth)
+
+def RequestEphemerisData(datum):
+	data = EncodeRequest(datum.latitude, datum.longitude, datum.timestamp, datum.elevation)
+	url = 'http://aa.usno.navy.mil/cgi-bin/aa_topocentric2.pl'
+	req = urllib2.Request(url, data)
+	response = urllib2.urlopen(req)
+
+	lines = response.readlines()
+	response.close()
+	#print lines
+	print lines[21]
+	result = lines[21]
+	tokens = filter(lambda x: x not in ' ', result.split(' '))
+	print 'Tokens: \n', tokens
+
+	usno_alt = float(tokens[4]) + float(tokens[5])/60.0 + float(tokens[6])/3600.0
+	usno_az = float(tokens[7]) + float(tokens[8])/60.0 + float(tokens[9])/3600.0
+
+#	print usno_alt
+#	print usno_az
+
+	result  = Ephemeris(datum.timestamp, datum.latitude, datum.longitude, datum.elevation, usno_az, usno_alt)
+
+	return result
+
+def ComparePysolarToUSNO(datum):
+	alt = solar.GetAltitude(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+	pysolar_alt = (90.0 - alt)
+	az = solar.GetAzimuth(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+	pysolar_az = (180.0 - az)%360.0
+
+#	print pysolar_alt
+#	print pysolar_az
+
+	pysolar = Ephemeris(datum.timestamp, datum.latitude, datum.longitude, datum.elevation, pysolar_az, pysolar_alt)
+	c = EphemerisComparison('pysolar', pysolar, 'usno', datum)
+	return c
 
 def EncodeRequest(latitude, longitude, timestamp, elevation):
+	"""Builds a string of arguments to be passed to the Perl script at the USNO
+	
+	Note that the degree arguments must be integers, or the USNO script chokes."""
 	params = {}
 	params['FFX'] = '2' # use worldwide locations script
 	params['ID'] = 'Pysolar'
@@ -57,38 +121,71 @@ def EncodeRequest(latitude, longitude, timestamp, elevation):
 	data = urllib.urlencode(params)
 	return data
 
-latitude = 70
-longitude = 42
-d = datetime.datetime.utcnow()
-elevation = 100.0
-data = EncodeRequest(latitude, longitude, d, elevation)
-url = 'http://aa.usno.navy.mil/cgi-bin/aa_topocentric2.pl'
-req = urllib2.Request(url, data)
-response = urllib2.urlopen(req)
+def GatherRandomEphemeris():
+	latitude = random.randrange(0, 90)
+	longitude = random.randrange(0, 360)
+	elevation = 0.0
+	t = datetime.datetime(2008, random.randrange(1, 13), random.randrange(1, 28), random.randrange(0, 24), random.randrange(0, 60), random.randrange(0,60))
+	query = Ephemeris(t, latitude, longitude, elevation)
+	PrintEphemerisDatum(query)
+	d = RequestEphemerisData(query)
+	PrintEphemerisDatum(d)
+	WriteEphemerisDatumToFile(d, 'usno_data.txt')
 
-lines = response.readlines()
-response.close()
+def PrintEphemerisDatum(datum):
+	print datum.timestamp, datum.latitude, datum.longitude, datum.elevation, datum.azimuth, datum.altitude
 
-print lines[21]
-result = lines[21]
-tokens = result.split(' ')
-print tokens
+def ReadEphemeridesLog(logname):
+	data = []
+	log = open(logname, 'r')
+	lines = log.readlines()
+	log.close()
+	for line in lines:
+		args = line.split(' ')
+		d = datetime.datetime(*(time.strptime(args[0] + ' ' + args[1], '%Y-%m-%d %H:%M:%S')[0:6]))
+		e = Ephemeris(d, args[2], args[3], args[4], args[5], args[6])
+		data.append(e)
+	return data
 
-usno_alt = float(tokens[9]) + float(tokens[10])/60.0 + float(tokens[11])/3600.0
-usno_az = float(tokens[16]) + float(tokens[17])/60.0 + float(tokens[18])/3600.0
-print usno_alt
-print usno_az
+def WriteEphemerisDatumToFile(d, filename):
+	log = open(filename, 'a')
+	log.write('%s %s %s %s %s %s\n' % (d.timestamp, d.latitude, d.longitude, d.elevation, d.azimuth, d.altitude))
+	log.close()
 
-alt = solar.GetAltitude(latitude, longitude, d, elevation)
-pysolar_alt = (90.0 - alt)
-az = solar.GetAzimuth(latitude, longitude, d, elevation)
-pysolar_az = (180.0 - az)%360.0
+def WriteComparisonsToCSV(comps, filename):
+	out = open(filename, 'a')
+	for c in comps:
+		out.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (c.timestamp, c.latitude, c.longitude, c.elevation, c.alt1, c.alt2, c.alt_error, c.az1, c.az2, c.az_error))
+	out.close()
+		
+if __name__ == '__main__':
 
-print pysolar_alt
-print pysolar_az
+	from scipy import stats
+	import sys
+	
+	ephemerides = ReadEphemeridesLog(sys.argv[1])
+	
+	comps = []
+	for e in ephemerides:
+		c = ComparePysolarToUSNO(e)
+		comps.append(c)
 
-alt_delta = usno_alt - pysolar_alt
-az_delta = usno_az - pysolar_az
+	az_errors = [c.az_error for c in comps]
+	alt_errors = [c.alt_error for c in comps]
 
-print alt_delta
-print az_delta
+	print '---------------------'
+	print 'Azimuth stats'
+	print 'Mean error: ' + str(stats.mean(az_errors))
+	print 'Std dev: ' + str(stats.std(az_errors))
+	print 'Min error: ' + str(stats.tmin(az_errors, None))
+	print 'Max error: ' + str(stats.tmax(az_errors, None))
+
+	print '----------------------'
+	print 'Altitude stats'
+	
+	print 'Mean error: ' + str(stats.mean(alt_errors))
+	print 'Std dev: '+ str(stats.std(alt_errors))
+	print 'Min error: ' + str(stats.tmin(alt_errors, None))
+	print 'Max error: ' + str(stats.tmax(alt_errors, None))
+
+#	WriteComparisonsToCSV(comps, 'pysolar_v_usno.csv')
