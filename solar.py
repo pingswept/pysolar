@@ -237,16 +237,8 @@ def GetMeanSiderealTime(julian_day):
 	sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
 	return sidereal_time % 360
 
-def GetNutationAberrationXY(jce, i):
+def GetNutationAberrationXY(jce, i, x):
 	y = constants.aberration_sin_terms
-	x = []
-	p = poly.buildPolyDict()
-	# order of 5 x.append lines below is important
-	x.append(p['MeanElongationOfMoon'](jce))
-	x.append(p['MeanAnomalyOfSun'](jce))
-	x.append(p['MeanAnomalyOfMoon'](jce))
-	x.append(p['ArgumentOfLatitudeOfMoon'](jce))
-	x.append(p['LongitudeOfAscendingNode'](jce))
 	sigmaxy = 0.0
 	for j in range(len(x)):
 		sigmaxy += x[j] * y[i][j]
@@ -257,9 +249,10 @@ def GetNutation(jde):
 	jce = julian.GetJulianEphemerisCentury(jde)
 	nutation_long = []
 	nutation_oblique = []
+	x = PrecalculateAberrations(poly.buildPolyDict(), jce)
 
 	for i in range(len(abcd)):
-		sigmaxy = GetNutationAberrationXY(jce, i)
+		sigmaxy = GetNutationAberrationXY(jce, i, x)
 		nutation_long.append((abcd[i][0] + (abcd[i][1] * jce)) * math.sin(math.radians(sigmaxy)))
 		nutation_oblique.append((abcd[i][2] + (abcd[i][3] * jce)) * math.cos(math.radians(sigmaxy)))
 
@@ -355,3 +348,12 @@ def GetTrueEclipticObliquity(jme, nutation):
 	+ (27.87 * u ** 8) + (5.79 * u ** 9) + (2.45 * u ** 10)
 	return (mean_obliquity / 3600.0) + nutation['obliquity']
 
+def PrecalculateAberrations(p, jce):
+	x = []
+	# order of 5 x.append lines below is important
+	x.append(p['MeanElongationOfMoon'](jce))
+	x.append(p['MeanAnomalyOfSun'](jce))
+	x.append(p['MeanAnomalyOfMoon'](jce))
+	x.append(p['ArgumentOfLatitudeOfMoon'](jce))
+	x.append(p['LongitudeOfAscendingNode'](jce))
+	return x
