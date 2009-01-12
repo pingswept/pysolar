@@ -73,7 +73,7 @@ def GetAltitude(latitude_deg, longitude_deg, utc_datetime, elevation = 0, temper
 	geocentric_sun_right_ascension = GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
 	geocentric_sun_declination = GetGeocentricSunDeclination(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
 	local_hour_angle = GetLocalHourAngle(apparent_sidereal_time, longitude_deg, geocentric_sun_right_ascension)
-	parallax_sun_right_ascension = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination, projected_axial_distance)
+	parallax_sun_right_ascension = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination)
 	topocentric_local_hour_angle = GetTopocentricLocalHourAngle(local_hour_angle, parallax_sun_right_ascension)
 	topocentric_sun_declination = GetTopocentricSunDeclination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
 	topocentric_elevation_angle = GetTopocentricElevationAngle(latitude_deg, topocentric_sun_declination, topocentric_local_hour_angle)
@@ -124,7 +124,7 @@ def GetAzimuth(latitude_deg, longitude_deg, utc_datetime, elevation = 0):
 	geocentric_sun_right_ascension = GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
 	geocentric_sun_declination = GetGeocentricSunDeclination(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
 	local_hour_angle = GetLocalHourAngle(apparent_sidereal_time, longitude_deg, geocentric_sun_right_ascension)
-	parallax_sun_right_ascension = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination, projected_axial_distance)
+	parallax_sun_right_ascension = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination)
 	topocentric_local_hour_angle = GetTopocentricLocalHourAngle(local_hour_angle, parallax_sun_right_ascension)
 	topocentric_sun_declination = GetTopocentricSunDeclination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
 	return 180 - GetTopocentricAzimuthAngle(topocentric_local_hour_angle, latitude_deg, topocentric_sun_declination)
@@ -145,10 +145,7 @@ def GetAzimuthFast(latitude_deg, longitude_deg, utc_datetime):
 		return (180 - math.degrees(azimuth_rad))
 
 def GetCoefficient(jme, constant_array):
-	total = 0
-	for i in range(len(constant_array)):
-		total = total + (constant_array[i-1][0] * math.cos(constant_array[i-1][1] + (constant_array[i-1][2] * jme)))
-	return total
+	return sum([constant_array[i-1][0] * math.cos(constant_array[i-1][1] + (constant_array[i-1][2] * jme)) for i in range(len(constant_array))])
 
 def GetDayOfYear(utc_datetime):
 	year_start = datetime.datetime(utc_datetime.year, 1, 1,)
@@ -261,14 +258,13 @@ def GetNutation(jde):
 
 	return nutation
 
-def GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination, projected_axial_distance):
+def GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination):
 	prd = projected_radial_distance
 	ehp_rad = math.radians(equatorial_horizontal_parallax)
 	lha_rad = math.radians(local_hour_angle)
 	gsd_rad = math.radians(geocentric_sun_declination)
-	pad = projected_axial_distance
 	a = -1 * prd * math.sin(ehp_rad) * math.sin(lha_rad)
-	b =  math.cos(gsd_rad) - pad * math.sin(ehp_rad) * math.cos(lha_rad)
+	b =  math.cos(gsd_rad) - prd * math.sin(ehp_rad) * math.cos(lha_rad)
 	parallax = math.atan2(a, b)
 	return math.degrees(parallax)
 
@@ -326,14 +322,16 @@ def GetTopocentricSunDeclination(geocentric_sun_declination, projected_axial_dis
     gsd_rad = math.radians(geocentric_sun_declination)
     pad = projected_axial_distance
     ehp_rad = math.radians(equatorial_horizontal_parallax)
-    a = (math.sin(gsd_rad) - pad * math.sin(ehp_rad)) * math.cos(parallax_sun_right_ascension)
-    b = math.cos(gsd_rad) - (pad * math.sin(ehp_rad) * math.cos(local_hour_angle))
+    psra_rad = math.radians(parallax_sun_right_ascension)
+    lha_rad = math.radians(local_hour_angle)
+    a = (math.sin(gsd_rad) - pad * math.sin(ehp_rad)) * math.cos(psra_rad)
+    b = math.cos(gsd_rad) - (pad * math.sin(ehp_rad) * math.cos(lha_rad))
     return math.degrees(math.atan2(a, b))
 
-def GetTopocentricSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, projected_axial_distance,
+def GetTopocentricSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle,
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude):
     gsd = GetGeocentricSunDeclination(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
-    psra = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, gsd, projected_axial_distance)
+    psra = GetParallaxSunRightAscension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, gsd)
     gsra = GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
     return psra + gsra
 

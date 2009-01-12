@@ -56,8 +56,8 @@ class testSolar(unittest.TestCase):
 		self.projected_radial_distance = solar.GetProjectedRadialDistance(self.elevation, self.latitude)
 		self.projected_axial_distance = solar.GetProjectedAxialDistance(self.elevation, self.latitude)
 		self.topocentric_sun_right_ascension = solar.GetTopocentricSunRightAscension(self.projected_radial_distance,
-		    self.equatorial_horizontal_parallax, self.local_hour_angle, self.projected_axial_distance, self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
-		self.parallax_sun_right_ascension = solar.GetParallaxSunRightAscension(self.projected_radial_distance, self.equatorial_horizontal_parallax, self.local_hour_angle, self.geocentric_sun_declination, self.projected_axial_distance)
+		    self.equatorial_horizontal_parallax, self.local_hour_angle, self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
+		self.parallax_sun_right_ascension = solar.GetParallaxSunRightAscension(self.projected_radial_distance, self.equatorial_horizontal_parallax, self.local_hour_angle, self.geocentric_sun_declination)
 		self.topocentric_sun_declination = solar.GetTopocentricSunDeclination(self.geocentric_sun_declination, self.projected_axial_distance, self.equatorial_horizontal_parallax, self.parallax_sun_right_ascension, self.local_hour_angle)
 		self.topocentric_local_hour_angle = solar.GetTopocentricLocalHourAngle(self.local_hour_angle, self.parallax_sun_right_ascension)
 		self.topocentric_zenith_angle = solar.GetTopocentricZenithAngle(self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle, self.pressure, self.temperature)
@@ -117,7 +117,7 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3) # value from Reda and Andreas (2005)
 
 	def testGetParallaxSunRightAscension(self):
-		self.assertAlmostEqual(-0.00036598821845849395, self.parallax_sun_right_ascension, 12) # value not validated
+		self.assertAlmostEqual(-0.00036599029186055283, self.parallax_sun_right_ascension, 12) # value not validated
 		
 	def testGetTopocentricSunDeclination(self):
 		self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3) # value from Reda and Andreas (2005)
@@ -129,7 +129,7 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(50.11162, self.topocentric_zenith_angle, 3) # value from Reda and Andreas (2005)
 
 	def testGetTopocentricAzimuthAngle(self):
-		self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 3) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5) # value from Reda and Andreas (2005)
 
 	def testGetIncidenceAngle(self):
 		self.assertAlmostEqual(25.18700, self.incidence_angle, 3) # value from Reda and Andreas (2005)

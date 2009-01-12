@@ -188,4 +188,4 @@ if __name__ == '__main__':
 	print 'Min error: ' + str(stats.tmin(alt_errors, None))
 	print 'Max error: ' + str(stats.tmax(alt_errors, None))
 
-#	WriteComparisonsToCSV(comps, 'pysolar_v_usno.csv')
+	WriteComparisonsToCSV(comps, 'pysolar_v_usno.csv')
