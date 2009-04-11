@@ -23,6 +23,10 @@
 from PIL import Image
 from math import *
 import numpy as np
+import solar
+import datetime as dt
+import simulate as sim
+import radiation as rad
 
 def squareImage(im):
     (width, height) = im.size
@@ -40,12 +44,27 @@ def despherifyImage(im):
 
     full_circle = 1000.0 * 2 * pi
 
+#    for r in range(half_width):
+#        for theta in range(int(full_circle)):
+#            (inx, iny) = (round(r * cos(theta/1000.0)) + half_width, round(r * sin(theta/1000.0)) + half_width)
+#            (outx, outy) = (width - width * (theta/full_circle) - 1, r)
+#            outpix[outx, outy] = inpix[inx, iny]
+
+    theta_range = range(int(full_circle))
+    t_1000_range = [t / 1000.0 for t in theta_range]
+    thetas = zip([cos(t) for t in t_1000_range],
+    [sin(t) for t in t_1000_range],
+    [t / full_circle for t in theta_range])
+
     for r in range(half_width):
-        for theta in range(int(full_circle)):
-            (inx, iny) = (round(r * cos(theta/1000.0)) + half_width, round(r * sin(theta/1000.0)) + half_width)
-            (outx, outy) = (width - width * (theta/full_circle) - 1, r)
-            outpix[outx, outy] = inpix[inx, iny]
+        for t_cos, t_sin, t_full_circle in thetas:
+            (inx, iny) = (round(r * t_cos) + half_width,
+            round(r * t_sin) + half_width)
+            outx = width - width * (t_full_circle) - 1
+            outpix[outx, r] = inpix[inx, iny]
     return out
+
+
 
 def differentiateImageColumns(im):
     (width, height) = im.size
@@ -62,21 +81,69 @@ def redlineImage(im):
     pix = im.load()
 
     threshold = 300
+    horizon = []
 
     for x in range(width):
         for y in range(height - 1):
             (R, G, B) = pix[x, y]
             if R + G + B > threshold:
                 pix[x, y] = (255, 0, 0)
+                horizon.append(y)
                 break
+    return (im, horizon)
+
+def addSunPaths(im, latitude_deg, longitude_deg, horizon, d):
+    pix = im.load()
+
+    alt_zero = getAltitudeZero()
+    az_zero = getAzimuthZero()
+
+    for m in range(24 * 60):
+        alt = solar.GetAltitude(latitude_deg, longitude_deg, d + dt.timedelta(minutes = m))
+        az = solar.GetAzimuth(latitude_deg, longitude_deg, d + dt.timedelta(minutes = m))
+
+        x = az_zero + int(az * 1944.0/360.0)
+        y = alt_zero - int(alt_zero * sin(radians(alt)))
+        if y < horizon[x]:
+            pix[x % 1944, y] = (255, 193, 37)
+    
     return im
+
+def getAzimuthZero():
+    return 1100
+
+def getAltitudeZero():
+    return 380
+
+horizon = []
 
 im = Image.open('spherical.jpg').convert("L")
 im = squareImage(im)
 
+print 'Starting despherification . . .'
 lin = despherifyImage(im)
+
+print 'Despherification complete. Calculating horizon . . .'
 d = differentiateImageColumns(lin).convert("RGB")
-r = redlineImage(d)
+r, horizon = redlineImage(d)
+print 'Horizon calculated.'
 
-r.show()
+(latitude_deg, longitude_deg) = (42.206, -71.382)
+summer = dt.datetime(2009, 6, 21, 5, 0, 0, 0)
+fall = dt.datetime(2009, 9, 21, 5, 0, 0, 0)
+winter = dt.datetime(2009, 12, 21, 5, 0, 0, 0)
+step_minutes = 5
 
+power_densities = [radiation for (time, alt, az, radiation, shade) in sim.SimulateSpan(latitude_deg, longitude_deg, horizon, summer, winter, step_minutes)]
+print power_densities
+
+energy = sum(power_densities) * step_minutes * 60
+print str(energy/1000000) + ' MJ per m^2 per year'
+
+sp = addSunPaths(r, latitude_deg, longitude_deg, horizon, summer)
+sp2 = addSunPaths(r, latitude_deg, longitude_deg, horizon, fall)
+sp3 = addSunPaths(r, latitude_deg, longitude_deg, horizon, winter)
+
+sp3.show()
+
+#sp3.save('sun_path.jpg')

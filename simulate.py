@@ -22,6 +22,7 @@
 import datetime
 import radiation
 import solar
+from math import *
 
 def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
 	'''Create a list of sample points evenly spaced apart by step_minutes.'''
@@ -29,10 +30,18 @@ def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
 	time_list = []
 	span = end_utc_datetime - start_utc_datetime
 	dt = datetime.timedelta(seconds = step)
-	print span
 	return map(lambda n: start_utc_datetime + dt * n, range((span.days * 86400 + span.seconds) / step))
 
-def SimulateSpan(latitude_deg, longitude_deg, start_utc_datetime, end_utc_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
+def CheckAgainstHorizon(power):
+    (time, alt, az, radiation, shade) = power
+    alt_zero = 380
+
+    if shade < alt_zero - int(alt_zero * sin(radians(alt))):
+        radiation = 0
+
+    return (time, alt, az, radiation, shade)
+
+def SimulateSpan(latitude_deg, longitude_deg, horizon, start_utc_datetime, end_utc_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
 	'''Simulate the motion of the sun over a time span and location of your choosing.
 	
 	The start and end points are set by datetime objects, which can be created with
@@ -47,8 +56,8 @@ def SimulateSpan(latitude_deg, longitude_deg, start_utc_datetime, end_utc_dateti
 		solar.GetAltitude(latitude_deg, longitude_deg, time, elevation, temperature_celsius, pressure_millibars),
 		solar.GetAzimuth(latitude_deg, longitude_deg, time, elevation)
 		) for time in time_list]	
-	power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt)) for (time, alt, az) in angles_list]
-	print power_list
+	power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
+	return filter(CheckAgainstHorizon, power_list)
 		
 #		xs = shade.GetXShade(width, 120, azimuth_deg)
 #		ys = shade.GetYShade(height, 120, altitude_deg)
