@@ -61,6 +61,7 @@ def despherifyImage(im):
             (inx, iny) = (round(r * t_cos) + half_width,
             round(r * t_sin) + half_width)
             outx = width - width * (t_full_circle) - 1
+#            print inpix, outx, r, inx, iny
             outpix[outx, r] = inpix[inx, iny]
     return out
 
@@ -115,35 +116,36 @@ def getAzimuthZero():
 def getAltitudeZero():
     return 380
 
-horizon = []
+if __name__ == '__main__':
+    horizon = []
 
-im = Image.open('spherical.jpg').convert("L")
-im = squareImage(im)
+    im = Image.open('spherical.jpg').convert("L")
+    im = squareImage(im)
 
-print 'Starting despherification . . .'
-lin = despherifyImage(im)
+    print 'Starting despherification . . .'
+    lin = despherifyImage(im)
 
-print 'Despherification complete. Calculating horizon . . .'
-d = differentiateImageColumns(lin).convert("RGB")
-r, horizon = redlineImage(d)
-print 'Horizon calculated.'
+    print 'Despherification complete. Calculating horizon . . .'
+    d = differentiateImageColumns(lin).convert("RGB")
+    r, horizon = redlineImage(d)
+    print 'Horizon calculated.'
 
-(latitude_deg, longitude_deg) = (42.206, -71.382)
-summer = dt.datetime(2009, 6, 21, 5, 0, 0, 0)
-fall = dt.datetime(2009, 9, 21, 5, 0, 0, 0)
-winter = dt.datetime(2009, 12, 21, 5, 0, 0, 0)
-step_minutes = 5
+    (latitude_deg, longitude_deg) = (42.206, -71.382)
+    summer = dt.datetime(2009, 6, 21, 5, 0, 0, 0)
+    fall = dt.datetime(2009, 9, 21, 5, 0, 0, 0)
+    winter = dt.datetime(2009, 12, 21, 5, 0, 0, 0)
+    step_minutes = 5
 
-power_densities = [radiation for (time, alt, az, radiation, shade) in sim.SimulateSpan(latitude_deg, longitude_deg, horizon, summer, winter, step_minutes)]
-print power_densities
+    power_densities = [radiation for (time, alt, az, radiation, shade) in sim.SimulateSpan(latitude_deg, longitude_deg, horizon, summer, winter, step_minutes)]
+    print power_densities
 
-energy = sum(power_densities) * step_minutes * 60
-print str(energy/1000000) + ' MJ per m^2 per year'
+    energy = sum(power_densities) * step_minutes * 60
+    print str(energy/1000000) + ' MJ per m^2 per year'
 
-sp = addSunPaths(r, latitude_deg, longitude_deg, horizon, summer)
-sp2 = addSunPaths(r, latitude_deg, longitude_deg, horizon, fall)
-sp3 = addSunPaths(r, latitude_deg, longitude_deg, horizon, winter)
+    sp = addSunPaths(r, latitude_deg, longitude_deg, horizon, summer)
+    sp2 = addSunPaths(r, latitude_deg, longitude_deg, horizon, fall)
+    sp3 = addSunPaths(r, latitude_deg, longitude_deg, horizon, winter)
 
-sp3.show()
+    sp3.show()
 
-#sp3.save('sun_path.jpg')
+#   sp3.save('sun_path.jpg')
