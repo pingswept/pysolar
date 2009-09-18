@@ -29,11 +29,11 @@ def GetAirMassRatio(altitude_deg):
 
 def GetApparentExtraterrestrialFlux(day):
 	# from Masters, p. 412
-	return 1160 + (75 * math.sin((360/365) * (day - 275)))
+	return 1160 + (75 * math.sin((360./365) * (day - 275)))
 
 def GetOpticalDepth(day):
 	# from Masters, p. 412
-	return 0.174 + (0.035 * math.sin((360/365) * (day - 100)))
+	return 0.174 + (0.035 * math.sin((360./365) * (day - 100)))
 
 def GetRadiationDirect(utc_datetime, altitude_deg):
 	# from Masters, p. 412
