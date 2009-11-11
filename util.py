@@ -1,8 +1,9 @@
-!/usr/bin/env python
+#!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
 
 #    Library for calculating location of the sun
-
+#
 #    Copyright 2009 Brandon Stafford
 #
 #    This file is part of Pysolar.
