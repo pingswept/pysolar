@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-#    Library for solar panel shading calculations
-
-#    Copyright 2007 Brandon Stafford
+#    Copyright 2007-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -19,6 +17,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""Shade calculation functions
+
+"""
 import math
 
 def GetSideByLawOfCosines(side_a, side_b, included_angle_deg):

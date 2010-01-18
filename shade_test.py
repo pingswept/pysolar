@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-#    Test of solar panel shading calculations
-
-#    Copyright 2007 Brandon Stafford
+#    Copyright 2007-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -19,10 +17,14 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""A test module for shading calculations
+
+"""
 import solar
 import shade
 import datetime
-from pylab import *
+import radiation
+import pylab
 #from itertools import izip
 
 def ShadeTest():
@@ -42,7 +44,7 @@ def ShadeTest():
 		timestamp = d.ctime()
 		altitude_deg = solar.GetAltitude(latitude_deg, longitude_deg, d)
 		azimuth_deg = solar.GetAzimuth(latitude_deg, longitude_deg, d)
-		power = solar.GetRadiationDirect(d, altitude_deg)
+		power = radiation.GetRadiationDirect(d, altitude_deg)
 		xs = shade.GetXShade(width, 120, azimuth_deg)
 		ys = shade.GetYShade(height, 120, altitude_deg)
 		shaded_area = xs * ys
@@ -59,8 +61,8 @@ def ShadeTest():
 	print powers
 	print shade_x
 	
-	plot(times, shaded_powers, times, powers)   # plot ends up with a line across it because x values wrap around
-	show()                                      # could fix that with sort function below
+	pylab.plot(times, shaded_powers, times, powers)   # plot ends up with a line across it because x values wrap around
+	pylab.show()                                      # could fix that with sort function below
 
 #def sort(list_to_sort, order): # based on a function by Ron Adam on some Python mailing list
 #    d = dict(izip(order, list_to_sort))

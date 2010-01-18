@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-#    Library for calculating location of the sun
-
-#    Copyright 2008 Brandon Stafford
+#    Copyright 2008-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -19,6 +17,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""Additional support constants and their calculation for solar geometry
+
+"""
 coeff_list = [
 		('ArgumentOfLatitudeOfMoon', (93.27191, 483202.017538, -0.0036825, 327270.0)),
 		('LongitudeOfAscendingNode', (125.04452, -1934.136261, 0.0020708, 450000.0)),

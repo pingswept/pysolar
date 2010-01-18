@@ -2,9 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-#    Library for calculating location of the sun
-#
-#    Copyright 2009 Brandon Stafford
+#    Copyright 2009-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -21,18 +19,17 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-"""This module contains the basic tools for solar calculations.
+"""Additional support functions for solar geometry, astronomy, radiation correlation
 
 :Original author: Simeon Nwaogaidu
-:Contact: SimeonObinna.Nwaogaidu@lahmeyer.de
+:Contact: SimeonObinna.Nwaogaidu AT lahmeyer DOT de
 
 :Additional author: Holger Zebner
-:Contact: holger.zebner@lahmeyer.de
+:Contact: holger.zebner AT lahmeyer DOT de
 
 :Additional author: Brandon Stafford
 
 """
-
 import conversions_time as ct
 import datetime
 import decimaldegrees.decimaldegrees as dg

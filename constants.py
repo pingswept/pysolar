@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-#    Constants for calculating the position of the sun relative to the earth
-
-#    Copyright 2008 Brandon Stafford
+#    Copyright 2008-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -33,6 +31,9 @@
 #
 # See also ftp://ftp.imcce.fr/pub/ephem/planets/vsop87/VSOP87D.ear
 
+"""Constants as input for ephemeris calculations
+
+"""
 earth_radius = 6378140.0 # meters
 
 aberration_sin_terms = [[0,0,0,0,1],

@@ -1,8 +1,6 @@
 #!/usr/bin/python
  
-# Tool for requesting data from US Naval Observatory
- 
-# Copyright 2007, 2008 Brandon Stafford
+# Copyright 2007-2010 Brandon Stafford
 #
 # This file is part of Pysolar.
 #
@@ -19,6 +17,9 @@
 # You should have received a copy of the GNU General Public License along
 # with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tool for requesting data from US Naval Observatory
+
+"""
 import datetime, random, solar, time, urllib, urllib2
 
 class Ephemeris:

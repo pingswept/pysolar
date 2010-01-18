@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-#    Functions for calculating the solar radiation hitting the earth
-
-#    Copyright 2008 Brandon Stafford
+#    Copyright 2008-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -19,6 +17,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""Calculate different kinds of radiation components via default values
+
+"""
 import solar
 import math
 

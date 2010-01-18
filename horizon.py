@@ -1,9 +1,6 @@
 #!/usr/bin/python
  
-# Script for detecting angle to solar obstructions from
-# spherically distorted images
- 
-# Copyright 2009 Brandon Stafford
+# Copyright 2009-2010 Brandon Stafford
 #
 # This file is part of Pysolar.
 #
@@ -20,6 +17,9 @@
 # You should have received a copy of the GNU General Public License along
 # with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""Script for detecting angle to solar obstructions from spherically distorted images
+
+"""
 from PIL import Image
 from math import *
 import numpy as np

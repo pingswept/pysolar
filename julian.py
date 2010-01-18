@@ -1,8 +1,6 @@
-	#!/usr/bin/python
+#!/usr/bin/python
 
-#    Julian calendar calculations for calculating the position of the sun relative to the earth
-
-#    Copyright 2008 Brandon Stafford
+#    Copyright 2008-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -19,6 +17,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""Julian calendar calculations for calculating the position of the sun relative to the earth
+
+"""
 import math
 
 def GetJulianCentury(julian_day):

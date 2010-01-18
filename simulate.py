@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-#    Library for calculating location of the sun
-
-#    Copyright 2007 Brandon Stafford
+#    Copyright 2007-2010 Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
@@ -19,6 +17,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+"""Support functions for horizon calculation 
+
+"""
 import datetime
 import radiation
 import solar
