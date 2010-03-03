@@ -30,9 +30,9 @@
 :Additional author: Brandon Stafford
 
 """
-import conversions_time as ct
+#import conversions_time as ct
 import datetime
-import decimaldegrees.decimaldegrees as dg
+#import decimaldegrees.decimaldegrees as dg
 import math
 import pytz
 from pytz import all_timezones
@@ -48,35 +48,11 @@ elevation_default = 0.0      # Default elevation is 0.0
 
 # Useful equations for analysis
 
-def date_with_decimal_hour(datetime, hour_decimal):    
-    """This converts dates with decimal hour to datetime_hour.
-    An improved version :mod:`conversions_time`
-    
-    Parameters
-    ----------
-    datetime : datetime.datetime
-        A datetime object is a single object containing all the information from a 
-        date object and a time object.              
-    hour_decimal : datetime.datetime
-        An hour is a unit of time 60 minutes, or 3,600 seconds in length.
-    
-    Returns
-    -------.
-    datetime_hour : datetime.datetime
-        datetime_hour
-    
-    """
-    hour_dms = dg.decimal2dms(hour_decimal)
-    
-    datetime_hour = dt.datetime(datetime.year, 
-                                date_utc.month, date_utc.day, hour_dms[0], hour_dms[1],int(hour_dms[2]))
-
-    return datetime_hour
-
-
 def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     """This function calculates the astronomical sunrise and sunset times in local time.
     
+    WARNING: THIS FUNCTION IS BROKEN. It relies on an unknown library called conversions_time, and another library called decimaldegrees that does not appear to have an active maintainer. TODO: Fix this function so it works without creating unnecessary dependencies.
+
     Parameters
     ----------
     latitude_deg : float
@@ -142,10 +118,10 @@ def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     # Sunset_time in hours
     sunset_time = (TON + sunn - time_adst) 
 
-    sunrise_time_dms = dg.decimal2dms(sunrise_time)
-    sunset_time_dms = dg.decimal2dms(sunset_time)
-    sunrise_time_dt = ct.hour_decimal2datetime(utc_datetime, sunrise_time)    
-    sunset_time_dt = ct.hour_decimal2datetime(utc_datetime, sunset_time)    
+    sunrise_time_dms = 0 # BROKEN dg.decimal2dms(sunrise_time)
+    sunset_time_dms = 0 # BROKEN dg.decimal2dms(sunset_time)
+    sunrise_time_dt = 0 # BROKEN ct.hour_decimal2datetime(utc_datetime, sunrise_time)    
+    sunset_time_dt = 0 # BROKEN ct.hour_decimal2datetime(utc_datetime, sunset_time)    
 
     return sunrise_time_dt, sunset_time_dt
 
@@ -331,7 +307,7 @@ def solarelevation_function_overcast(latitude_deg, longitude_deg, utc_datetime,
             
     """
     altitude = solar.GetAltitude(latitude_deg, longitude_deg,utc_datetime, elevation, temperature_celsius,pressure_millibars)
-    return = ((-0.0067133) + (0.78600 * (math.sin(altitude)))) + (0.22401 * (0.5 * (1 - math.cos(2 * altitude))))))
+    return ((-0.0067133) + (0.78600 * (math.sin(altitude)))) + (0.22401 * (0.5 * (1 - math.cos(2 * altitude))))
 
 
 def diffuse_transmittance(TL = TL_default):
@@ -461,7 +437,7 @@ def direct_underclear(latitude_deg, longitude_deg, utc_datetime,
     AM : float
         Air mass. An Air Mass is a measure of how far light travels through the Earth's atmosphere. One air mass,
         or AM1, is the thickness of the Earth's atmosphere. Air mass zero (AM0) describes solar irradiance in space,
-        where it is unaffected by the atmosphere. The power density of AM1 light is about 1,000 :math:`W/m^2`
+        where it is unaffected by the atmosphere. The power density of AM1 light is about 1,000 W/m^2
     TL : float
         Linke turbidity factor 
     elevation : float
