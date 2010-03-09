@@ -1,0 +1,5 @@
+# Python binaries 
+*.pyc
+
+# Output of Sphinx documentation generator
+doc/.build
