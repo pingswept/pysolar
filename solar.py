@@ -151,7 +151,7 @@ def GetCoefficient(jme, constant_array):
 	return sum([constant_array[i-1][0] * math.cos(constant_array[i-1][1] + (constant_array[i-1][2] * jme)) for i in range(len(constant_array))])
 
 def GetDayOfYear(utc_datetime):
-	year_start = datetime.datetime(utc_datetime.year, 1, 1,)
+	year_start = datetime.datetime(utc_datetime.year, 1, 1, tzinfo=utc_datetime.tzinfo)
 	delta = (utc_datetime - year_start)
 	return delta.days
 
