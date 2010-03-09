@@ -17,7 +17,13 @@
 # You should have received a copy of the GNU General Public License along
 # with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-"""Script for detecting angle to solar obstructions from spherically distorted images
+"""This script rectifies spherically distorted images in order to detect the
+angle to solar obstructions. It is not used in Pysolar's ephemeris
+calculations.
+
+An example of this script in action appears here:
+
+http://pingswept.org/2009/03/16/calculating-solar-panel-shading-in-python/
 
 """
 from PIL import Image

@@ -17,23 +17,53 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-# Note about sources for the constants below:
-#
-# Most of the constants below come from a 2005 paper by Reda and Andreas:
-#
-# I. Reda and A. Andreas, "Solar Position Algorithm for Solar Radiation Applications,"
-# National Renewable Energy Laboratory, NREL/TP-560-34302, revised November 2005.
-# http://www.osti.gov/bridge/servlets/purl/15003974-iP3z6k/native/15003974.PDF
-#
-# However, it seems that Reda and Andreas took the bulk of the constants (L0, etc.)
-# from VSOP87:
-# http://en.wikipedia.org/wiki/Secular_variations_of_the_planetary_orbits#VSOP87
-#
-# See also ftp://ftp.imcce.fr/pub/ephem/planets/vsop87/VSOP87D.ear
+"""This file is consists of numerical constants for calculating corrections,
+such as the wiggling ("nutation") of the axis of the earth. It also includes
+functions for building dictionaries of polynomial functions for rapid
+calculation of corrections.
 
-"""Constants as input for ephemeris calculations
+Most of the constants come from a 2005 paper by Reda and Andreas:
+
+I. Reda and A. Andreas, "Solar Position Algorithm for Solar Radiation
+Applications," National Renewable Energy Laboratory, NREL/TP-560-34302,
+revised November 2005.
+
+http://www.osti.gov/bridge/servlets/purl/15003974-iP3z6k/native/15003974.PDF
+
+However, it seems that Reda and Andreas took the bulk of the constants
+(L0, etc.) from Pierre Bretagnon and Gerard Francou's Variations Seculaires
+des Orbites Planetaires, or VSOP87:
+
+http://en.wikipedia.org/wiki/Secular_variations_of_the_planetary_orbits#VSOP87
+
+See also ftp://ftp.imcce.fr/pub/ephem/planets/vsop87/VSOP87D.ear
 
 """
+
+def buildPolyFit((a, b, c, d)):
+    """Given coefficients a through d, this function returns a polynomial
+    function that can be used repeatedly.
+
+    """ 
+    return (lambda x: a + b * x + c * x ** 2 + (x ** 3) / d)
+
+def buildPolyDict():
+    """This function builds a dictionary of polynomial functions from a list of
+    coefficients, so that the functions can be called by name. This is used in
+    calculating nutation.
+
+    """
+    return dict([(name, buildPolyFit(coeffs)) for (name, coeffs) in coeff_list])
+
+
+coeff_list = [
+		('ArgumentOfLatitudeOfMoon', (93.27191, 483202.017538, -0.0036825, 327270.0)),
+		('LongitudeOfAscendingNode', (125.04452, -1934.136261, 0.0020708, 450000.0)),
+		('MeanElongationOfMoon', (297.85036, 445267.111480, -0.0019142, 189474.0)),
+		('MeanAnomalyOfMoon', (134.96298, 477198.867398, 0.0086972, 56250.0)),
+		('MeanAnomalyOfSun', (357.52772, 35999.050340, -0.0001603, -300000.0))
+	]
+
 earth_radius = 6378140.0 # meters
 
 aberration_sin_terms = [[0,0,0,0,1],
