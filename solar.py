@@ -26,7 +26,6 @@ import math
 import datetime
 import constants
 import julian
-import poly
 import radiation
 
 #if __name__ == "__main__":

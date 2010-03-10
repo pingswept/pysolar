@@ -30,11 +30,6 @@ julian.py
 .. automodule:: julian
     :members:
 
-poly.py
--------
-.. automodule:: poly
-    :members:
-
 query_usno.py
 -------------
 .. automodule:: query_usno
