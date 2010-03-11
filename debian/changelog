@@ -1,0 +1,5 @@
+pysolar (0.4.2-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Brandon Stafford <brandon@pingswept.org>  Thu, 11 Mar 2010 12:22:31 -0500

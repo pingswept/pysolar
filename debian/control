@@ -1,0 +1,13 @@
+Source: pysolar
+Section: science
+Priority: extra
+Maintainer: Brandon Stafford <brandon@pingswept.org>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://pysolar.org
+
+Package: pysolar
+Architecture: all
+Depends: python
+Description: Python library for precise ephemeris calculations
+ Pysolar is a collection of Python libraries for simulating the irradiation of any point on earth by the sun. It includes code for extremely precise ephemeris calculations.
