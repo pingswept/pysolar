@@ -30,9 +30,7 @@
 :Additional author: Brandon Stafford
 
 """
-#import conversions_time as ct
-import datetime
-#import decimaldegrees.decimaldegrees as dg
+from datetime import datetime as dt
 import math
 import pytz
 from pytz import all_timezones
@@ -118,10 +116,8 @@ def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     # Sunset_time in hours
     sunset_time = (TON + sunn - time_adst) 
 
-    sunrise_time_dms = 0 # BROKEN dg.decimal2dms(sunrise_time)
-    sunset_time_dms = 0 # BROKEN dg.decimal2dms(sunset_time)
-    sunrise_time_dt = 0 # BROKEN ct.hour_decimal2datetime(utc_datetime, sunrise_time)    
-    sunset_time_dt = 0 # BROKEN ct.hour_decimal2datetime(utc_datetime, sunset_time)    
+    sunrise_time_dt = date_with_decimal_hour(utc_datetime, sunrise_time)    
+    sunset_time_dt = date_with_decimal_hour(utc_datetime, sunset_time)    
 
     return sunrise_time_dt, sunset_time_dt
 
@@ -635,3 +631,28 @@ def clear_index(ghi_data, utc_datetime, latitude_deg, longitude_deg):
     
     return KT
   
+def date_with_decimal_hour(date_utc, hour_decimal):    
+    """This converts dates with decimal hour to datetime_hour.
+    An improved version :mod:`conversions_time`
+    
+    Parameters
+    ----------
+    datetime : datetime.datetime
+        A datetime object is a single object containing all the information from a 
+        date object and a time object.              
+    hour_decimal : datetime.datetime
+        An hour is a unit of time 60 minutes, or 3,600 seconds in length.
+    
+    Returns
+    -------.
+    datetime_hour : datetime.datetime
+        datetime_hour
+    
+    """
+    hour_dms = (int(hour_decimal), int((hour_decimal-int(hour_decimal))*60), 0,)
+    
+    datetime_hour = dt(date_utc.year, date_utc.month, date_utc.day,
+        hour_dms[0], hour_dms[1],int(hour_dms[2]))
+
+    return datetime_hour
+
