@@ -17,13 +17,13 @@ classifiers = ['Development Status :: 5 - Production/Stable',
 
 
 setup(name='Pysolar',
-    version='0.4.1',
+    version='0.4.4',
     description='Collection of Python libraries for simulating the irradiation of any point on earth by the sun',
     author='Brandon Stafford',
     author_email='brandon@pingswept.org',
     license = 'GNU General Public License (GPL)',
     url='http://pysolar.org',
-    py_modules=['constants', 'horizon', 'julian', 'poly', 'query_usno', 'radiation', 'shade', 'shade_test', 'simulate', 'solar', 'testsolar', 'util'],
-    requires = ['decimaldegrees', 'gtk', 'numpy', 'PIL', 'pygtk', 'pylab', 'pytz'],
+    py_modules=['constants', 'horizon', 'julian', 'query_usno', 'radiation', 'shade', 'shade_test', 'simulate', 'solar', 'testsolar', 'util'],
+    requires = ['gtk', 'numpy', 'PIL', 'pygtk', 'pylab', 'pytz'],
     )
 

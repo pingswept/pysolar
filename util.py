@@ -49,8 +49,6 @@ elevation_default = 0.0      # Default elevation is 0.0
 def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     """This function calculates the astronomical sunrise and sunset times in local time.
     
-    WARNING: THIS FUNCTION IS BROKEN. It relies on an unknown library called conversions_time, and another library called decimaldegrees that does not appear to have an active maintainer. TODO: Fix this function so it works without creating unnecessary dependencies.
-
     Parameters
     ----------
     latitude_deg : float
