@@ -23,7 +23,7 @@ setup(name='Pysolar',
     author_email='brandon@pingswept.org',
     license = 'GNU General Public License (GPL)',
     url='http://pysolar.org',
-    py_modules=['constants', 'horizon', 'julian', 'query_usno', 'radiation', 'shade', 'shade_test', 'simulate', 'solar', 'testsolar', 'util'],
+    packages=['Pysolar'],
     requires = ['gtk', 'numpy', 'PIL', 'pygtk', 'pylab', 'pytz'],
     )
 
