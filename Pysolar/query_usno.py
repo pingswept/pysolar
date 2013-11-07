@@ -20,7 +20,8 @@
 """Tool for requesting data from US Naval Observatory
 
 """
-import datetime, random, solar, time, urllib, urllib2
+import datetime, random, time, urllib, urllib2
+import Pysolar as solar
 
 class Ephemeris:
 	def __init__(self, timestamp, latitude, longitude, elevation, azimuth=0, altitude=0):
@@ -55,7 +56,7 @@ def RequestEphemerisData(datum):
 	lines = response.readlines()
 	response.close()
 	#print lines
-	print lines[21]
+	#print lines[21] # should not we do some try catch here?
 	result = lines[21]
 	tokens = filter(lambda x: x not in ' ', result.split(' '))
 	print 'Tokens: \n', tokens
@@ -103,18 +104,19 @@ def EncodeRequest(latitude, longitude, timestamp, elevation):
 	params['rep'] = '1'
 	params['place'] = 'Name omitted'
 
+        sign = lambda x: ('1', '-1')[x < 0]
 	(deg, rem) = divmod(longitude, 1)
 	(min, sec) = divmod(rem, 1.0/60.0)
-	params['xx0'] = '1' # longitude (1 = east, -1 = west)
-	params['xx1'] = str(deg) # degrees
-	params['xx2'] = str(min) # minutes
+	params['xx0'] = sign(deg)# longitude (1 = east, -1 = west)
+	params['xx1'] = str(abs(int(deg))) # degrees
+	params['xx2'] = str(int(min)) # minutes
 	params['xx3'] = str(sec) # seconds
 
 	(deg, rem) = divmod(latitude, 1)
 	(min, sec) = divmod(rem, 1.0/60.0)	
-	params['yy0'] = '1' # latitude (1 = north, -1 = south)
-	params['yy1'] = str(deg) # degrees
-	params['yy2'] = str(min) # minutes
+	params['yy0'] = sign(deg) # latitude (1 = north, -1 = south)
+	params['yy1'] = str(abs(int(deg))) # degrees
+	params['yy2'] = str(int(min)) # minutes
 	params['yy3'] = str(sec) # seconds
 	
 	params['hh1'] = str(elevation) # height above sea level in meters
@@ -123,10 +125,10 @@ def EncodeRequest(latitude, longitude, timestamp, elevation):
 	return data
 
 def GatherRandomEphemeris():
-	latitude = random.randrange(0, 90)
+	latitude = random.randrange(-90, 90)
 	longitude = random.randrange(0, 360)
 	elevation = 0.0
-	t = datetime.datetime(2008, random.randrange(1, 13), random.randrange(1, 28), random.randrange(0, 24), random.randrange(0, 60), random.randrange(0,60))
+	t = datetime.datetime(random.randrange(2012,2014), random.randrange(1, 13), random.randrange(1, 28), random.randrange(0, 24), random.randrange(0, 60), random.randrange(0,60))
 	query = Ephemeris(t, latitude, longitude, elevation)
 	PrintEphemerisDatum(query)
 	d = RequestEphemerisData(query)
@@ -162,30 +164,35 @@ def WriteComparisonsToCSV(comps, filename):
 if __name__ == '__main__':
 
 	from scipy import stats
+        import numpy as np
 	import sys
 	
-	ephemerides = ReadEphemeridesLog(sys.argv[1])
-	
+	if len(sys.argv) >= 2:
+                ephemerides = ReadEphemeridesLog(sys.argv[1])
+        else:
+                for i in range(100):
+                        GatherRandomEphemeris()
+        ephemerides = ReadEphemeridesLog('usno_data.txt')
 	comps = []
 	for e in ephemerides:
 		c = ComparePysolarToUSNO(e)
 		comps.append(c)
 
-	az_errors = [c.az_error for c in comps]
-	alt_errors = [c.alt_error for c in comps]
+	az_errors = np.array([c.az_error for c in comps])
+	alt_errors = np.array([c.alt_error for c in comps])
 
 	print '---------------------'
 	print 'Azimuth stats'
-	print 'Mean error: ' + str(stats.mean(az_errors))
-	print 'Std dev: ' + str(stats.std(az_errors))
+	print 'Mean error: ' + str(np.mean(az_errors))
+	print 'Std dev: ' + str(np.std(az_errors))
 	print 'Min error: ' + str(stats.tmin(az_errors, None))
 	print 'Max error: ' + str(stats.tmax(az_errors, None))
 
 	print '----------------------'
 	print 'Altitude stats'
 	
-	print 'Mean error: ' + str(stats.mean(alt_errors))
-	print 'Std dev: '+ str(stats.std(alt_errors))
+	print 'Mean error: ' + str(np.mean(alt_errors))
+	print 'Std dev: '+ str(np.std(alt_errors))
 	print 'Min error: ' + str(stats.tmin(alt_errors, None))
 	print 'Max error: ' + str(stats.tmax(alt_errors, None))
 
