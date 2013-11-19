@@ -31,6 +31,7 @@
 
 """
 from datetime import datetime as dt
+from datetime import timedelta
 import math
 import pytz
 from pytz import all_timezones
@@ -647,10 +648,9 @@ def date_with_decimal_hour(date_utc, hour_decimal):
         datetime_hour
     
     """
-    hour_dms = (int(hour_decimal), int((hour_decimal-int(hour_decimal))*60), 0,)
+    # Backwards compatibility: round down to nearest round minute
+    offset_seconds = int(hour_decimal * 60) * 60
+    datetime_utc = dt(date_utc.year, date_utc.month, date_utc.day)
     
-    datetime_hour = dt(date_utc.year, date_utc.month, date_utc.day,
-        hour_dms[0], hour_dms[1],int(hour_dms[2]))
-
-    return datetime_hour
+    return datetime_utc + timedelta(seconds=offset_seconds)
 
