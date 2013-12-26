@@ -40,7 +40,7 @@ def SolarTest():
 		azimuth_deg = GetAzimuth(latitude_deg, longitude_deg, d)
 		power = radiation.GetRadiationDirect(d, altitude_deg)
 		if (altitude_deg > 0):
-			print timestamp, "UTC", altitude_deg, azimuth_deg, power
+			print(timestamp, "UTC", altitude_deg, azimuth_deg, power)
 		d = d + thirty_minutes
 
 def EquationOfTime(day):
