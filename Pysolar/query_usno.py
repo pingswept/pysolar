@@ -164,14 +164,14 @@ def WriteComparisonsToCSV(comps, filename):
 if __name__ == '__main__':
 
     from scipy import stats
-        import numpy as np
+    import numpy as np
     import sys
     
     if len(sys.argv) >= 2:
-                ephemerides = ReadEphemeridesLog(sys.argv[1])
-        else:
-                for i in range(100):
-                        GatherRandomEphemeris()
+        ephemerides = ReadEphemeridesLog(sys.argv[1])
+    else:
+        for i in range(100):
+            GatherRandomEphemeris()
         ephemerides = ReadEphemeridesLog('usno_data.txt')
     comps = []
     for e in ephemerides:
