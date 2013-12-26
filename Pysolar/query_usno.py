@@ -104,7 +104,7 @@ def EncodeRequest(latitude, longitude, timestamp, elevation):
     params['rep'] = '1'
     params['place'] = 'Name omitted'
 
-        sign = lambda x: ('1', '-1')[x < 0]
+    sign = lambda x: ('1', '-1')[x < 0]
     (deg, rem) = divmod(longitude, 1)
     (min, sec) = divmod(rem, 1.0/60.0)
     params['xx0'] = sign(deg)# longitude (1 = east, -1 = west)
