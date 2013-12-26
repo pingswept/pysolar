@@ -56,7 +56,7 @@ def despherifyImage(im):
 #            (outx, outy) = (width - width * (theta/full_circle) - 1, r)
 #            outpix[outx, outy] = inpix[inx, iny]
 
-    theta_range = range(int(full_circle))
+    theta_range = list(range(int(full_circle)))
     t_1000_range = [t / 1000.0 for t in theta_range]
     thetas = zip([cos(t) for t in t_1000_range],
     [sin(t) for t in t_1000_range],
@@ -67,7 +67,7 @@ def despherifyImage(im):
             (inx, iny) = (round(r * t_cos) + half_width,
             round(r * t_sin) + half_width)
             outx = width - width * (t_full_circle) - 1
-#            print inpix, outx, r, inx, iny
+#            print( inpix, outx, r, inx, iny)
             outpix[outx, r] = inpix[inx, iny]
     return out
 
@@ -128,13 +128,13 @@ if __name__ == '__main__':
     im = Image.open('spherical.jpg').convert("L")
     im = squareImage(im)
 
-    print 'Starting despherification . . .'
+    print('Starting despherification . . .')
     lin = despherifyImage(im)
 
-    print 'Despherification complete. Calculating horizon . . .'
+    print('Despherification complete. Calculating horizon . . .')
     d = differentiateImageColumns(lin).convert("RGB")
     r, horizon = redlineImage(d)
-    print 'Horizon calculated.'
+    print('Horizon calculated.')
 
     (latitude_deg, longitude_deg) = (42.206, -71.382)
     summer = dt.datetime(2009, 6, 21, 5, 0, 0, 0)
@@ -143,10 +143,10 @@ if __name__ == '__main__':
     step_minutes = 5
 
     power_densities = [radiation for (time, alt, az, radiation, shade) in sim.SimulateSpan(latitude_deg, longitude_deg, horizon, summer, winter, step_minutes)]
-    print power_densities
+    print(power_densities)
 
     energy = sum(power_densities) * step_minutes * 60
-    print str(energy/1000000) + ' MJ per m^2 per year'
+    print((str(energy/1000000) + ' MJ per m^2 per year'))
 
     sp = addSunPaths(r, latitude_deg, longitude_deg, horizon, summer)
     sp2 = addSunPaths(r, latitude_deg, longitude_deg, horizon, fall)

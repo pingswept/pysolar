@@ -59,7 +59,7 @@ def RequestEphemerisData(datum):
 	#print lines[21] # should not we do some try catch here?
 	result = lines[21]
 	tokens = filter(lambda x: x not in ' ', result.split(' '))
-	print 'Tokens: \n', tokens
+	print('Tokens: \n', tokens)
 
 	usno_alt = float(tokens[4]) + float(tokens[5])/60.0 + float(tokens[6])/3600.0
 	usno_az = float(tokens[7]) + float(tokens[8])/60.0 + float(tokens[9])/3600.0
@@ -136,7 +136,7 @@ def GatherRandomEphemeris():
 	WriteEphemerisDatumToFile(d, 'usno_data.txt')
 
 def PrintEphemerisDatum(datum):
-	print datum.timestamp, datum.latitude, datum.longitude, datum.elevation, datum.azimuth, datum.altitude
+	print((datum.timestamp, datum.latitude, datum.longitude, datum.elevation, datum.azimuth, datum.altitude))
 
 def ReadEphemeridesLog(logname):
 	data = []
@@ -181,19 +181,19 @@ if __name__ == '__main__':
 	az_errors = np.array([c.az_error for c in comps])
 	alt_errors = np.array([c.alt_error for c in comps])
 
-	print '---------------------'
-	print 'Azimuth stats'
-	print 'Mean error: ' + str(np.mean(az_errors))
-	print 'Std dev: ' + str(np.std(az_errors))
-	print 'Min error: ' + str(stats.tmin(az_errors, None))
-	print 'Max error: ' + str(stats.tmax(az_errors, None))
+	print('---------------------')
+	print('Azimuth stats')
+	print(('Mean error: ' + str(np.mean(az_errors))))
+	print(('Std dev: ' + str(np.std(az_errors))))
+	print(('Min error: ' + str(stats.tmin(az_errors, None))))
+	print(('Max error: ' + str(stats.tmax(az_errors, None))))
 
-	print '----------------------'
-	print 'Altitude stats'
+	print('----------------------')
+	print('Altitude stats')
 	
-	print 'Mean error: ' + str(np.mean(alt_errors))
-	print 'Std dev: '+ str(np.std(alt_errors))
-	print 'Min error: ' + str(stats.tmin(alt_errors, None))
-	print 'Max error: ' + str(stats.tmax(alt_errors, None))
+	print(('Mean error: ' + str(np.mean(alt_errors))))
+	print(('Std dev: '+ str(np.std(alt_errors))))
+	print(('Min error: ' + str(stats.tmin(alt_errors, None))))
+	print(('Max error: ' + str(stats.tmax(alt_errors, None))))
 
 	WriteComparisonsToCSV(comps, 'pysolar_v_usno.csv')

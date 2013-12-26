@@ -57,9 +57,9 @@ def ShadeTest():
 			shaded_powers.append(power * (1 - shaded_percentage))
 			#print timestamp, "UTC", altitude_deg, azimuth_deg, power
 		d = d + thirty_minutes
-	print times
-	print powers
-	print shade_x
+	print(times)
+	print(powers)
+	print(shade_x)
 	
 	pylab.plot(times, shaded_powers, times, powers)   # plot ends up with a line across it because x values wrap around
 	pylab.show()                                      # could fix that with sort function below
