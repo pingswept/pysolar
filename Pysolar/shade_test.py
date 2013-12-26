@@ -28,41 +28,41 @@ import pylab
 #from itertools import izip
 
 def ShadeTest():
-	latitude_deg = 42.364908
-	longitude_deg = -71.112828
-	width = 100
-	height = 200
-	area = width * height
-	d = datetime.datetime.utcnow()
-	thirty_minutes = datetime.timedelta(hours = 0.5)
-	times = []
-	powers = []
-	shade_x = []
-	shade_y = []
-	shaded_powers = []
-	for i in range(48):
-		timestamp = d.ctime()
-		altitude_deg = solar.GetAltitude(latitude_deg, longitude_deg, d)
-		azimuth_deg = solar.GetAzimuth(latitude_deg, longitude_deg, d)
-		power = radiation.GetRadiationDirect(d, altitude_deg)
-		xs = shade.GetXShade(width, 120, azimuth_deg)
-		ys = shade.GetYShade(height, 120, altitude_deg)
-		shaded_area = xs * ys
-		shaded_percentage = shaded_area/area
-		if (altitude_deg > 0):
-			times.append(float(d.hour) + (float(d.minute)/60) - 5) # - 5 to adjust to EST
-			powers.append(power)
-			shade_x.append(xs)
-			shade_y.append(ys)
-			shaded_powers.append(power * (1 - shaded_percentage))
-			#print timestamp, "UTC", altitude_deg, azimuth_deg, power
-		d = d + thirty_minutes
-	print(times)
-	print(powers)
-	print(shade_x)
-	
-	pylab.plot(times, shaded_powers, times, powers)   # plot ends up with a line across it because x values wrap around
-	pylab.show()                                      # could fix that with sort function below
+    latitude_deg = 42.364908
+    longitude_deg = -71.112828
+    width = 100
+    height = 200
+    area = width * height
+    d = datetime.datetime.utcnow()
+    thirty_minutes = datetime.timedelta(hours = 0.5)
+    times = []
+    powers = []
+    shade_x = []
+    shade_y = []
+    shaded_powers = []
+    for i in range(48):
+        timestamp = d.ctime()
+        altitude_deg = solar.GetAltitude(latitude_deg, longitude_deg, d)
+        azimuth_deg = solar.GetAzimuth(latitude_deg, longitude_deg, d)
+        power = radiation.GetRadiationDirect(d, altitude_deg)
+        xs = shade.GetXShade(width, 120, azimuth_deg)
+        ys = shade.GetYShade(height, 120, altitude_deg)
+        shaded_area = xs * ys
+        shaded_percentage = shaded_area/area
+        if (altitude_deg > 0):
+            times.append(float(d.hour) + (float(d.minute)/60) - 5) # - 5 to adjust to EST
+            powers.append(power)
+            shade_x.append(xs)
+            shade_y.append(ys)
+            shaded_powers.append(power * (1 - shaded_percentage))
+            #print timestamp, "UTC", altitude_deg, azimuth_deg, power
+        d = d + thirty_minutes
+    print(times)
+    print(powers)
+    print(shade_x)
+    
+    pylab.plot(times, shaded_powers, times, powers)   # plot ends up with a line across it because x values wrap around
+    pylab.show()                                      # could fix that with sort function below
 
 #def sort(list_to_sort, order): # based on a function by Ron Adam on some Python mailing list
 #    d = dict(izip(order, list_to_sort))

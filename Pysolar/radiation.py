@@ -24,26 +24,26 @@ import solar
 import math
 
 def GetAirMassRatio(altitude_deg):
-	# from Masters, p. 412
-	# warning: pukes on input of zero
-	return (1/math.sin(math.radians(altitude_deg)))
+    # from Masters, p. 412
+    # warning: pukes on input of zero
+    return (1/math.sin(math.radians(altitude_deg)))
 
 def GetApparentExtraterrestrialFlux(day):
-	# from Masters, p. 412
-	return 1160 + (75 * math.sin(math.radians((360./365) * (day - 275))))
+    # from Masters, p. 412
+    return 1160 + (75 * math.sin(math.radians((360./365) * (day - 275))))
 
 def GetOpticalDepth(day):
-	# from Masters, p. 412
-	return 0.174 + (0.035 * math.sin(math.radians((360./365) * (day - 100))))
+    # from Masters, p. 412
+    return 0.174 + (0.035 * math.sin(math.radians((360./365) * (day - 100))))
 
 def GetRadiationDirect(utc_datetime, altitude_deg):
-	# from Masters, p. 412
-	
-	if(altitude_deg > 0):
-		day = solar.GetDayOfYear(utc_datetime)
-		flux = GetApparentExtraterrestrialFlux(day)
-		optical_depth = GetOpticalDepth(day)
-		air_mass_ratio = GetAirMassRatio(altitude_deg)
-		return flux * math.exp(-1 * optical_depth * air_mass_ratio)
-	else:
-		return 0.0
+    # from Masters, p. 412
+    
+    if(altitude_deg > 0):
+        day = solar.GetDayOfYear(utc_datetime)
+        flux = GetApparentExtraterrestrialFlux(day)
+        optical_depth = GetOpticalDepth(day)
+        air_mass_ratio = GetAirMassRatio(altitude_deg)
+        return flux * math.exp(-1 * optical_depth * air_mass_ratio)
+    else:
+        return 0.0
