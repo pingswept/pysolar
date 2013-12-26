@@ -19,9 +19,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-import solar
-import constants
-import julian
+from . import solar
+from . import constants
+from . import julian
 import datetime
 import unittest
 

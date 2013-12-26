@@ -24,9 +24,9 @@ This module contains the most important functions for calculation of the positio
 """
 import math
 import datetime
-import constants
-import julian
-import radiation
+from . import constants
+from . import julian
+from . import radiation
 
 #if __name__ == "__main__":
 def SolarTest():

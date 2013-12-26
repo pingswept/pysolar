@@ -35,7 +35,7 @@ from datetime import timedelta
 import math
 import pytz
 from pytz import all_timezones
-import solar
+from . import solar
 
 # Some default constants
 

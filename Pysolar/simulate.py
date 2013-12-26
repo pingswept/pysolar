@@ -21,8 +21,8 @@
 
 """
 import datetime
-import radiation
-import solar
+from . import radiation
+from . import solar
 from math import *
 
 def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):

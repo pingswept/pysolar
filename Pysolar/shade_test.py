@@ -20,10 +20,10 @@
 """A test module for shading calculations
 
 """
-import solar
-import shade
+from . import solar
+from . import shade
 import datetime
-import radiation
+from . import radiation
 import pylab
 #from itertools import izip
 

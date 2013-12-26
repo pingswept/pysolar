@@ -20,7 +20,7 @@
 """Tool for requesting data from US Naval Observatory
 
 """
-import datetime, random, time, urllib, urllib2
+import datetime, random, time, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
 import Pysolar as solar
 
 class Ephemeris:

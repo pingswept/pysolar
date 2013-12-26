@@ -29,10 +29,10 @@ http://pingswept.org/2009/03/16/calculating-solar-panel-shading-in-python/
 from PIL import Image
 from math import *
 import numpy as np
-import solar
+from . import solar
 import datetime as dt
-import simulate as sim
-import radiation as rad
+from . import simulate as sim
+from . import radiation as rad
 
 def squareImage(im):
     (width, height) = im.size
