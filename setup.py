@@ -25,6 +25,6 @@ setup(name='Pysolar',
     license = 'GNU General Public License (GPL)',
     url='http://pysolar.org',
     packages=['Pysolar'],
-    requires = ['gtk', 'numpy', 'PIL', 'pygtk', 'pylab', 'pytz'],
+    requires = ['numpy', 'pytz'],
     )
 
