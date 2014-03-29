@@ -37,6 +37,18 @@ def GetAerosolForwardScatteranceFactor(altitude_deg):
 	Z = 90 - altitude_deg
 	return 1 - math.e ** (-0.6931 - 1.8326 * math.cos(math.radians(Z)))
 
+def GetAerosolScatteringCorrectionFactor(band, ma, tau_a):
+	if band == 1:
+		g0 = (3.715 + 0.368 * ma + 0.036294 * ma ** 2)/(1 + 0.0009391 * ma ** 2)
+		g1 = (-0.164 - 0.72567 * ma + 0.20701 * ma ** 2)/(1 + 0.001901 * ma ** 2)
+		g2 = (-0.052288 + 0.31902 * ma + 0.17871 * ma ** 2)/(1 + 0.0069592 * ma ** 2)
+		return (g0 + g1 * tau_a)/(1 + g2 * tau_a)
+	else:
+		h0 = (3.4352 +  0.65267 * ma + 0.00034328 * ma ** 2)/(1 + 0.034388 * ma ** 1.5)
+		h1 = (1.231 - 1.63853 * ma + 0.20667 * ma ** 2)/(1 + 0.1451 * ma ** 1.5)
+		h2 = (0.8889 - 0.55063 * ma + 0.50152 * ma ** 2)/(1 + 0.14865 * ma ** 1.5)
+		return (h0 + h1 * tau_a)/(1 + h2 * tau_a)
+
 def GetRayleighExtinctionForwardScatteringFraction(air_mass, layer):
 	if layer == 1:
 		return 0.5 * (0.89013 - 0.049558 * air_mass + 0.000045721 * air_mass ** 2)
