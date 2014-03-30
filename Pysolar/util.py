@@ -2,7 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-#    Copyright 2009-2010 Brandon Stafford
+#    Copyright Brandon Stafford
 #
 #    This file is part of Pysolar.
 #

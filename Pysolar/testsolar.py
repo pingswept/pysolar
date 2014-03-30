@@ -2,7 +2,7 @@
 
 #    Library for calculating location of the sun
 
-#    Copyright 2007 Brandon Stafford
+#    Copyright Brandon Stafford
 #
 #    This file is part of Pysolar.
 #
