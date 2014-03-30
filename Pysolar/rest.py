@@ -38,7 +38,7 @@ def GetAerosolForwardScatteranceFactor(altitude_deg):
 	return 1 - math.e ** (-0.6931 - 1.8326 * math.cos(math.radians(Z)))
 
 def GetAerosolScatteringCorrectionFactor(band, ma, tau_a):
-	if band == 1:
+	if band == "high-frequency":
 		g0 = (3.715 + 0.368 * ma + 0.036294 * ma ** 2)/(1 + 0.0009391 * ma ** 2)
 		g1 = (-0.164 - 0.72567 * ma + 0.20701 * ma ** 2)/(1 + 0.001901 * ma ** 2)
 		g2 = (-0.052288 + 0.31902 * ma + 0.17871 * ma ** 2)/(1 + 0.0069592 * ma ** 2)
@@ -49,16 +49,16 @@ def GetAerosolScatteringCorrectionFactor(band, ma, tau_a):
 		h2 = (0.8889 - 0.55063 * ma + 0.50152 * ma ** 2)/(1 + 0.14865 * ma ** 1.5)
 		return (h0 + h1 * tau_a)/(1 + h2 * tau_a)
 
-def GetRayleighExtinctionForwardScatteringFraction(air_mass, layer):
-	if layer == 1:
+def GetRayleighExtinctionForwardScatteringFraction(air_mass, band):
+	if band == "high-frequency":
 		return 0.5 * (0.89013 - 0.049558 * air_mass + 0.000045721 * air_mass ** 2)
 	else
 		return 0.5
 
 def GetDiffuseIrradiance():
-	return GetDiffuseIrradianceByLayer(1) + GetDiffuseIrradianceByLayer(2)
+	return GetDiffuseIrradianceByBand("high-frequency") + GetDiffuseIrradianceByBand("low-frequency")
 
-def GetDiffuseIrradianceByLayer(layer, air_mass=1.66):
+def GetDiffuseIrradianceByBand(band, air_mass=1.66):
 	Z = 90 - altitude_deg
 	To =
 	Tg =
@@ -70,7 +70,7 @@ def GetDiffuseIrradianceByLayer(layer, air_mass=1.66):
 	Br = GetRayleighExtinctionForwardScatteringFraction(air_mass, layer)
 	Ba = GetAerosolForwardScatteranceFactor(altitude_deg)
 	F =
-	Edp = To * Tg * Tn * Tw * (Br * (1 - Tr) * Ta ** 0.25 + Ba * F * Tr * (1 - Tas ** 0.25)) * E0n[layer] # E0n[layer] won't work yet
+	Edp = To * Tg * Tn * Tw * (Br * (1 - Tr) * Ta ** 0.25 + Ba * F * Tr * (1 - Tas ** 0.25)) * E0n[band]
 	Edd = rhogi * rhosi * (Eb + Edp)/(1 - rhogi * rhosi)
 	return Edp + Edd
 
