@@ -68,12 +68,6 @@ def GetAerosolScatteringCorrectionFactor(band, ma, tau_a):
 		h2 = (0.8889 - 0.55063 * ma + 0.50152 * ma ** 2)/(1 + 0.14865 * ma ** 1.5)
 		return (h0 + h1 * tau_a)/(1 + h2 * tau_a)
 
-def GetRayleighExtinctionForwardScatteringFraction(air_mass, band):
-	if band == "high-frequency":
-		return 0.5 * (0.89013 - 0.049558 * air_mass + 0.000045721 * air_mass ** 2)
-	else
-		return 0.5
-
 def GetDiffuseIrradiance():
 	return GetDiffuseIrradianceByBand("high-frequency") + GetDiffuseIrradianceByBand("low-frequency")
 
@@ -106,6 +100,51 @@ def GetDirectNormalIrradianceByBand(band, air_mass=1.66, pressure_millibars=1013
 	Ta = transmittance["aerosol"][band](turbidity_alpha, turbidity_beta, optical_mass["aerosol"](pressure_millibars, air_mass))
 	return E0n[band] * Tr * Tg * To * Tn * Tw * Ta
 
+def GetEffectiveAerosolWavelength(band, turbidity_alpha):
+	ua = optical_mass["aerosol"]
+	if band == "high-frequency":
+		a1 = turbidity_alpha # just renaming to keep equations short
+		d0 = 0.57664 - 0.024743 * a1
+		d1 = (0.093942 - 0.2269 * a1  0.12848 * a1 ** 2)/(1 + 0.6418 * a1)
+		d2 = (-0.093819 + 0.36668 * a1 - 0.12775 * a1 ** 2)/(1 - 0.11651 * a1)
+		d3 = a1 * (0.15232 - 0.087214 * a1 + 0.012664 a1 ** 2)/(1 - 0.90454 * a1 + 0.26167 a1 ** 2)
+		return (d0 + d1 * ua + d2 * ua ** 2)/(1 + d3 * ua ** 2)
+	else:
+		a2 = turbidity_alpha
+		e0 = 1.183 - 0.022989 * a2 + 0.020829 * a2 ** 2)/(1 + 0.11133 * a2)
+		e1 = -0.50003 - 0.18329 * a2 + 0.23835 * a2 ** 2)/(1 + 1.6756 * a2)
+		e2 = -0.50001 + 1.1414 * a2 + 0.0083589 * a2 ** 2)/(1 + 11.168 * a2)
+		e3 = -0.70003 - 0.73587 * a2 + 0.51509 * a2 ** 2)/(1 + 4.7665 * a2)
+		return (e0 + e1 * ua + e2 * ua ** 2)/(1 + e3 * ua ** 2)
+
 def GetGlobalIrradiance(direct_normal_irradiance, altitude_deg, diffuse_irradiance):
 	Z = 90 - altitude_deg
 	return direct_normal_irradiance * math.cos(math.radians(Z)) + diffuse_irradiance
+
+def GetRayleighExtinctionForwardScatteringFraction(air_mass, band):
+	if band == "high-frequency":
+		return 0.5 * (0.89013 - 0.049558 * air_mass + 0.000045721 * air_mass ** 2)
+	else:
+		return 0.5
+
+def GetSkyAlbedo(band, turbidity_alpha, turbidity_beta):
+	if band == "high-frequency":
+		a1 = turbidity_alpha # just renaming to keep equations short
+		b1 = turbidity_beta
+		rhos = (0.13363 + 0.00077358 * a1 + b1 * (0.37567
+		+ 0.22946 * a1)/(1 - 0.10832 * a1))/(1 + b1 * (0.84057
+		+ 0.68683 * a1)/(1 - 0.08158 * a1))
+	else:
+		a2 = turbidity_alpha # just renaming to keep equations short
+		b2 = turbidity_beta
+		rhos = (0.010191 + 0.00085547 * a2 + b2 * (0.14618
+		+ 0.062758 * a2)/(1 - 0.19402 * a2))/(1 + b2 * (0.58101
+		+ 0.17426 * a2)/(1 - 0.17586 * a2))
+	return rhos
+
+def GetWaterVaporTransmittanceCoefficients(w):
+
+	c1 = w * (19.566 - 1.6506 * w + 1.0672 * w ** 2)/(1 + 5.4248 * w + 1.6005 * w ** 2)
+	c2 = w * (0.50158 - 0.14732 * w + 0.047584 * w ** 2)/(1 + 1.1811 * w + 1.0699 * w ** 2)
+	c3 = w * (21.286 - 0.39232 * w + 1.2692 * w ** 2)/(1 + 4.8318 * w + 1.412 * w ** 2)
+	c4 = w * (0.70992 - 0.23155 * w + 0.096514 * w ** 2)/(1 + 0.44907 * w + 0.75425 * w ** 2)
