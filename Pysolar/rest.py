@@ -121,6 +121,24 @@ def GetGlobalIrradiance(direct_normal_irradiance, altitude_deg, diffuse_irradian
 	Z = 90 - altitude_deg
 	return direct_normal_irradiance * math.cos(math.radians(Z)) + diffuse_irradiance
 
+def GetNitrogenTransmittance(band, un, m):
+	if band == "high-frequency":
+		g1 = (0.17499 + 41.654 * un - 2146.4 * un ** 2)/(1 + 22295.0 * un ** 2)
+		g2 = un * (-1.2134 + 59.324 * un)/(1 + 8847.8 * un ** 2)
+		g3 = (0.17499 + 61.658 * un + 9196.4 * un ** 2)/(1 + 74109.0 * un ** 2)
+		return min (1, (1 + g1 * m + g2 * m ** 2)/(1 + g3 * m))
+	else:
+		return 1.0
+
+def GetOzoneTransmittance(band, uo, m):
+	if band == "high-frequency":
+		f1 = uo(10.979 - 8.5421 * u0)/(1 + 2.0115 * u0 + 40.189 * u0 **2)
+		f2 = uo(-0.027589 - 0.005138 * u0)/(1 - 2.4857 * u0 + 13.942 * u0 **2)
+		f3 = uo(10.995 - 5.5001 * u0)/(1 + 1.6784 * u0 + 42.406 * u0 **2)
+		return (1 + f1 * m + f2 * m ** 2)/(1 + f3 * m)
+	else:
+		return 1.0
+
 def GetRayleighExtinctionForwardScatteringFraction(air_mass, band):
 	if band == "high-frequency":
 		return 0.5 * (0.89013 - 0.049558 * air_mass + 0.000045721 * air_mass ** 2)
@@ -142,9 +160,22 @@ def GetSkyAlbedo(band, turbidity_alpha, turbidity_beta):
 		+ 0.17426 * a2)/(1 - 0.17586 * a2))
 	return rhos
 
-def GetWaterVaporTransmittanceCoefficients(w):
+def GetWaterVaporTransmittance(band, w, m):
+	if band == "high-frequency":
+		h = GetWaterVaporTransmittanceCoefficients(band, w)
+		return (1 + h[1] * m)/(1 + h[2] * m)
+	else:
+		c = GetWaterVaporTransmittanceCoefficients(band, w)
+		return (1 + c[1] * m + c[2] * m ** 2)/(1 + c[3] * m + c[4] * m ** 2)
 
-	c1 = w * (19.566 - 1.6506 * w + 1.0672 * w ** 2)/(1 + 5.4248 * w + 1.6005 * w ** 2)
-	c2 = w * (0.50158 - 0.14732 * w + 0.047584 * w ** 2)/(1 + 1.1811 * w + 1.0699 * w ** 2)
-	c3 = w * (21.286 - 0.39232 * w + 1.2692 * w ** 2)/(1 + 4.8318 * w + 1.412 * w ** 2)
-	c4 = w * (0.70992 - 0.23155 * w + 0.096514 * w ** 2)/(1 + 0.44907 * w + 0.75425 * w ** 2)
+def GetWaterVaporTransmittanceCoefficients(band, w):
+	if band == "high-frequency":
+		h1 = w * (0.065445 + 0.00029901 * w)/(1 + 1.2728 * w)
+		h2 = w * (0.065687 + 0.0013218 * w)/(1 + 1.2008 * w)
+		return [float('NaN'), h1, h2]
+	else:
+		c1 = w * (19.566 - 1.6506 * w + 1.0672 * w ** 2)/(1 + 5.4248 * w + 1.6005 * w ** 2)
+		c2 = w * (0.50158 - 0.14732 * w + 0.047584 * w ** 2)/(1 + 1.1811 * w + 1.0699 * w ** 2)
+		c3 = w * (21.286 - 0.39232 * w + 1.2692 * w ** 2)/(1 + 4.8318 * w + 1.412 * w ** 2)
+		c4 = w * (0.70992 - 0.23155 * w + 0.096514 * w ** 2)/(1 + 0.44907 * w + 0.75425 * w ** 2)
+		return [float('NaN'), c1, c2, c3, c4]
