@@ -22,6 +22,7 @@
 import solar
 import constants
 import julian
+import elevation
 import datetime
 import unittest
 
@@ -56,13 +57,15 @@ class testSolar(unittest.TestCase):
 		self.projected_radial_distance = solar.GetProjectedRadialDistance(self.elevation, self.latitude)
 		self.projected_axial_distance = solar.GetProjectedAxialDistance(self.elevation, self.latitude)
 		self.topocentric_sun_right_ascension = solar.GetTopocentricSunRightAscension(self.projected_radial_distance,
-		    self.equatorial_horizontal_parallax, self.local_hour_angle, self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
+		self.equatorial_horizontal_parallax, self.local_hour_angle, self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
 		self.parallax_sun_right_ascension = solar.GetParallaxSunRightAscension(self.projected_radial_distance, self.equatorial_horizontal_parallax, self.local_hour_angle, self.geocentric_sun_declination)
 		self.topocentric_sun_declination = solar.GetTopocentricSunDeclination(self.geocentric_sun_declination, self.projected_axial_distance, self.equatorial_horizontal_parallax, self.parallax_sun_right_ascension, self.local_hour_angle)
 		self.topocentric_local_hour_angle = solar.GetTopocentricLocalHourAngle(self.local_hour_angle, self.parallax_sun_right_ascension)
 		self.topocentric_zenith_angle = solar.GetTopocentricZenithAngle(self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle, self.pressure, self.temperature)
 		self.topocentric_azimuth_angle = solar.GetTopocentricAzimuthAngle(self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
 		self.incidence_angle = solar.GetIncidenceAngle(self.topocentric_zenith_angle, self.slope, self.slope_orientation, self.topocentric_azimuth_angle)
+		self.pressure_with_elevation = elevation.GetPressureWithElevation(1567.7)
+		self.temperature_with_elevation = elevation.GetTemperatureWithElevation(1567.7)
 
 	def testGetJulianDay(self):
 		self.assertAlmostEqual(2452930.312847, self.jd, 6) # value from Reda and Andreas (2005)
@@ -133,6 +136,12 @@ class testSolar(unittest.TestCase):
 
 	def testGetIncidenceAngle(self):
 		self.assertAlmostEqual(25.18700, self.incidence_angle, 3) # value from Reda and Andreas (2005)
+
+	def testPressureWithElevation(self):
+		self.assertAlmostEqual(83855.90228, self.pressure_with_elevation, 4)
+
+	def testTemperatureWithElevation(self):
+		self.assertAlmostEqual(277.9600, self.temperature_with_elevation, 4)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(testSolar)
 unittest.TextTestRunner(verbosity=2).run(suite)
