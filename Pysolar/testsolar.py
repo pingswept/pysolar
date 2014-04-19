@@ -19,10 +19,10 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-import solar
-import constants
-import julian
-import elevation
+from . import solar
+from . import constants
+from . import julian
+from . import elevation
 import datetime
 import unittest
 

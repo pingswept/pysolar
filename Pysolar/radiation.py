@@ -20,7 +20,7 @@
 """Calculate different kinds of radiation components via default values
 
 """
-import solar
+from . import solar
 import math
 
 def GetAirMassRatio(altitude_deg):
