@@ -40,8 +40,8 @@ See also ftp://ftp.imcce.fr/pub/ephem/planets/vsop87/VSOP87D.ear
 
 """
 
-def buildPolyFit(xxx_todo_changeme): 
-    (a, b, c, d) = xxx_todo_changeme
+def buildPolyFit(params): 
+    (a, b, c, d) = params
     return (lambda x: a + b * x + c * x ** 2 + (x ** 3) / d)
 
 def buildPolyDict():
