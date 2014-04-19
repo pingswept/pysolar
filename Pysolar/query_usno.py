@@ -141,7 +141,7 @@ def GatherRandomEphemeris():
     latitude = random.randrange(-90, 90)
     longitude = random.randrange(0, 360)
     elevation = 0.0
-    t = datetime.datetime(random.randrange(2012,2014), random.randrange(1, 13), random.randrange(1, 28), random.randrange(0, 24), random.randrange(0, 60), random.randrange(0,60))
+    t = datetime.datetime(random.randrange(2013,2014), random.randrange(1, 13), random.randrange(1, 28), random.randrange(0, 24), random.randrange(0, 60), random.randrange(0,60))
     query = Ephemeris(t, latitude, longitude, elevation)
     PrintEphemerisDatum(query)
     d = RequestEphemerisData(query)
