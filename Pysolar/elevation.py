@@ -36,7 +36,7 @@ def GetPressureWithElevation(h, Ps=101325.00, Ts=288.15, Tl=-0.0065, Hb=0.0, R=8
 	#M= Molar mass of Earth's atmosphere = 0.0289644 kg/mol
 	#P=Ps*(Ts/((Ts+Tl)*(h-Hb)))^((g*M)/(R*Tl))
 	#returns pressure in pascals
-	if h>11000.0: print"WARNING: Elevation used exceeds the recommended maximum elevation for this function (11,000m)"
+	if h>11000.0: print("WARNING: Elevation used exceeds the recommended maximum elevation for this function (11,000m)")
 	theDenominator = Ts+(Tl*(h-Hb))
 	theExponent=(g*M)/(R*Tl)
 	return Ps*(Ts/theDenominator)**theExponent
@@ -51,12 +51,12 @@ def GetTemperatureWithElevation(h, Ts=288.15, Tl=-0.0065):
 	return Ts+(h*Tl)
 
 def ElevationTest():
-	print "Elevation(m) Pressure(Pa) Temperature(K)"
+	print("Elevation(m) Pressure(Pa) Temperature(K)")
 	h=0
 	for i in range(11):
 		P=GetPressureWithElevation(h)
 		T=GetTemperatureWithElevation(h)
-		print "%i %i %i" % (h, P, T)
+		print("%i %i %i" % (h, P, T))
 		h=h+1000
 
 

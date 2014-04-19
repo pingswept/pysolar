@@ -21,8 +21,8 @@
 
 """
 import datetime
-import radiation
-import solar
+from . import radiation
+from . import solar
 from math import *
 
 def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
@@ -31,7 +31,7 @@ def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
 	time_list = []
 	span = end_utc_datetime - start_utc_datetime
 	dt = datetime.timedelta(seconds = step)
-	return map(lambda n: start_utc_datetime + dt * n, range((span.days * 86400 + span.seconds) / step))
+	return [start_utc_datetime + dt * n for n in range((span.days * 86400 + span.seconds) / step)]
 
 def CheckAgainstHorizon(power):
     (time, alt, az, radiation, shade) = power
@@ -58,7 +58,7 @@ def SimulateSpan(latitude_deg, longitude_deg, horizon, start_utc_datetime, end_u
 		solar.GetAzimuth(latitude_deg, longitude_deg, time, elevation)
 		) for time in time_list]	
 	power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
-	return filter(CheckAgainstHorizon, power_list)
+	return list(filter(CheckAgainstHorizon, power_list))
 		
 #		xs = shade.GetXShade(width, 120, azimuth_deg)
 #		ys = shade.GetYShade(height, 120, altitude_deg)

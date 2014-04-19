@@ -1,1 +1,1 @@
-from solar import *
+from .solar import *
