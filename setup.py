@@ -14,7 +14,9 @@ classifiers = ['Development Status :: 5 - Production/Stable',
     'Topic :: Scientific/Engineering',
     'Topic :: Scientific/Engineering :: Atmospheric Science',
     'Topic :: Scientific/Engineering :: Mathematics',
-    'Topic :: Software Development :: Libraries :: Python Modules']
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 3']
 
 
 setup(name='Pysolar',
