@@ -71,7 +71,7 @@ def RequestEphemerisData(datum):
     #print lines
     #print lines[21] # should not we do some try catch here?
     result = lines[21]
-    tokens = [x for x in result.split(' ') if x not in ' ']
+    tokens = [x for x in result.split(b' ') if x not in b' ']
     print('Tokens: \n', tokens)
 
     usno_alt = float(tokens[4]) + float(tokens[5])/60.0 + float(tokens[6])/3600.0
