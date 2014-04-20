@@ -19,13 +19,6 @@
 
 import math
 
-optical_mass = {}
-
-optical_mass["rayleigh"] = lambda p, m: m
-optical_mass["ozone"] = lambda p, m: m
-optical_mass["water"] = lambda p, m: m
-optical_mass["aerosol"] = lambda p, m: m
-
 albedo = {} # single-scattering albedo used to calculate aerosol scattering transmittance
 
 albedo["high-frequency"] = 0.92
@@ -42,6 +35,8 @@ def GetAerosolForwardScatteranceFactor(altitude_deg):
 
 def GetAerosolOpticalDepth(turbidity_beta, effective_wavelength, turbidity_alpha):
 	# returns tau_a
+	print("effective_wavelength: ")
+	print effective_wavelength
 	return turbidity_beta * effective_wavelength ** -turbidity_alpha
 
 def GetAerosolScatteringCorrectionFactor(band, ma, tau_a):
@@ -78,11 +73,15 @@ def GetDiffuseIrradianceByBand(band, air_mass=1.66, turbidity_alpha=1.3, turbidi
 	tau_a = GetAerosolOpticalDepth(turbidity_beta, effective_wavelength, turbidity_alpha)
 	rhosi = GetSkyAlbedo(band, turbidity_alpha, turbidity_beta)
 
-	To = GetOzoneTransmittance(band, optical_mass["ozone"])
-	Tg = GetGasTransmittance(band, optical_mass["rayleigh"])
+	ma = GetOpticalMassAerosol(altitude_deg)
+	mo = GetOpticalMassOzone(altitude_deg)
+	mR = GetOpticalMassRayleigh(altitude_deg, pressure_millibars)
+
+	To = GetOzoneTransmittance(band, mo)
+	Tg = GetGasTransmittance(band, mR)
 	Tn = GetNitrogenTransmittance(band, 1.66)
 	Tw = GetWaterVaporTransmittance(band, 1.66)
-	TR = GetRayleighTransmittance(band, optical_mass["rayleigh"])
+	TR = GetRayleighTransmittance(band, mR)
 	Ta = GetAerosolTransmittance(band, ma, tau_a)
 	Tas = GetAerosolScatteringTransmittance(band, ma, tau_a)
 
@@ -94,23 +93,31 @@ def GetDiffuseIrradianceByBand(band, air_mass=1.66, turbidity_alpha=1.3, turbidi
 	Edd = rhogi * rhosi * (Eb + Edp)/(1 - rhogi * rhosi)
 	return Edp + Edd
 
-def GetDirectNormalIrradiance(air_mass=1.66, pressure_millibars=1013.25, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
-	return GetDirectNormalIrradianceByBand("high-frequency") + GetDirectNormalIrradianceByBand("low-frequency")
+def GetDirectNormalIrradiance(altitude_deg, pressure_millibars=1013.25, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
+	high = GetDirectNormalIrradianceByBand("high-frequency", altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
+	low = GetDirectNormalIrradianceByBand("low-frequency", altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
+	return high + low
 
-def GetDirectNormalIrradianceByBand(band, air_mass=1.66, pressure_millibars=1013.25, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
-	effective_wavelength = GetEffectiveAerosolWavelength(band, turbidity_alpha)
+def GetDirectNormalIrradianceByBand(band, altitude_deg, pressure_millibars=1013.25, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
+	ma = GetOpticalMassAerosol(altitude_deg)
+	mo = GetOpticalMassOzone(altitude_deg)
+	mR = GetOpticalMassRayleigh(altitude_deg, pressure_millibars)
+	mRprime = mR * pressure_millibars / 1013.25
+	mw = GetOpticalMassWater(altitude_deg)
+
+	effective_wavelength = GetEffectiveAerosolWavelength(band, ma, turbidity_alpha, turbidity_beta)
 	tau_a = GetAerosolOpticalDepth(turbidity_beta, effective_wavelength, turbidity_alpha)
 
-	TR = GetRayleighTransmittance(band, optical_mass["rayleigh"])
-	Tg = GetGasTransmittance(band, optical_mass["rayleigh"])
-	To = GetOzoneTransmittance(band, optical_mass["ozone"])
-	Tn = GetNitrogenTransmittance(band, optical_mass["water"]) # is water_optical_mass really used for nitrogen calc?
-	Tw = GetWaterVaporTransmittance(band, optical_mass["water"])
-	Ta = GetAerosolTransmittance(band, optical_mass["aerosol"], tau_a)
+	TR = GetRayleighTransmittance(band, mRprime)
+	Tg = GetGasTransmittance(band, mRprime)
+	To = GetOzoneTransmittance(band, mo, ozone_atm_cm)
+	Tn = GetNitrogenTransmittance(band, mw, nitrogen_atm_cm) # is water_optical_mass really used for nitrogen calc?
+	Tw = GetWaterVaporTransmittance(band, mw, precipitable_water_cm)
+	Ta = GetAerosolTransmittance(band, ma, tau_a)
 	return E0n[band] * TR * Tg * To * Tn * Tw * Ta
 
-def GetEffectiveAerosolWavelength(band, turbidity_alpha):
-	ua = optical_mass["aerosol"]
+def GetEffectiveAerosolWavelength(band, ma, turbidity_alpha, turbidity_beta):
+	ua = math.log(1 + ma * turbidity_beta)
 	if band == "high-frequency":
 		a1 = turbidity_alpha # just renaming to keep equations short
 		d0 = 0.57664 - 0.024743 * a1
@@ -126,45 +133,65 @@ def GetEffectiveAerosolWavelength(band, turbidity_alpha):
 		e3 = (-0.70003 - 0.73587 * a2 + 0.51509 * a2 ** 2)/(1 + 4.7665 * a2)
 		return (e0 + e1 * ua + e2 * ua ** 2)/(1 + e3 * ua ** 2)
 
-def GetGasTransmittance(band, m):
+def GetGasTransmittance(band, mRprime):
 	if band == "high-frequency":
-		return (1 + 0.95885 * m + 0.012871 * m ** 2)/(1 + 0.96321 * m + 0.015455 * m ** 2)
+		return (1 + 0.95885 * mRprime + 0.012871 * mRprime ** 2)/(1 + 0.96321 * mRprime + 0.015455 * mRprime ** 2)
 	else:
-		return (1 + 0.27284 * m - 0.00063699 * m ** 2)/(1 + 0.30306 * m)
+		return (1 + 0.27284 * mRprime - 0.00063699 * mRprime ** 2)/(1 + 0.30306 * mRprime)
 
 def GetBroadbandGlobalIrradiance(Ebn, altitude_deg, Ed):
 	return GetBeamBroadbandIrradiance(Ebn, altitude_deg) + Ed
 
-def GetNitrogenTransmittance(band, un, m):
+def GetNitrogenTransmittance(band, mw, nitrogen_atm_cm):
 	if band == "high-frequency":
 		g1 = (0.17499 + 41.654 * un - 2146.4 * un ** 2)/(1 + 22295.0 * un ** 2)
 		g2 = un * (-1.2134 + 59.324 * un)/(1 + 8847.8 * un ** 2)
 		g3 = (0.17499 + 61.658 * un + 9196.4 * un ** 2)/(1 + 74109.0 * un ** 2)
-		return min (1, (1 + g1 * m + g2 * m ** 2)/(1 + g3 * m))
+		return min (1, (1 + g1 * mw + g2 * mw ** 2)/(1 + g3 * mw))
 	else:
 		return 1.0
 
-def GetOzoneTransmittance(band, uo, m):
+def GetOpticalMassRayleigh(altitude_deg, pressure_millibars): # from Appendix B of [Gueymard, 2003]
+	Z = 90 - altitude_deg
+	Z_rad = math.radians(Z)
+	return (pressure_millibars / 1013.25)/((math.cos(Z_rad) + 0.48353 * Z_rad ** 0.095846)/(96.741 - Z_rad) ** 1.754)
+
+def GetOpticalMassOzone(altitude_deg): # from Appendix B of [Gueymard, 2003]
+	Z = 90 - altitude_deg
+	Z_rad = math.radians(Z)
+	return 1/((math.cos(Z_rad) + 1.0651 * Z_rad ** 0.6379)/(101.8 - Z_rad) ** 2.2694)
+
+def GetOpticalMassWater(altitude_deg): # from Appendix B of [Gueymard, 2003]
+	Z = 90 - altitude_deg
+	Z_rad = math.radians(Z)
+	return 1/((math.cos(Z_rad) + 0.10648 * Z_rad ** 0.11423)/(93.781 - Z_rad) ** 1.9203)
+
+def GetOpticalMassAerosol(altitude_deg): # from Appendix B of [Gueymard, 2003]
+	Z = 90 - altitude_deg
+	Z_rad = math.radians(Z)
+	return 1/((math.cos(Z_rad) + 0.16851 * Z_rad ** 0.18198)/(95.318 - Z_rad) ** 1.9542)
+
+def GetOzoneTransmittance(band, mo, uo):
 	if band == "high-frequency":
-		f1 = uo(10.979 - 8.5421 * u0)/(1 + 2.0115 * u0 + 40.189 * u0 **2)
-		f2 = uo(-0.027589 - 0.005138 * u0)/(1 - 2.4857 * u0 + 13.942 * u0 **2)
-		f3 = uo(10.995 - 5.5001 * u0)/(1 + 1.6784 * u0 + 42.406 * u0 **2)
-		return (1 + f1 * m + f2 * m ** 2)/(1 + f3 * m)
+		f1 = uo(10.979 - 8.5421 * uo)/(1 + 2.0115 * uo + 40.189 * uo **2)
+		f2 = uo(-0.027589 - 0.005138 * uo)/(1 - 2.4857 * uo + 13.942 * uo **2)
+		f3 = uo(10.995 - 5.5001 * uo)/(1 + 1.6784 * uo + 42.406 * uo **2)
+		return (1 + f1 * mo + f2 * mo ** 2)/(1 + f3 * mo)
 	else:
 		return 1.0
 
-def GetRayleighExtinctionForwardScatteringFraction(band, air_mass):
+def GetRayleighExtinctionForwardScatteringFraction(band, mR):
 	# returns BR
 	if band == "high-frequency":
-		return 0.5 * (0.89013 - 0.049558 * air_mass + 0.000045721 * air_mass ** 2)
+		return 0.5 * (0.89013 - 0.049558 * mR + 0.000045721 * mR ** 2)
 	else:
 		return 0.5
 
-def GetRayleighTransmittance(band, m):
+def GetRayleighTransmittance(band, mRprime):
 	if band == "high-frequency":
-		return (1 + 1.8169 * m + 0.033454 * m ** 2)/(1 + 2.063 * m + 0.31978 * m ** 2)
+		return (1 + 1.8169 * mRprime + 0.033454 * mRprime ** 2)/(1 + 2.063 * mRprime + 0.31978 * mRprime ** 2)
 	else:
-		return (1 - 0.010394 * m)/(1 - 0.00011042 * m ** 2)
+		return (1 - 0.010394 * mRprime)/(1 - 0.00011042 * mRprime ** 2)
 
 def GetSkyAlbedo(band, turbidity_alpha, turbidity_beta):
 	if band == "high-frequency":
@@ -181,13 +208,13 @@ def GetSkyAlbedo(band, turbidity_alpha, turbidity_beta):
 		+ 0.17426 * a2)/(1 - 0.17586 * a2))
 	return rhos
 
-def GetWaterVaporTransmittance(band, w, m):
+def GetWaterVaporTransmittance(band, mw, w):
 	if band == "high-frequency":
 		h = GetWaterVaporTransmittanceCoefficients(band, w)
-		return (1 + h[1] * m)/(1 + h[2] * m)
+		return (1 + h[1] * mw)/(1 + h[2] * mw)
 	else:
 		c = GetWaterVaporTransmittanceCoefficients(band, w)
-		return (1 + c[1] * m + c[2] * m ** 2)/(1 + c[3] * m + c[4] * m ** 2)
+		return (1 + c[1] * mw + c[2] * mw ** 2)/(1 + c[3] * mw + c[4] * mw ** 2)
 
 def GetWaterVaporTransmittanceCoefficients(band, w):
 	if band == "high-frequency":
