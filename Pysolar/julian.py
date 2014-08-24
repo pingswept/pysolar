@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #    Copyright Brandon Stafford
 #
 #    This file is part of Pysolar.

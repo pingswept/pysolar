@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #    Copyright Brandon Stafford
 #
 #    This file is part of Pysolar.
@@ -28,7 +26,6 @@ from . import constants
 from . import julian
 from . import radiation
 
-#if __name__ == "__main__":
 def SolarTest():
 	latitude_deg = 42.364908
 	longitude_deg = -71.112828

@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-
 # -*- coding: utf-8 -*-
-
 #    Copyright Brandon Stafford
 #
 #    This file is part of Pysolar.
@@ -33,8 +30,6 @@
 from datetime import datetime as dt
 from datetime import timedelta
 import math
-import pytz
-from pytz import all_timezones
 from . import solar
 
 # Some default constants
@@ -653,4 +648,3 @@ def date_with_decimal_hour(date_utc, hour_decimal):
     datetime_utc = dt(date_utc.year, date_utc.month, date_utc.day)
     
     return datetime_utc + timedelta(seconds=offset_seconds)
-

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #    Copyright Sean T. Hammond
 #
 #    This file is part of Pysolar.
@@ -58,5 +56,3 @@ def ElevationTest():
 		T=GetTemperatureWithElevation(h)
 		print("%i %i %i" % (h, P, T))
 		h=h+1000
-
-

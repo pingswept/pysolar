@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 #    Library for calculating location of the sun
 
@@ -19,10 +19,11 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-from . import solar
-from . import constants
-from . import julian
-from . import elevation
+from Pysolar import \
+	solar, \
+	constants, \
+	julian, \
+	elevation
 import datetime
 import unittest
 
@@ -143,9 +144,8 @@ class testSolar(unittest.TestCase):
 	def testTemperatureWithElevation(self):
 		self.assertAlmostEqual(277.9600, self.temperature_with_elevation, 4)
 
-suite = unittest.TestLoader().loadTestsFromTestCase(testSolar)
-unittest.TextTestRunner(verbosity=2).run(suite)
 
-# if __name__ == "__main__":
-#	unittest.main()
-
+if __name__ == "__main__":
+	suite = unittest.TestLoader().loadTestsFromTestCase(testSolar)
+	unittest.TextTestRunner(verbosity=2).run(suite)
+#end if

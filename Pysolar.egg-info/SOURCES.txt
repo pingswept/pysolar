@@ -4,12 +4,10 @@ Pysolar/__init__.py
 Pysolar/constants.py
 Pysolar/elevation.py
 Pysolar/julian.py
-Pysolar/query_usno.py
 Pysolar/radiation.py
 Pysolar/rest.py
 Pysolar/simulate.py
 Pysolar/solar.py
-Pysolar/testsolar.py
 Pysolar/util.py
 Pysolar.egg-info/PKG-INFO
 Pysolar.egg-info/SOURCES.txt

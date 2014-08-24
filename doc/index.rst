@@ -30,11 +30,6 @@ julian.py
 .. automodule:: julian
     :members:
 
-query_usno.py
--------------
-.. automodule:: query_usno
-    :members:
-
 radiation.py
 ------------
 .. automodule:: radiation
@@ -58,11 +53,6 @@ simulate.py
 solar.py
 --------
 .. automodule:: solar
-    :members:
-
-testsolar.py
-------------
-.. automodule:: testsolar
     :members:
 
 util.py
