@@ -21,6 +21,7 @@
 import datetime
 from . import radiation
 from . import solar
+from .constants import seconds_per_day
 import math
 
 def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
@@ -29,7 +30,7 @@ def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
 	time_list = []
 	span = end_utc_datetime - start_utc_datetime
 	dt = datetime.timedelta(seconds = step)
-	return [start_utc_datetime + dt * n for n in range((span.days * 86400 + span.seconds) // step)]
+	return [start_utc_datetime + dt * n for n in range((span.days * seconds_per_day + span.seconds) // step)]
 
 def CheckAgainstHorizon(power):
     (time, alt, az, radiation, shade) = power

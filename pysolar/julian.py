@@ -20,6 +20,7 @@ are used in calculating the position of the sun relative to the earth
 
 """
 import math
+from .constants import seconds_per_day
 
 def GetJulianCentury(julian_day):
     return (julian_day - 2451545.0) / 36525.0
@@ -36,7 +37,7 @@ def GetJulianDay(utc_datetime):
     if(month <= 2.0):        # shift to accomodate leap years?
         year = year - 1.0
         month = month + 12.0
-    day = utc_datetime.day + (((utc_datetime.hour * 3600.0) + (utc_datetime.minute * 60.0) + utc_datetime.second + (utc_datetime.microsecond / 1000000.0)) / 86400.0)
+    day = utc_datetime.day + (((utc_datetime.hour * 3600.0) + (utc_datetime.minute * 60.0) + utc_datetime.second + (utc_datetime.microsecond / 1000000.0)) / seconds_per_day)
     gregorian_offset = 2.0 - (year // 100.0) + ((year // 100.0) // 4.0)
     julian_day = math.floor(365.25 * (year + 4716.0)) + math.floor(30.6001 * (month + 1.0)) + day - 1524.5
     if (julian_day <= 2299160.0):
@@ -55,7 +56,7 @@ def GetJulianEphemerisDay(julian_day, delta_seconds = 66.0):
     More details: http://en.wikipedia.org/wiki/DeltaT
 
     """
-    return julian_day + (delta_seconds / 86400.0)
+    return julian_day + (delta_seconds / seconds_per_day)
 
 def GetJulianEphemerisMillenium(julian_ephemeris_century):
     return (julian_ephemeris_century / 10.0)
