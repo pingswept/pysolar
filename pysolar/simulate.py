@@ -21,7 +21,7 @@
 import datetime
 from . import radiation
 from . import solar
-from math import *
+import math
 
 def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
 	'''Create a list of sample points evenly spaced apart by step_minutes.'''
@@ -29,13 +29,13 @@ def BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes):
 	time_list = []
 	span = end_utc_datetime - start_utc_datetime
 	dt = datetime.timedelta(seconds = step)
-	return [start_utc_datetime + dt * n for n in range((span.days * 86400 + span.seconds) / step)]
+	return [start_utc_datetime + dt * n for n in range((span.days * 86400 + span.seconds) // step)]
 
 def CheckAgainstHorizon(power):
     (time, alt, az, radiation, shade) = power
     alt_zero = 380
 
-    if shade < alt_zero - int(alt_zero * sin(radians(alt))):
+    if shade < alt_zero - int(alt_zero * math.sin(math.radians(alt))):
         radiation = 0
 
     return (time, alt, az, radiation, shade)
