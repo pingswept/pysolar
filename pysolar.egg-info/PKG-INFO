@@ -1,5 +1,5 @@
 Metadata-Version: 1.1
-Name: Pysolar
+Name: pysolar
 Version: 0.6-alpha
 Summary: Collection of Python libraries for simulating the irradiation of any point on earth by the sun
 Home-page: http://pysolar.org

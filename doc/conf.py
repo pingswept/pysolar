@@ -21,7 +21,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = 'Pysolar'
+project = 'pysolar'
 copyright = '2008-2010, Brandon Stafford'
 
 # The default replacements for |version| and |release|, also used in various
@@ -59,7 +59,7 @@ html_static_path = ['.static']
 html_last_updated_fmt = '%b %d, %Y'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Pysolardoc'
+htmlhelp_basename = 'pysolardoc'
 
 # Options for LaTeX output
 # ------------------------
@@ -67,6 +67,6 @@ htmlhelp_basename = 'Pysolardoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'Pysolar.tex', 'Pysolar Documentation',
+  ('index', 'pysolar.tex', 'Pysolar Documentation',
    'Brandon Stafford', 'manual'),
 ]

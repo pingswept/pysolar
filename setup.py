@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from distutils.core import setup
 import setuptools
 
@@ -19,14 +17,14 @@ classifiers = ['Development Status :: 5 - Production/Stable',
     'Programming Language :: Python :: 3']
 
 
-setup(name='Pysolar',
+setup(name='pysolar',
     version='0.6',
     description='Collection of Python libraries for simulating the irradiation of any point on earth by the sun',
     author='Brandon Stafford',
     author_email='brandon@pingswept.org',
     license = 'GNU General Public License (GPL)',
     url='http://pysolar.org',
-    packages=['Pysolar'],
+    packages=['pysolar'],
     requires = ['numpy', 'pytz'],
     )
 
