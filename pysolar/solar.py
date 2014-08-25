@@ -48,14 +48,14 @@ def EquationOfTime(day):
 def GetAberrationCorrection(radius_vector):     # r is earth radius vector [astronomical units]
     return -20.4898/(3600.0 * radius_vector)
 
-def GetAltitude(latitude_deg, longitude_deg, utc_datetime, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
+def GetAltitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
     '''See also the faster, but less accurate, GetAltitudeFast()'''
     # location-dependent calculations
     projected_radial_distance = GetProjectedRadialDistance(elevation, latitude_deg)
     projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = julian.GetJulianDay(utc_datetime)
+    jd = julian.GetJulianDay(when)
     jde = julian.GetJulianEphemerisDay(jd, 65)
     jce = julian.GetJulianEphemerisCentury(jde)
     jme = julian.GetJulianEphemerisMillenium(jce)
@@ -209,8 +209,8 @@ def GetHeliocentricLongitude(jme):
     l = (l0 + l1 * jme + l2 * jme ** 2 + l3 * jme ** 3 + l4 * jme ** 4 + l5 * jme ** 5) / 10 ** 8
     return math.degrees(l) % 360
 
-def GetHourAngle(utc_datetime, longitude_deg):
-    solar_time = GetSolarTime(longitude_deg, utc_datetime)
+def GetHourAngle(when, longitude_deg):
+    solar_time = GetSolarTime(longitude_deg, when)
     return 15 * (12 - solar_time)
 
 def GetIncidenceAngle(topocentric_zenith_angle, slope, slope_orientation, topocentric_azimuth_angle):
@@ -289,9 +289,9 @@ def GetRefractionCorrection(pressure_millibars, temperature_celsius, topocentric
     b = 1010.0 * temperature_kelvin * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
     return a / b
 
-def GetSolarTime(longitude_deg, utc_datetime):
-    day = utc_datetime.timetuple().tm_yday
-    return (((utc_datetime.hour * 60) + utc_datetime.minute + (4 * longitude_deg) + EquationOfTime(day))/60)
+def GetSolarTime(longitude_deg, when):
+    when = when.utctimetuple()
+    return (((when.tm_hour * 60) + when.tm_min + (4 * longitude_deg) + EquationOfTime(when.tm_yday))/60)
 
 # Topocentric functions calculate angles relative to a location on the surface of the earth.
 

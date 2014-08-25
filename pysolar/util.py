@@ -144,15 +144,15 @@ def get_sunset_time(latitude_deg, longitude_deg, when):
     return \
         get_sunrise_sunset(latitude_deg, longitude_deg, when)[1]
 
-def mean_earth_sun_distance(utc_datetime):
+def mean_earth_sun_distance(when):
     """Mean Earth-Sun distance is the arithmetical mean of the maximum and minimum distances
     between a planet (Earth) and the object about which it revolves (Sun). However,
     the function is used to  calculate the Mean earth sun distance.
 
     Parameters
     ----------
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
 
     Returns
     -------
@@ -166,9 +166,9 @@ def mean_earth_sun_distance(utc_datetime):
             radiation models, p.113
     """
 
-    return (1 - (0.0335 * math.sin(360 * ((utc_datetime.timetuple().tm_yday) - 94)) / (365)))
+    return (1 - (0.0335 * math.sin(360 * ((when.utctimetuple().tm_yday) - 94)) / (365)))
 
-def extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg,SC=SC_default):
+def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
     """Equation calculates Extratrestrial radiation. Solar radiation incident outside the earth's
     atmosphere is called extraterrestrial radiation. On average the extraterrestrial irradiance
     is 1367 Watts/meter2 (W/m2). This value varies by + or - 3 percent as the earth orbits the sun.
@@ -177,8 +177,8 @@ def extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg,SC=SC_defau
 
     Parameters
     ----------
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     latitude_deg : float
         latitude in decimal degree. A geographical term denoting the north/south angular location
         of a place on a sphere.
@@ -201,27 +201,27 @@ def extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg,SC=SC_defau
     .. [2] Dr. J. Schumacher and et al,"INSEL LE(Integrated Simulation Environment Language)Block reference",p.68
 
     """
-    day = utc_datetime.timetuple().tm_yday
-    ab = math.cos(2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0))
-    bc = math.sin(2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0))
-    cd = math.cos(2 * (2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0)))
-    df = math.sin(2 * (2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0)))
+    day = when.utctimetuple().tm_yday
+    ab = math.cos(2 * math.pi * (day - 1.0)/(365.0))
+    bc = math.sin(2 * math.pi * (day - 1.0)/(365.0))
+    cd = math.cos(2 * (2 * math.pi * (day - 1.0)/(365.0)))
+    df = math.sin(2 * (2 * math.pi * (day - 1.0)/(365.0)))
     decl = solar.GetDeclination(day)
-    ha = solar.GetHourAngle(utc_datetime, longitude_deg)
+    ha = solar.GetHourAngle(when, longitude_deg)
     ZA = math.sin(latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(ha)
 
     return SC * ZA * (1.00010 + 0.034221 * ab + 0.001280 * bc + 0.000719 * cd + 0.000077 * df)
 
 
-def declination_degree(utc_datetime, TY = TY_default ):
+def declination_degree(when, TY = TY_default ):
     """The declination of the sun is the angle between Earth's equatorial plane and a line
     between the Earth and the sun. It varies between 23.45 degrees and -23.45 degrees,
     hitting zero on the equinoxes and peaking on the solstices.
 
     Parameters
     ----------
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     TY : float
         Total number of days in a year. eg. 365 days per year,(no leap days)
 
@@ -235,10 +235,10 @@ def declination_degree(utc_datetime, TY = TY_default ):
     .. [1] http://pysolar.org/
 
     """
-    return constants.earth_axis_inclination * math.sin((2 * math.pi / (TY)) * ((utc_datetime.timetuple().tm_yday) - 81))
+    return constants.earth_axis_inclination * math.sin((2 * math.pi / (TY)) * ((when.utctimetuple().tm_yday) - 81))
 
 
-def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temperature_celsius = default_temperature_celsius,
+def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature_celsius = default_temperature_celsius,
                                   pressure_millibars = default_pressure_millibars,  elevation = elevation_default):
     """Equation calculates Solar elevation function for clear sky type.
 
@@ -250,8 +250,8 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temp
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location
         in an east-west direction,relative to the Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
     pressure_millibars : float
@@ -271,10 +271,10 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temp
             and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    altitude = solar.GetAltitude(latitude_deg, longitude_deg,utc_datetime, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.GetAltitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
     return (0.038175 + (1.5458 * (math.sin(altitude))) + ((-0.59980) * (0.5 * (1 - math.cos(2 * (altitude))))))
 
-def solarelevation_function_overcast(latitude_deg, longitude_deg, utc_datetime,
+def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
                                      elevation = elevation_default, temperature_celsius = default_temperature_celsius,
                                      pressure_millibars = default_pressure_millibars):
     """ The function calculates solar elevation function for overcast sky type.
@@ -291,8 +291,8 @@ def solarelevation_function_overcast(latitude_deg, longitude_deg, utc_datetime,
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location in an east-west direction,relative to the
         Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature_celsius : float
@@ -314,7 +314,7 @@ def solarelevation_function_overcast(latitude_deg, longitude_deg, utc_datetime,
         Design of Buildings"
 
     """
-    altitude = solar.GetAltitude(latitude_deg, longitude_deg,utc_datetime, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.GetAltitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
     return ((-0.0067133) + (0.78600 * (math.sin(altitude)))) + (0.22401 * (0.5 * (1 - math.cos(2 * altitude))))
 
 
@@ -341,7 +341,7 @@ def diffuse_transmittance(TL = TL_default):
     return ((-21.657) + (41.752 * (TL)) + (0.51905 * (TL) * (TL)))
 
 
-def diffuse_underclear(latitude_deg, longitude_deg, utc_datetime, elevation = elevation_default,
+def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_default,
                        temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TL=TL_default):
     """Equation calculates diffuse radiation under clear sky conditions.
 
@@ -353,8 +353,8 @@ def diffuse_underclear(latitude_deg, longitude_deg, utc_datetime, elevation = el
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location in an east-west direction,relative to the
         Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature_celsius : float
@@ -376,11 +376,11 @@ def diffuse_underclear(latitude_deg, longitude_deg, utc_datetime, elevation = el
 
     """
     DT = ((-21.657) + (41.752 * (TL)) + (0.51905 * (TL) * (TL)))
-    altitude = solar.GetAltitude(latitude_deg, longitude_deg,utc_datetime, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.GetAltitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
 
-    return mean_earth_sun_distance(utc_datetime) * DT * altitude
+    return mean_earth_sun_distance(when) * DT * altitude
 
-def diffuse_underovercast(latitude_deg, longitude_deg, utc_datetime, elevation = elevation_default,
+def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevation_default,
                           temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars,TL=TL_default):
     """Function calculates the diffuse radiation under overcast conditions.
 
@@ -392,8 +392,8 @@ def diffuse_underovercast(latitude_deg, longitude_deg, utc_datetime, elevation =
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location in an east-west direction,relative to the
         Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature_celsius : float
@@ -416,12 +416,12 @@ def diffuse_underovercast(latitude_deg, longitude_deg, utc_datetime, elevation =
     """
     DT = ((-21.657) + (41.752 * (TL)) + (0.51905 * (TL) * (TL)))
 
-    DIFOC = ((mean_earth_sun_distance(utc_datetime)
-              )*(DT)*(solar.GetAltitude(latitude_deg,longitude_deg, utc_datetime, elevation,
+    DIFOC = ((mean_earth_sun_distance(when)
+              )*(DT)*(solar.GetAltitude(latitude_deg,longitude_deg, when, elevation,
                                         temperature_celsius, pressure_millibars)))
     return DIFOC
 
-def direct_underclear(latitude_deg, longitude_deg, utc_datetime,
+def direct_underclear(latitude_deg, longitude_deg, when,
                       temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TY = TY_default,
                       AM = AM_default, TL = TL_default,elevation = elevation_default):
     """Equation calculates direct radiation under clear sky conditions.
@@ -434,8 +434,8 @@ def direct_underclear(latitude_deg, longitude_deg, utc_datetime,
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location in an east-west direction,relative to the
         Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
     pressure_millibars : float
@@ -463,18 +463,18 @@ def direct_underclear(latitude_deg, longitude_deg, utc_datetime,
            new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    KD = mean_earth_sun_distance(utc_datetime)
+    KD = mean_earth_sun_distance(when)
 
-    DEC = declination_degree(utc_datetime,TY)
+    DEC = declination_degree(when,TY)
 
     DIRC = (1367 * KD * math.exp(-0.8662 * (AM) * (TL) * (DEC)
                              ) * math.sin(solar.GetAltitude(latitude_deg,longitude_deg,
-                                                          utc_datetime,elevation ,
+                                                          when,elevation ,
                                                           temperature_celsius , pressure_millibars )))
 
     return DIRC
 
-def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, utc_datetime,
+def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
                             temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TY = TY_default,
                             AM = AM_default, TL = TL_default, elevation = elevation_default):
 
@@ -493,8 +493,8 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, utc_dateti
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location in an east-west direction,relative to
         the Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
     pressure_millibars : float
@@ -526,11 +526,11 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, utc_dateti
             new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    DIRC =  direct_underclear(latitude_deg, longitude_deg, utc_datetime,
+    DIRC =  direct_underclear(latitude_deg, longitude_deg, when,
                               TY, AM, TL, elevation, temperature_celsius = default_temperature_celsius,
                               pressure_millibars = default_pressure_millibars)
 
-    DIFFC = diffuse_underclear(latitude_deg, longitude_deg, utc_datetime,
+    DIFFC = diffuse_underclear(latitude_deg, longitude_deg, when,
                                elevation, temperature_celsius = default_temperature_celsius, pressure_millibars= default_pressure_millibars)
 
     ghic = (DIRC + DIFFC)
@@ -538,7 +538,7 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, utc_dateti
     return ghic
 
 
-def global_irradiance_overcast(latitude_deg, longitude_deg, utc_datetime,
+def global_irradiance_overcast(latitude_deg, longitude_deg, when,
                                elevation = elevation_default, temperature_celsius = default_temperature_celsius,
                                pressure_millibars = default_pressure_millibars):
     """Calculated Global is used to compare to the Diffuse under overcast conditions.
@@ -553,8 +553,8 @@ def global_irradiance_overcast(latitude_deg, longitude_deg, utc_datetime,
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location in an east-west direction,relative
         to the Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the
         mean sea level.
@@ -577,7 +577,7 @@ def global_irradiance_overcast(latitude_deg, longitude_deg, utc_datetime,
             (2005), pp 1533 - 1549.
 
     """
-    ghioc = (572 * (solar.GetAltitude(latitude_deg, longitude_deg, utc_datetime,
+    ghioc = (572 * (solar.GetAltitude(latitude_deg, longitude_deg, when,
                                     elevation , temperature_celsius , pressure_millibars )))
 
     return ghioc
@@ -609,7 +609,7 @@ def diffuse_ratio(DIFF_data,ghi_data):
     return K
 
 
-def clear_index(ghi_data, utc_datetime, latitude_deg, longitude_deg):
+def clear_index(ghi_data, when, latitude_deg, longitude_deg):
 
     """This calculates the clear index ratio.
 
@@ -617,8 +617,8 @@ def clear_index(ghi_data, utc_datetime, latitude_deg, longitude_deg):
     ----------
     ghi_data : array_like
         global horizontal irradiation data array
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
+    when : datetime.datetime
+        date/time for which to do the calculation
     latitude_deg : float
         latitude in decimal degree. A geographical term denoting the north/south angular location of a place
         on a sphere.
@@ -637,7 +637,7 @@ def clear_index(ghi_data, utc_datetime, latitude_deg, longitude_deg):
             new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    EXTR1 = extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg)
+    EXTR1 = extraterrestrial_irrad(when, latitude_deg, longitude_deg)
 
     KT = (ghi_data/EXTR1)
 
