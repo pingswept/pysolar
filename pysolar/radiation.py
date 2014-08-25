@@ -40,9 +40,9 @@ def get_optical_depth(day):
     return 0.174 + (0.035 * math.sin(2 * math.pi / 365 * (day - 100)))
 #end get_optical_depth
 
-def get_radiation_direct(utc_datetime, altitude_deg):
+def get_radiation_direct(when, altitude_deg):
     # from Masters, p. 412
-    day = utc_datetime.timetuple().tm_yday
+    day = when.utctimetuple().tm_yday
     flux = get_apparent_extraterrestrial_flux(day)
     optical_depth = get_optical_depth(day)
     air_mass_ratio = get_air_mass_ratio(altitude_deg)

@@ -80,14 +80,14 @@ def GetAltitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_ce
     refraction_correction = GetRefractionCorrection(pressure_millibars, temperature_celsius, topocentric_elevation_angle)
     return topocentric_elevation_angle + refraction_correction
 
-def GetAltitudeFast(latitude_deg, longitude_deg, utc_datetime):
+def GetAltitudeFast(latitude_deg, longitude_deg, when):
 
 # expect 19 degrees for solar.GetAltitude(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
 
-    day = utc_datetime.timetuple().tm_yday
+    day = when.utctimetuple().tm_yday
     declination_rad = math.radians(GetDeclination(day))
     latitude_rad = math.radians(latitude_deg)
-    hour_angle = GetHourAngle(utc_datetime, longitude_deg)
+    hour_angle = GetHourAngle(when, longitude_deg)
 
     first_term = math.cos(latitude_rad) * math.cos(declination_rad) * math.cos(math.radians(hour_angle))
     second_term = math.sin(latitude_rad) * math.sin(declination_rad)
@@ -99,14 +99,14 @@ def GetApparentSiderealTime(julian_day, jme, nutation):
 def GetApparentSunLongitude(geocentric_longitude, nutation, ab_correction):
     return geocentric_longitude + nutation['longitude'] + ab_correction
 
-def GetAzimuth(latitude_deg, longitude_deg, utc_datetime, elevation = 0):
+def GetAzimuth(latitude_deg, longitude_deg, when, elevation = 0):
 
     # location-dependent calculations
     projected_radial_distance = GetProjectedRadialDistance(elevation, latitude_deg)
     projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = julian.GetJulianDay(utc_datetime)
+    jd = julian.GetJulianDay(when)
     jde = julian.GetJulianEphemerisDay(jd, 65)
     jce = julian.GetJulianEphemerisCentury(jde)
     jme = julian.GetJulianEphemerisMillenium(jce)
@@ -129,13 +129,13 @@ def GetAzimuth(latitude_deg, longitude_deg, utc_datetime, elevation = 0):
     topocentric_sun_declination = GetTopocentricSunDeclination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
     return 180 - GetTopocentricAzimuthAngle(topocentric_local_hour_angle, latitude_deg, topocentric_sun_declination)
 
-def GetAzimuthFast(latitude_deg, longitude_deg, utc_datetime):
+def GetAzimuthFast(latitude_deg, longitude_deg, when):
 # expect -50 degrees for solar.GetAzimuth(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
-    day = utc_datetime.timetuple().tm_yday
+    day = when.utctimetuple().tm_yday
     declination_rad = math.radians(GetDeclination(day))
     latitude_rad = math.radians(latitude_deg)
-    hour_angle_rad = math.radians(GetHourAngle(utc_datetime, longitude_deg))
-    altitude_rad = math.radians(GetAltitude(latitude_deg, longitude_deg, utc_datetime))
+    hour_angle_rad = math.radians(GetHourAngle(when, longitude_deg))
+    altitude_rad = math.radians(GetAltitude(latitude_deg, longitude_deg, when))
 
     azimuth_rad = math.asin(math.cos(declination_rad) * math.sin(hour_angle_rad) / math.cos(altitude_rad))
 
