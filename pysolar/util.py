@@ -45,7 +45,7 @@ default_temperature_celsius = 25
 
 # Useful equations for analysis
 
-def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
+def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     """This function calculates the astronomical sunrise and sunset times in local time.
 
     Parameters
@@ -81,7 +81,7 @@ def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     >>> lon = 8.680506
     >>> timezone_local = 'Europe/Berlin'
     >>> utct = datetime.utcnow()
-    >>> sr, ss = sb.GetSunriseSunset(lat, lon, utct, gmt_offset)
+    >>> sr, ss = sb.get_sunrise_sunset(lat, lon, utct, gmt_offset)
     >>> print 'sunrise: ', sr
     >>> print 'sunset:', ss
 
@@ -118,15 +118,15 @@ def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
 
     return sunrise_time_dt, sunset_time_dt
 
-def GetSunriseTime(latitude_deg, longitude_deg, utc_datetime, timezone):
-    "Wrapper for GetSunriseSunset that returns just the sunrise time"
-    sr, ss = GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone)
+def get_sunrise_time(latitude_deg, longitude_deg, utc_datetime, timezone):
+    "Wrapper for get_sunrise_sunset that returns just the sunrise time"
+    sr, ss = get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)
 
     return sr
 
-def GetSunsetTime(latitude_deg, longitude_deg, utc_datetime, timezone):
-    "Wrapper for GetSunriseSunset that returns just the sunset time"
-    sr, ss = GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone)
+def get_sunset_time(latitude_deg, longitude_deg, utc_datetime, timezone):
+    "Wrapper for get_sunrise_sunset that returns just the sunset time"
+    sr, ss = get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)
     return ss
 
 def mean_earth_sun_distance(utc_datetime):
