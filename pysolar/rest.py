@@ -34,7 +34,7 @@ def GetAerosolForwardScatteranceFactor(altitude_deg):
 def GetAerosolOpticalDepth(turbidity_beta, effective_wavelength, turbidity_alpha):
 	# returns tau_a
 	print("effective_wavelength: ")
-	print effective_wavelength
+	print(effective_wavelength)
 	return turbidity_beta * effective_wavelength ** -turbidity_alpha
 
 def GetAerosolScatteringCorrectionFactor(band, ma, tau_a):

@@ -30,7 +30,7 @@
 from datetime import datetime as dt
 from datetime import timedelta
 import math
-from . import solar
+#from . import solar # not valid here, fixed up further up
 
 # Some default constants
 
