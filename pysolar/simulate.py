@@ -24,7 +24,7 @@ from . import solar
 from .constants import seconds_per_day
 import math
 
-def BuildTimeList(start_datetime, end_datetime, step_minutes):
+def build_time_list(start_datetime, end_datetime, step_minutes):
     '''Create a list of sample points evenly spaced apart by step_minutes.'''
     step = step_minutes * 60
     time_list = []
@@ -32,7 +32,7 @@ def BuildTimeList(start_datetime, end_datetime, step_minutes):
     dt = datetime.timedelta(seconds = step)
     return [start_datetime + dt * n for n in range((span.days * seconds_per_day + span.seconds) // step)]
 
-def CheckAgainstHorizon(power):
+def check_against_horizon(power):
     (time, alt, az, radiation, shade) = power
     alt_zero = 380
 
@@ -41,7 +41,7 @@ def CheckAgainstHorizon(power):
 
     return (time, alt, az, radiation, shade)
 
-def SimulateSpan(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
+def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
     '''Simulate the motion of the sun over a time span and location of your choosing.
 
     The start and end points are set by datetime objects, which can be created with
@@ -49,7 +49,7 @@ def SimulateSpan(latitude_deg, longitude_deg, horizon, start_datetime, end_datet
     import datetime
     start = datetime.datetime(2008, 12, 23, 23, 14, 0)
     '''
-    time_list = BuildTimeList(start_datetime, end_datetime, step_minutes)
+    time_list = build_time_list(start_datetime, end_datetime, step_minutes)
 
     angles_list = [(
         time,
@@ -57,10 +57,10 @@ def SimulateSpan(latitude_deg, longitude_deg, horizon, start_datetime, end_datet
         solar.GetAzimuth(latitude_deg, longitude_deg, time, elevation)
         ) for time in time_list]
     power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
-    return list(filter(CheckAgainstHorizon, power_list))
+    return list(filter(check_against_horizon, power_list))
 
 #       xs = shade.GetXShade(width, 120, azimuth_deg)
 #       ys = shade.GetYShade(height, 120, altitude_deg)
 #       shaded_area = xs * ys
 #       shaded_percentage = shaded_area/area
-# import simulate, datetime; s = datetime.datetime(2008,1,1); e = datetime.datetime(2008,1,5); simulate.SimulateSpan(42.0, -70.0, s, e, 30)
+# import simulate, datetime; s = datetime.datetime(2008,1,1); e = datetime.datetime(2008,1,5); simulate.simulate_span(42.0, -70.0, s, e, 30)
