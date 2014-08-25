@@ -60,6 +60,7 @@ coeff_list = [
     ]
 
 earth_radius = 6378140.0 # meters
+earth_axis_inclination = 23.45 # degrees
 
 seconds_per_day = 86400
 

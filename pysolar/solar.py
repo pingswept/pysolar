@@ -84,7 +84,7 @@ def GetAltitudeFast(latitude_deg, longitude_deg, utc_datetime):
 
 # expect 19 degrees for solar.GetAltitude(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
 
-    day = GetDayOfYear(utc_datetime)
+    day = utc_datetime.timetuple().tm_yday
     declination_rad = math.radians(GetDeclination(day))
     latitude_rad = math.radians(latitude_deg)
     hour_angle = GetHourAngle(utc_datetime, longitude_deg)
@@ -131,7 +131,7 @@ def GetAzimuth(latitude_deg, longitude_deg, utc_datetime, elevation = 0):
 
 def GetAzimuthFast(latitude_deg, longitude_deg, utc_datetime):
 # expect -50 degrees for solar.GetAzimuth(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
-    day = GetDayOfYear(utc_datetime)
+    day = utc_datetime.timetuple().tm_yday
     declination_rad = math.radians(GetDeclination(day))
     latitude_rad = math.radians(latitude_deg)
     hour_angle_rad = math.radians(GetHourAngle(utc_datetime, longitude_deg))
@@ -147,18 +147,13 @@ def GetAzimuthFast(latitude_deg, longitude_deg, utc_datetime):
 def GetCoefficient(jme, constant_array):
     return sum([constant_array[i-1][0] * math.cos(constant_array[i-1][1] + (constant_array[i-1][2] * jme)) for i in range(len(constant_array))])
 
-def GetDayOfYear(utc_datetime):
-    year_start = datetime.datetime(utc_datetime.year, 1, 1, tzinfo=utc_datetime.tzinfo)
-    delta = (utc_datetime - year_start)
-    return delta.days
-
 def GetDeclination(day):
     '''The declination of the sun is the angle between
     Earth's equatorial plane and a line between the Earth and the sun.
     The declination of the sun varies between 23.45 degrees and -23.45 degrees,
     hitting zero on the equinoxes and peaking on the solstices.
     '''
-    return 23.45 * math.sin((2 * math.pi / 365.0) * (day - 81))
+    return constants.earth_axis_inclination * math.sin((2 * math.pi / 365.0) * (day - 81))
 
 def GetEquatorialHorizontalParallax(radius_vector):
     return 8.794 / (3600 / radius_vector)
@@ -295,7 +290,7 @@ def GetRefractionCorrection(pressure_millibars, temperature_celsius, topocentric
     return a / b
 
 def GetSolarTime(longitude_deg, utc_datetime):
-    day = GetDayOfYear(utc_datetime)
+    day = utc_datetime.timetuple().tm_yday
     return (((utc_datetime.hour * 60) + utc_datetime.minute + (4 * longitude_deg) + EquationOfTime(day))/60)
 
 # Topocentric functions calculate angles relative to a location on the surface of the earth.

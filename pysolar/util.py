@@ -88,30 +88,61 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     """
 
     # Day of the year
-    day = solar.GetDayOfYear(utc_datetime)
+    day = utc_datetime.timetuple().tm_yday
 
     # Solar hour angle
-    SHA = ((timezone)* 15.0 - longitude_deg)
+    SHA = timezone * 15.0 - longitude_deg
 
     # Time adjustment
-    TT = (279.134+0.985647*day)*math.pi/180
+    TT = math.radians(279.134 + 0.985647 * day)
 
     # Time adjustment in hours
-    time_adst = ((5.0323 - 100.976*math.sin(TT)+595.275*math.sin(2*TT)+
-                  3.6858*math.sin(3*TT) - 12.47*math.sin(4*TT) - 430.847*math.cos(TT)+
-                  12.5024*math.cos(2*TT) + 18.25*math.cos(3*TT))/3600)
+    time_adst = \
+        (
+                (
+                    5.0323
+                -
+                    100.976 * math.sin(TT)
+                +
+                    595.275 * math.sin(2 * TT)
+                +
+                    3.6858 * math.sin(3 * TT)
+                -
+                    12.47 * math.sin(4 * TT)
+                -
+                    430.847 * math.cos(TT)
+                +
+                    12.5024 * math.cos(2 * TT)
+                +
+                    18.25 * math.cos(3 * TT)
+                )
+            /
+                3600
+        )
 
     # Time of noon
-    TON = (12 + (SHA/15.0) - time_adst)
+    TON = 12 + SHA / 15.0 - time_adst
 
-    sunn = (math.pi/2-(23.45*math.pi/180)*math.tan(latitude_deg*math.pi/180)*
-            math.cos(2*math.pi*day/365.25))*(180/(math.pi*15))
+    sunn = \
+        (
+            (
+                math.pi / 2
+            -
+                    math.radians(constants.earth_axis_inclination)
+                *
+                    math.tan(math.radians(latitude_deg))
+                *
+                    math.cos(2 * math.pi * day / 365.25)
+            )
+        *
+            (12 / math.pi)
+        )
 
     # Sunrise_time in hours
-    sunrise_time = (TON - sunn + time_adst)
+    sunrise_time = TON - sunn + time_adst
 
     # Sunset_time in hours
-    sunset_time = (TON + sunn - time_adst)
+    sunset_time = TON + sunn - time_adst
 
     sunrise_time_dt = date_with_decimal_hour(utc_datetime, sunrise_time)
     sunset_time_dt = date_with_decimal_hour(utc_datetime, sunset_time)
@@ -151,7 +182,7 @@ def mean_earth_sun_distance(utc_datetime):
             radiation models, p.113
     """
 
-    return (1 - (0.0335 * math.sin(360 * ((solar.GetDayOfYear(utc_datetime)) - 94)) / (365)))
+    return (1 - (0.0335 * math.sin(360 * ((utc_datetime.timetuple().tm_yday) - 94)) / (365)))
 
 def extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg,SC=SC_default):
     """Equation calculates Extratrestrial radiation. Solar radiation incident outside the earth's
@@ -186,11 +217,11 @@ def extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg,SC=SC_defau
     .. [2] Dr. J. Schumacher and et al,"INSEL LE(Integrated Simulation Environment Language)Block reference",p.68
 
     """
-    day = solar.GetDayOfYear(utc_datetime)
-    ab = math.cos(2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0))
-    bc = math.sin(2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0))
-    cd = math.cos(2 * (2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0)))
-    df = math.sin(2 * (2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0)))
+    day = utc_datetime.timetuple().tm_yday
+    ab = math.cos(2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0))
+    bc = math.sin(2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0))
+    cd = math.cos(2 * (2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0)))
+    df = math.sin(2 * (2 * math.pi * (utc_datetime.timetuple().tm_yday - 1.0)/(365.0)))
     decl = solar.GetDeclination(day)
     ha = solar.GetHourAngle(utc_datetime, longitude_deg)
     ZA = math.sin(latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(ha)
@@ -220,7 +251,7 @@ def declination_degree(utc_datetime, TY = TY_default ):
     .. [1] http://pysolar.org/
 
     """
-    return 23.45 * math.sin((2 * math.pi / (TY)) * ((solar.GetDayOfYear(utc_datetime)) - 81))
+    return constants.earth_axis_inclination * math.sin((2 * math.pi / (TY)) * ((utc_datetime.timetuple().tm_yday) - 81))
 
 
 def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temperature_celsius = default_temperature_celsius,

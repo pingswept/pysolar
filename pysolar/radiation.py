@@ -18,7 +18,6 @@
 """Calculate different kinds of radiation components via default values
 
 """
-#from . import solar # not valid here, fixed up further up
 import math
 
 def get_air_mass_ratio(altitude_deg):
@@ -33,17 +32,17 @@ def get_air_mass_ratio(altitude_deg):
 
 def get_apparent_extraterrestrial_flux(day):
     # from Masters, p. 412
-    return 1160 + (75 * math.sin(math.radians((360./365) * (day - 275))))
+    return 1160 + (75 * math.sin(2 * math.pi / 365 * (day - 275)))
 #end get_apparent_extraterrestrial
 
 def get_optical_depth(day):
     # from Masters, p. 412
-    return 0.174 + (0.035 * math.sin(math.radians((360./365) * (day - 100))))
+    return 0.174 + (0.035 * math.sin(2 * math.pi / 365 * (day - 100)))
 #end get_optical_depth
 
 def get_radiation_direct(utc_datetime, altitude_deg):
     # from Masters, p. 412
-    day = solar.GetDayOfYear(utc_datetime)
+    day = utc_datetime.timetuple().tm_yday
     flux = get_apparent_extraterrestrial_flux(day)
     optical_depth = get_optical_depth(day)
     air_mass_ratio = get_air_mass_ratio(altitude_deg)
