@@ -45,7 +45,7 @@ default_temperature_celsius = 25
 
 # Useful equations for analysis
 
-def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
+def get_sunrise_sunset(latitude_deg, longitude_deg, when):
     """This function calculates the astronomical sunrise and sunset times in local time.
 
     Parameters
@@ -56,18 +56,15 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location
         in an east-west direction,relative to the Greenwich meridian.
-    utc_datetime : date_object
-        utc_datetime. UTC DateTime is for Universal Time ( i.e. like a GMT+0 )
-    timezone : float
-        timezone as numerical value: GMT offset in hours. A time zone is a region of
-        the earth that has uniform standard time, usually referred to as the local time.
+    when : datetime.datetime
+        date and time in any valid timezone, answers will be for same day in same timezone.
 
     Returns
     -------
     sunrise_time_dt : datetime.datetime
-        Sunrise time in local time as datetime_obj.
+        Sunrise time in local time.
     sunset_time_dt : datetime.datetime
-        Sunset time in local time as datetime_obj.
+        Sunset time in local time.
 
     References
     ----------
@@ -76,19 +73,24 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
 
     Examples
     --------
-    >>> gmt_offset = 1
     >>> lat = 50.111512
     >>> lon = 8.680506
-    >>> timezone_local = 'Europe/Berlin'
-    >>> utct = datetime.utcnow()
-    >>> sr, ss = sb.get_sunrise_sunset(lat, lon, utct, gmt_offset)
+    >>> timezone_local = pytz.timezone('Europe/Berlin')
+    >>> now = datetime.now(timezone_local)
+    >>> sr, ss = sb.get_sunrise_sunset(lat, lon, now)
     >>> print('sunrise: ', sr)
     >>> print('sunset:', ss)
 
     """
 
-    day = utc_datetime.timetuple().tm_yday # Day of the year
-    SHA = timezone * 15.0 - longitude_deg # Solar hour angle
+    utc_offset = when.utcoffset()
+    if utc_offset != None :
+        utc_offset = utc_offset.total_seconds()
+    else :
+        utc_offset = 0
+    #end if
+    day = when.utctimetuple().tm_yday # Day of the year
+    SHA = utc_offset / 3600 * 15.0 - longitude_deg # Solar hour angle
     TT = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
     time_adst = \
         (
@@ -127,20 +129,20 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
         *
             (12 / math.pi)
         )
-    same_day = datetime(year = utc_datetime.year, month = utc_datetime.month, day = utc_datetime.day, tzinfo = utc_datetime.tzinfo)
+    same_day = datetime(year = when.year, month = when.month, day = when.day, tzinfo = when.tzinfo)
     sunrise_time = same_day + timedelta(hours = TON - sunn + time_adst)
     sunset_time = same_day + timedelta(hours = TON + sunn - time_adst)
     return sunrise_time, sunset_time
 
-def get_sunrise_time(latitude_deg, longitude_deg, utc_datetime, timezone):
+def get_sunrise_time(latitude_deg, longitude_deg, when):
     "Wrapper for get_sunrise_sunset that returns just the sunrise time."
     return \
-        get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)[0]
+        get_sunrise_sunset(latitude_deg, longitude_deg, when)[0]
 
-def get_sunset_time(latitude_deg, longitude_deg, utc_datetime, timezone):
+def get_sunset_time(latitude_deg, longitude_deg, when):
     "Wrapper for get_sunrise_sunset that returns just the sunset time."
     return \
-        get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)[1]
+        get_sunrise_sunset(latitude_deg, longitude_deg, when)[1]
 
 def mean_earth_sun_distance(utc_datetime):
     """Mean Earth-Sun distance is the arithmetical mean of the maximum and minimum distances
