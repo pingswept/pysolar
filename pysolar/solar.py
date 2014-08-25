@@ -50,11 +50,11 @@ def GetAberrationCorrection(radius_vector):     # r is earth radius vector [astr
 
 def GetAltitude(latitude_deg, longitude_deg, utc_datetime, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
     '''See also the faster, but less accurate, GetAltitudeFast()'''
-    # location-dependent calculations   
+    # location-dependent calculations
     projected_radial_distance = GetProjectedRadialDistance(elevation, latitude_deg)
     projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
 
-    # time-dependent calculations   
+    # time-dependent calculations
     jd = julian.GetJulianDay(utc_datetime)
     jde = julian.GetJulianEphemerisDay(jd, 65)
     jce = julian.GetJulianEphemerisCentury(jde)
@@ -67,7 +67,7 @@ def GetAltitude(latitude_deg, longitude_deg, utc_datetime, elevation = 0, temper
     nutation = GetNutation(jde)
     apparent_sidereal_time = GetApparentSiderealTime(jd, jme, nutation)
     true_ecliptic_obliquity = GetTrueEclipticObliquity(jme, nutation)
-    
+
     # calculations dependent on location and time
     apparent_sun_longitude = GetApparentSunLongitude(geocentric_longitude, nutation, aberration_correction)
     geocentric_sun_right_ascension = GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
@@ -101,11 +101,11 @@ def GetApparentSunLongitude(geocentric_longitude, nutation, ab_correction):
 
 def GetAzimuth(latitude_deg, longitude_deg, utc_datetime, elevation = 0):
 
-    # location-dependent calculations   
+    # location-dependent calculations
     projected_radial_distance = GetProjectedRadialDistance(elevation, latitude_deg)
     projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
 
-    # time-dependent calculations   
+    # time-dependent calculations
     jd = julian.GetJulianDay(utc_datetime)
     jde = julian.GetJulianEphemerisDay(jd, 65)
     jce = julian.GetJulianEphemerisCentury(jde)
@@ -118,7 +118,7 @@ def GetAzimuth(latitude_deg, longitude_deg, utc_datetime, elevation = 0):
     nutation = GetNutation(jde)
     apparent_sidereal_time = GetApparentSiderealTime(jd, jme, nutation)
     true_ecliptic_obliquity = GetTrueEclipticObliquity(jme, nutation)
-    
+
     # calculations dependent on location and time
     apparent_sun_longitude = GetApparentSunLongitude(geocentric_longitude, nutation, aberration_correction)
     geocentric_sun_right_ascension = GetGeocentricSunRightAscension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)

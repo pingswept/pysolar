@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-"""Support functions for horizon calculation 
+"""Support functions for horizon calculation
 
 """
 import datetime
@@ -43,22 +43,22 @@ def CheckAgainstHorizon(power):
 
 def SimulateSpan(latitude_deg, longitude_deg, horizon, start_utc_datetime, end_utc_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
     '''Simulate the motion of the sun over a time span and location of your choosing.
-    
+
     The start and end points are set by datetime objects, which can be created with
     the standard Python datetime module like this:
     import datetime
     start = datetime.datetime(2008, 12, 23, 23, 14, 0)
     '''
     time_list = BuildTimeList(start_utc_datetime, end_utc_datetime, step_minutes)
-    
+
     angles_list = [(
         time,
         solar.GetAltitude(latitude_deg, longitude_deg, time, elevation, temperature_celsius, pressure_millibars),
         solar.GetAzimuth(latitude_deg, longitude_deg, time, elevation)
-        ) for time in time_list]    
+        ) for time in time_list]
     power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
     return list(filter(CheckAgainstHorizon, power_list))
-        
+
 #       xs = shade.GetXShade(width, 120, azimuth_deg)
 #       ys = shade.GetYShade(height, 120, altitude_deg)
 #       shaded_area = xs * ys
