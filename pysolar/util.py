@@ -31,7 +31,7 @@ from datetime import \
     datetime, \
     timedelta
 import math
-#from . import solar # not valid here, fixed up further up
+#from . import solar, constants # not valid here, fixed up further up
 
 # Some default constants
 
@@ -82,21 +82,14 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     >>> timezone_local = 'Europe/Berlin'
     >>> utct = datetime.utcnow()
     >>> sr, ss = sb.get_sunrise_sunset(lat, lon, utct, gmt_offset)
-    >>> print 'sunrise: ', sr
-    >>> print 'sunset:', ss
+    >>> print('sunrise: ', sr)
+    >>> print('sunset:', ss)
 
     """
 
-    # Day of the year
-    day = utc_datetime.timetuple().tm_yday
-
-    # Solar hour angle
-    SHA = timezone * 15.0 - longitude_deg
-
-    # Time adjustment
-    TT = math.radians(279.134 + 0.985647 * day)
-
-    # Time adjustment in hours
+    day = utc_datetime.timetuple().tm_yday # Day of the year
+    SHA = timezone * 15.0 - longitude_deg # Solar hour angle
+    TT = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
     time_adst = \
         (
                 (
@@ -118,11 +111,8 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
                 )
             /
                 3600
-        )
-
-    # Time of noon
-    TON = 12 + SHA / 15.0 - time_adst
-
+        ) # Time adjustment in hours
+    TON = 12 + SHA / 15.0 - time_adst # Time of noon
     sunn = \
         (
             (
@@ -137,28 +127,20 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone):
         *
             (12 / math.pi)
         )
-
-    # Sunrise_time in hours
-    sunrise_time = TON - sunn + time_adst
-
-    # Sunset_time in hours
-    sunset_time = TON + sunn - time_adst
-
-    sunrise_time_dt = date_with_decimal_hour(utc_datetime, sunrise_time)
-    sunset_time_dt = date_with_decimal_hour(utc_datetime, sunset_time)
-
-    return sunrise_time_dt, sunset_time_dt
+    same_day = datetime(year = utc_datetime.year, month = utc_datetime.month, day = utc_datetime.day, tzinfo = utc_datetime.tzinfo)
+    sunrise_time = same_day + timedelta(hours = TON - sunn + time_adst)
+    sunset_time = same_day + timedelta(hours = TON + sunn - time_adst)
+    return sunrise_time, sunset_time
 
 def get_sunrise_time(latitude_deg, longitude_deg, utc_datetime, timezone):
-    "Wrapper for get_sunrise_sunset that returns just the sunrise time"
-    sr, ss = get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)
-
-    return sr
+    "Wrapper for get_sunrise_sunset that returns just the sunrise time."
+    return \
+        get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)[0]
 
 def get_sunset_time(latitude_deg, longitude_deg, utc_datetime, timezone):
-    "Wrapper for get_sunrise_sunset that returns just the sunset time"
-    sr, ss = get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)
-    return ss
+    "Wrapper for get_sunrise_sunset that returns just the sunset time."
+    return \
+        get_sunrise_sunset(latitude_deg, longitude_deg, utc_datetime, timezone)[1]
 
 def mean_earth_sun_distance(utc_datetime):
     """Mean Earth-Sun distance is the arithmetical mean of the maximum and minimum distances
@@ -658,27 +640,3 @@ def clear_index(ghi_data, utc_datetime, latitude_deg, longitude_deg):
     KT = (ghi_data/EXTR1)
 
     return KT
-
-def date_with_decimal_hour(date_utc, hour_decimal):
-    """This converts dates with decimal hour to datetime_hour.
-    An improved version :mod:`conversions_time`
-
-    Parameters
-    ----------
-    datetime : datetime.datetime
-        A datetime object is a single object containing all the information from a
-        date object and a time object.
-    hour_decimal : datetime.datetime
-        An hour is a unit of time 60 minutes, or 3,600 seconds in length.
-
-    Returns
-    -------.
-    datetime_hour : datetime.datetime
-        datetime_hour
-
-    """
-    # Backwards compatibility: round down to nearest round minute
-    offset_seconds = int(hour_decimal * 60) * 60
-    datetime_utc = datetime(date_utc.year, date_utc.month, date_utc.day)
-
-    return datetime_utc + timedelta(seconds=offset_seconds)
