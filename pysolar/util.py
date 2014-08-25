@@ -27,8 +27,9 @@
 :Additional author: Brandon Stafford
 
 """
-from datetime import datetime as dt
-from datetime import timedelta
+from datetime import \
+    datetime, \
+    timedelta
 import math
 #from . import solar # not valid here, fixed up further up
 
@@ -39,6 +40,8 @@ TL_default = 1.0             # Default Linke turbidity factor is 1.0
 SC_default = 1367.0          # Solar constant in W/m^2 is 1367.0. Note that this value could vary by +/-4 W/m^2
 TY_default = 365             # Total year number from 1 to 365 days
 elevation_default = 0.0      # Default elevation is 0.0
+default_pressure_millibars = 1013.25
+default_temperature_celsius = 25
 
 # Useful equations for analysis
 
@@ -77,7 +80,7 @@ def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     >>> lat = 50.111512
     >>> lon = 8.680506
     >>> timezone_local = 'Europe/Berlin'
-    >>> utct = dt.datetime.utcnow()
+    >>> utct = datetime.utcnow()
     >>> sr, ss = sb.GetSunriseSunset(lat, lon, utct, gmt_offset)
     >>> print 'sunrise: ', sr
     >>> print 'sunset:', ss
@@ -220,8 +223,8 @@ def declination_degree(utc_datetime, TY = TY_default ):
     return 23.45 * math.sin((2 * math.pi / (TY)) * ((solar.GetDayOfYear(utc_datetime)) - 81))
 
 
-def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temperature_celsius = 25,
-                                  pressure_millibars = 1013.25,  elevation = elevation_default):
+def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temperature_celsius = default_temperature_celsius,
+                                  pressure_millibars = default_pressure_millibars,  elevation = elevation_default):
     """Equation calculates Solar elevation function for clear sky type.
 
     Parameters
@@ -257,8 +260,8 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temp
     return (0.038175 + (1.5458 * (math.sin(altitude))) + ((-0.59980) * (0.5 * (1 - math.cos(2 * (altitude))))))
 
 def solarelevation_function_overcast(latitude_deg, longitude_deg, utc_datetime,
-                                     elevation = elevation_default, temperature_celsius = 25,
-                                     pressure_millibars = 1013.25):
+                                     elevation = elevation_default, temperature_celsius = default_temperature_celsius,
+                                     pressure_millibars = default_pressure_millibars):
     """ The function calculates solar elevation function for overcast sky type.
     This associated hourly overcast radiation model is based on the estimation of the
     overcast sky transmittance with the sun directly overhead combined with the application
@@ -324,7 +327,7 @@ def diffuse_transmittance(TL = TL_default):
 
 
 def diffuse_underclear(latitude_deg, longitude_deg, utc_datetime, elevation = elevation_default,
-                       temperature_celsius = 25, pressure_millibars = 1013.25, TL=TL_default):
+                       temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TL=TL_default):
     """Equation calculates diffuse radiation under clear sky conditions.
 
     Parameters
@@ -363,7 +366,7 @@ def diffuse_underclear(latitude_deg, longitude_deg, utc_datetime, elevation = el
     return mean_earth_sun_distance(utc_datetime) * DT * altitude
 
 def diffuse_underovercast(latitude_deg, longitude_deg, utc_datetime, elevation = elevation_default,
-                          temperature_celsius = 25, pressure_millibars = 1013.25,TL=TL_default):
+                          temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars,TL=TL_default):
     """Function calculates the diffuse radiation under overcast conditions.
 
     Parameters
@@ -404,7 +407,7 @@ def diffuse_underovercast(latitude_deg, longitude_deg, utc_datetime, elevation =
     return DIFOC
 
 def direct_underclear(latitude_deg, longitude_deg, utc_datetime,
-                      temperature_celsius = 25, pressure_millibars = 1013.25, TY = TY_default,
+                      temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TY = TY_default,
                       AM = AM_default, TL = TL_default,elevation = elevation_default):
     """Equation calculates direct radiation under clear sky conditions.
 
@@ -457,7 +460,7 @@ def direct_underclear(latitude_deg, longitude_deg, utc_datetime,
     return DIRC
 
 def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, utc_datetime,
-                            temperature_celsius = 25, pressure_millibars = 1013.25, TY = TY_default,
+                            temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TY = TY_default,
                             AM = AM_default, TL = TL_default, elevation = elevation_default):
 
     """Equation calculates global irradiance under clear sky conditions.
@@ -509,11 +512,11 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, utc_dateti
 
     """
     DIRC =  direct_underclear(latitude_deg, longitude_deg, utc_datetime,
-                              TY, AM, TL, elevation, temperature_celsius = 25,
-                              pressure_millibars = 1013.25)
+                              TY, AM, TL, elevation, temperature_celsius = default_temperature_celsius,
+                              pressure_millibars = default_pressure_millibars)
 
     DIFFC = diffuse_underclear(latitude_deg, longitude_deg, utc_datetime,
-                               elevation, temperature_celsius = 25, pressure_millibars= 1013.25)
+                               elevation, temperature_celsius = default_temperature_celsius, pressure_millibars= default_pressure_millibars)
 
     ghic = (DIRC + DIFFC)
 
@@ -521,8 +524,8 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, utc_dateti
 
 
 def global_irradiance_overcast(latitude_deg, longitude_deg, utc_datetime,
-                               elevation = elevation_default, temperature_celsius = 25,
-                               pressure_millibars = 1013.25):
+                               elevation = elevation_default, temperature_celsius = default_temperature_celsius,
+                               pressure_millibars = default_pressure_millibars):
     """Calculated Global is used to compare to the Diffuse under overcast conditions.
     Under overcast skies, global and diffuse are expected to be equal due to the absence of the beam
     component.
@@ -645,6 +648,6 @@ def date_with_decimal_hour(date_utc, hour_decimal):
     """
     # Backwards compatibility: round down to nearest round minute
     offset_seconds = int(hour_decimal * 60) * 60
-    datetime_utc = dt(date_utc.year, date_utc.month, date_utc.day)
+    datetime_utc = datetime(date_utc.year, date_utc.month, date_utc.day)
 
     return datetime_utc + timedelta(seconds=offset_seconds)
