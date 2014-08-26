@@ -21,7 +21,9 @@
 import datetime
 from . import radiation
 from . import solar
-from .constants import seconds_per_day
+from .constants import \
+    seconds_per_day, \
+    standard_pressure
 import math
 
 def build_time_list(start_datetime, end_datetime, step_minutes):
@@ -41,7 +43,7 @@ def check_against_horizon(power):
 
     return (time, alt, az, radiation, shade)
 
-def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
+def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = standard_pressure / 100):
     '''Simulate the motion of the sun over a time span and location of your choosing.
 
     The start and end points are set by datetime objects, which can be created with

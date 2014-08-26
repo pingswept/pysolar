@@ -40,7 +40,7 @@ TL_default = 1.0             # Default Linke turbidity factor is 1.0
 SC_default = 1367.0          # Solar constant in W/m^2 is 1367.0. Note that this value could vary by +/-4 W/m^2
 TY_default = 365             # Total year number from 1 to 365 days
 elevation_default = 0.0      # Default elevation is 0.0
-default_pressure_millibars = 1013.25
+default_pressure_millibars = constants.standard_pressure / 100
 default_temperature_celsius = 25
 
 # Useful equations for analysis

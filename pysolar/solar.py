@@ -47,7 +47,7 @@ def EquationOfTime(day):
 def GetAberrationCorrection(radius_vector):     # r is earth radius vector [astronomical units]
     return -20.4898/(3600.0 * radius_vector)
 
-def GetAltitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_celsius = 25, pressure_millibars = 1013.25):
+def GetAltitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_celsius = 25, pressure_millibars = constants.standard_pressure / 100):
     '''See also the faster, but less accurate, GetAltitudeFast()'''
     # location-dependent calculations
     projected_radial_distance = GetProjectedRadialDistance(elevation, latitude_deg)

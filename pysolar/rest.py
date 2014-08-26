@@ -16,11 +16,13 @@
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
 import math
+from .constants import standard_pressure
 
 albedo = {} # single-scattering albedo used to calculate aerosol scattering transmittance
 
 albedo["high-frequency"] = 0.92
 albedo["low-frequency"] = 0.84
+standard_pressure_millibars = standard_pressure / 100
 
 rhogi = 0.150 # mean ground albedo from [Gueymard, 2008], Table 1
 
@@ -91,16 +93,16 @@ def GetDiffuseIrradianceByBand(band, air_mass=1.66, turbidity_alpha=1.3, turbidi
     Edd = rhogi * rhosi * (Eb + Edp)/(1 - rhogi * rhosi)
     return Edp + Edd
 
-def GetDirectNormalIrradiance(altitude_deg, pressure_millibars=1013.25, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
+def GetDirectNormalIrradiance(altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
     high = GetDirectNormalIrradianceByBand("high-frequency", altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
     low = GetDirectNormalIrradianceByBand("low-frequency", altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
     return high + low
 
-def GetDirectNormalIrradianceByBand(band, altitude_deg, pressure_millibars=1013.25, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
+def GetDirectNormalIrradianceByBand(band, altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
     ma = GetOpticalMassAerosol(altitude_deg)
     mo = GetOpticalMassOzone(altitude_deg)
     mR = GetOpticalMassRayleigh(altitude_deg, pressure_millibars)
-    mRprime = mR * pressure_millibars / 1013.25
+    mRprime = mR * pressure_millibars / standard_pressure_millibars
     mw = GetOpticalMassWater(altitude_deg)
 
     effective_wavelength = GetEffectiveAerosolWavelength(band, ma, turbidity_alpha, turbidity_beta)
@@ -152,7 +154,7 @@ def GetNitrogenTransmittance(band, mw, nitrogen_atm_cm):
 def GetOpticalMassRayleigh(altitude_deg, pressure_millibars): # from Appendix B of [Gueymard, 2003]
     Z = 90 - altitude_deg
     Z_rad = math.radians(Z)
-    return (pressure_millibars / 1013.25)/((math.cos(Z_rad) + 0.48353 * Z_rad ** 0.095846)/(96.741 - Z_rad) ** 1.754)
+    return (pressure_millibars / standard_pressure_millibars)/((math.cos(Z_rad) + 0.48353 * Z_rad ** 0.095846)/(96.741 - Z_rad) ** 1.754)
 
 def GetOpticalMassOzone(altitude_deg): # from Appendix B of [Gueymard, 2003]
     Z = 90 - altitude_deg
