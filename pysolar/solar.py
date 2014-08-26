@@ -241,7 +241,7 @@ def GetNutation(jde):
     jce = julian.GetJulianEphemerisCentury(jde)
     nutation_long = []
     nutation_oblique = []
-    x = PrecalculateAberrations(constants.buildPolyDict(), jce)
+    x = PrecalculateAberrations(constants.build_poly_dict(), jce)
 
     for i in range(len(abcd)):
         sigmaxy = GetNutationAberrationXY(jce, i, x)
