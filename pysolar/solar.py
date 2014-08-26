@@ -55,7 +55,7 @@ def GetAltitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_ce
 
     # time-dependent calculations
     jd = julian.GetJulianDay(when)
-    jde = julian.GetJulianEphemerisDay(jd, 65)
+    jde = julian.GetJulianEphemerisDay(jd)
     jce = julian.GetJulianEphemerisCentury(jde)
     jme = julian.GetJulianEphemerisMillenium(jce)
     geocentric_latitude = GetGeocentricLatitude(jme)
@@ -106,7 +106,7 @@ def GetAzimuth(latitude_deg, longitude_deg, when, elevation = 0):
 
     # time-dependent calculations
     jd = julian.GetJulianDay(when)
-    jde = julian.GetJulianEphemerisDay(jd, 65)
+    jde = julian.GetJulianEphemerisDay(jd)
     jce = julian.GetJulianEphemerisCentury(jde)
     jme = julian.GetJulianEphemerisMillenium(jce)
     geocentric_latitude = GetGeocentricLatitude(jme)

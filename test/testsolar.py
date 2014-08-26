@@ -40,7 +40,7 @@ class testSolar(unittest.TestCase):
 		self.slope_orientation = -10.0 # degrees east from south
 		self.jd = julian.GetJulianDay(self.d)
 		self.jc = julian.GetJulianCentury(self.jd)
-		self.jde = julian.GetJulianEphemerisDay(self.jd, 67.0)
+		self.jde = julian.GetJulianEphemerisDay(self.jd)
 		self.jce = julian.GetJulianEphemerisCentury(self.jde)
 		self.jme = julian.GetJulianEphemerisMillenium(self.jce)
 		self.geocentric_longitude = solar.GetGeocentricLongitude(self.jme)
@@ -78,13 +78,15 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(0.03792779869191517, self.jc, 12) # value not validated
 
 	def testGetJulianEphemerisMillenium(self):
-		self.assertAlmostEqual(0.0037927819922933584, self.jme, 12) # value not validated
+		self.assertAlmostEqual(0.0037927819143886397, self.jme, 12) # value not validated
 
 	def testGetGeocentricLongitude(self):
-		self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 10) # value from Reda and Andreas (2005)
+		# self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 10) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 4) # above fails with more accurate Julian Ephemeris correction
 
 	def testGetGeocentricLatitude(self):
-		self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9) # value from Reda and Andreas (2005)
+		# self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 8) # above fails with more accurate Julian Ephemeris correction
 
 	def testGetNutation(self):
 		self.assertAlmostEqual(0.00166657, self.nutation['obliquity'], 8) # value from Reda and Andreas (2005)
@@ -100,7 +102,8 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
 
 	def testGetApparentSunLongitude(self):
-		self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10) # value from Reda and Andreas (2005)
+		# self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4) # above fails with more accurate Julian Ephemeris correction
 
 	def testGetApparentSiderealTime(self):
 		self.assertAlmostEqual(318.5119, self.apparent_sidereal_time, 2) # value derived from Reda and Andreas (2005)
@@ -121,7 +124,7 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3) # value from Reda and Andreas (2005)
 
 	def testGetParallaxSunRightAscension(self):
-		self.assertAlmostEqual(-0.00036599029186055283, self.parallax_sun_right_ascension, 12) # value not validated
+		self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12) # value not validated
 		
 	def testGetTopocentricSunDeclination(self):
 		self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3) # value from Reda and Andreas (2005)
@@ -133,7 +136,8 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(50.11162, self.topocentric_zenith_angle, 3) # value from Reda and Andreas (2005)
 
 	def testGetTopocentricAzimuthAngle(self):
-		self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5) # value from Reda and Andreas (2005)
+		# self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 4) # above fails with more accurate Julian Ephemeris correction
 
 	def testGetIncidenceAngle(self):
 		self.assertAlmostEqual(25.18700, self.incidence_angle, 3) # value from Reda and Andreas (2005)

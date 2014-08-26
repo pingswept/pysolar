@@ -19,10 +19,13 @@
 are used in calculating the position of the sun relative to the earth
 
 """
+import math
+import datetime
 from .constants import \
     julian_day_offset, \
     gregorian_day_offset, \
-    seconds_per_day
+    seconds_per_day, \
+    compute_delta_t
 
 def GetJulianCentury(julian_day):
     return (julian_day - 2451545.0) / 36525.0
@@ -35,18 +38,23 @@ def GetJulianDay(when):
     return \
         when.timestamp() / seconds_per_day + gregorian_day_offset + julian_day_offset
 
-def GetJulianEphemerisCentury(julian_ephemeris_day):
-    return (julian_ephemeris_day - 2451545.0) / 36525.0
-
-def GetJulianEphemerisDay(julian_day, delta_seconds = 66.0):
+def GetJulianEphemerisDay(julian_day):
     """delta_seconds is the value referred to by astronomers as Delta-T, defined as the difference between
-    Dynamical Time (TD) and Universal Time (UT). In 2007, it's around 65 seconds.
-    A list of values for Delta-T can be found here: ftp://maia.usno.navy.mil/ser7/deltat.data
+    Dynamical Time (TD) and Universal Time (UT).
 
     More details: http://en.wikipedia.org/wiki/DeltaT
 
     """
-    return julian_day + (delta_seconds / seconds_per_day)
+    return \
+        julian_day + compute_delta_t(from_julian_day(julian_day)) / seconds_per_day
+
+def from_julian_day(jd, tz = datetime.timezone.utc) :
+    return \
+        datetime.datetime.fromtimestamp((jd - julian_day_offset - gregorian_day_offset) * seconds_per_day, tz = tz)
+#end from_julian_day
+
+def GetJulianEphemerisCentury(julian_ephemeris_day):
+    return (julian_ephemeris_day - 2451545.0) / 36525.0
 
 def GetJulianEphemerisMillenium(julian_ephemeris_century):
     return (julian_ephemeris_century / 10.0)
