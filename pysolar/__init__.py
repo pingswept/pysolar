@@ -2,4 +2,5 @@ from . import \
     constants, \
     julian, \
     radiation, \
-    util
+    util, \
+    solar
