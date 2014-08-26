@@ -65,8 +65,8 @@ class testSolar(unittest.TestCase):
 		self.topocentric_zenith_angle = solar.GetTopocentricZenithAngle(self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle, self.pressure, self.temperature)
 		self.topocentric_azimuth_angle = solar.GetTopocentricAzimuthAngle(self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
 		self.incidence_angle = solar.GetIncidenceAngle(self.topocentric_zenith_angle, self.slope, self.slope_orientation, self.topocentric_azimuth_angle)
-		self.pressure_with_elevation = elevation.GetPressureWithElevation(1567.7)
-		self.temperature_with_elevation = elevation.GetTemperatureWithElevation(1567.7)
+		self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
+		self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
 
 	def testGetJulianDay(self):
 		self.assertAlmostEqual(2452930.312847, self.jd, 6) # value from Reda and Andreas (2005)
