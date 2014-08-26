@@ -31,7 +31,7 @@ from datetime import \
     datetime, \
     timedelta
 import math
-#from . import solar, constants # not valid here, fixed up further up
+from . import solar, constants
 
 # Some default constants
 

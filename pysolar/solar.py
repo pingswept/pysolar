@@ -25,7 +25,6 @@ import datetime
 from . import constants
 from . import julian
 from . import radiation
-from . import util
 
 def SolarTest():
     latitude_deg = 42.364908
