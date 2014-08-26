@@ -166,7 +166,7 @@ def mean_earth_sun_distance(when):
             radiation models, p.113
     """
 
-    return (1 - (0.0335 * math.sin(360 * ((when.utctimetuple().tm_yday) - 94)) / (365)))
+    return 1 - 0.0335 * math.sin(2 * math.pi * ((when.utctimetuple().tm_yday) - 94)) / 365
 
 def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
     """Equation calculates Extratrestrial radiation. Solar radiation incident outside the earth's
