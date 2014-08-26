@@ -19,35 +19,21 @@
 are used in calculating the position of the sun relative to the earth
 
 """
-import math
-import datetime
-from .constants import seconds_per_day
+from .constants import \
+    julian_day_offset, \
+    gregorian_day_offset, \
+    seconds_per_day
 
 def GetJulianCentury(julian_day):
     return (julian_day - 2451545.0) / 36525.0
 
 def GetJulianDay(when):
-    """This function is based on NREL/TP-560-34302 by Andreas and Reda
-
-    This function does not accept years before 0 because of the bounds check
-    on Python's datetime.year field.
-
-    """
-    if when.tzinfo != None and when.tzinfo != datetime.timezone.utc :
-        when = when.astimezone(datetime.timezone.utc)
-    #end if
-    year = when.year
-    month = when.month
-    if(month <= 2.0):        # shift to accomodate leap years?
-        year = year - 1.0
-        month = month + 12.0
-    day = when.day + (((when.hour * 3600.0) + (when.minute * 60.0) + when.second + (when.microsecond / 1000000.0)) / seconds_per_day)
-    gregorian_offset = 2.0 - (year // 100.0) + ((year // 100.0) // 4.0)
-    julian_day = math.floor(365.25 * (year + 4716.0)) + math.floor(30.6001 * (month + 1.0)) + day - 1524.5
-    if (julian_day <= 2299160.0):
-        return julian_day # before October 5, 1852
-    else:
-        return julian_day + gregorian_offset # after October 5, 1852
+    "returns the Julian day number (including fraction of a day) corresponding to" \
+    " the specified date/time. This version assumes the proleptic Gregorian calender;" \
+    " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
+    " happened over such wildly varying times in different regions."
+    return \
+        when.timestamp() / seconds_per_day + gregorian_day_offset + julian_day_offset
 
 def GetJulianEphemerisCentury(julian_ephemeris_day):
     return (julian_ephemeris_day - 2451545.0) / 36525.0

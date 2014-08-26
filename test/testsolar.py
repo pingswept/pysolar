@@ -30,7 +30,7 @@ import unittest
 class testSolar(unittest.TestCase):
 
 	def setUp(self):
-		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30)
+		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo = datetime.timezone.utc)
 		self.longitude = -105.1786
 		self.latitude = 39.742476
 		self.pressure = 820.0 # millibars

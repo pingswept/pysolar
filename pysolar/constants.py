@@ -73,6 +73,8 @@ earth_gravity = 9.80665 # N/m^2
 earth_atmosphere_molar_mass = 0.0289644 # kg/mol
 
 seconds_per_day = 86400
+julian_day_offset = 1721425 - 0.5 # add to datetime.datetime.toordinal() to get Julian day number
+gregorian_day_offset = 719163 # number of days to add to datetime.datetime.timestamp() / seconds_per_day to agree with datetime.datetime.toordinal()
 
 aberration_sin_terms = [[0,0,0,0,1],
     [-2,0,0,2,2],
