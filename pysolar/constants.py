@@ -38,9 +38,6 @@ See also ftp://ftp.imcce.fr/pub/ephem/planets/vsop87/VSOP87D.ear
 
 """
 
-def build_poly_fit(params):
-    (a, b, c, d) = params
-    return (lambda x: a + b * x + c * x ** 2 + (x ** 3) / d)
 
 def build_poly_dict():
     """This function builds a dictionary of polynomial functions from a list of
@@ -48,8 +45,14 @@ def build_poly_dict():
     calculating nutation.
 
     """
-    return dict([(name, build_poly_fit(coeffs)) for (name, coeffs) in coeff_list])
 
+    def build_poly_fit(a, b, c, d):
+        return lambda x: a + b * x + c * x ** 2 + (x ** 3) / d
+    #end build_poly_fit
+
+#begin build_poly_dict
+    return dict([(name, build_poly_fit(*coeffs)) for (name, coeffs) in coeff_list])
+#end build_poly_dict
 
 coeff_list = [
         ('ArgumentOfLatitudeOfMoon', (93.27191, 483202.017538, -0.0036825, 327270.0)),
