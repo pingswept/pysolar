@@ -54,10 +54,10 @@ def GetAltitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_ce
     projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = julian.GetJulianDay(when)
-    jde = julian.GetJulianEphemerisDay(jd)
-    jce = julian.GetJulianEphemerisCentury(jde)
-    jme = julian.GetJulianEphemerisMillenium(jce)
+    jd = julian.get_julian_day(when)
+    jde = julian.get_julian_ephemeris_day(jd)
+    jce = julian.get_julian_ephemeris_century(jde)
+    jme = julian.get_julian_ephemeris_millennium(jce)
     geocentric_latitude = GetGeocentricLatitude(jme)
     geocentric_longitude = GetGeocentricLongitude(jme)
     radius_vector = GetRadiusVector(jme)
@@ -105,10 +105,10 @@ def GetAzimuth(latitude_deg, longitude_deg, when, elevation = 0):
     projected_axial_distance = GetProjectedAxialDistance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = julian.GetJulianDay(when)
-    jde = julian.GetJulianEphemerisDay(jd)
-    jce = julian.GetJulianEphemerisCentury(jde)
-    jme = julian.GetJulianEphemerisMillenium(jce)
+    jd = julian.get_julian_day(when)
+    jde = julian.get_julian_ephemeris_day(jd)
+    jce = julian.get_julian_ephemeris_century(jde)
+    jme = julian.get_julian_ephemeris_millennium(jce)
     geocentric_latitude = GetGeocentricLatitude(jme)
     geocentric_longitude = GetGeocentricLongitude(jme)
     radius_vector = GetRadiusVector(jme)
@@ -224,7 +224,7 @@ def GetLocalHourAngle(apparent_sidereal_time, longitude, geocentric_sun_right_as
 
 def GetMeanSiderealTime(julian_day):
     # This function doesn't agree with Andreas and Reda as well as it should. Works to ~5 sig figs in current unit test
-    jc = julian.GetJulianCentury(julian_day)
+    jc = julian.get_julian_century(julian_day)
     sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
     return sidereal_time % 360
 
@@ -237,7 +237,7 @@ def GetNutationAberrationXY(jce, i, x):
 
 def GetNutation(jde):
     abcd = constants.nutation_coefficients
-    jce = julian.GetJulianEphemerisCentury(jde)
+    jce = julian.get_julian_ephemeris_century(jde)
     nutation_long = []
     nutation_oblique = []
     x = PrecalculateAberrations(constants.build_poly_dict(), jce)

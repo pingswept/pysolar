@@ -27,10 +27,10 @@ from .constants import \
     seconds_per_day, \
     compute_delta_t
 
-def GetJulianCentury(julian_day):
+def get_julian_century(julian_day):
     return (julian_day - 2451545.0) / 36525.0
 
-def GetJulianDay(when):
+def get_julian_day(when):
     "returns the Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
     " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
@@ -38,7 +38,7 @@ def GetJulianDay(when):
     return \
         when.timestamp() / seconds_per_day + gregorian_day_offset + julian_day_offset
 
-def GetJulianEphemerisDay(julian_day):
+def get_julian_ephemeris_day(julian_day):
     """delta_seconds is the value referred to by astronomers as Delta-T, defined as the difference between
     Dynamical Time (TD) and Universal Time (UT).
 
@@ -49,12 +49,18 @@ def GetJulianEphemerisDay(julian_day):
         julian_day + compute_delta_t(from_julian_day(julian_day)) / seconds_per_day
 
 def from_julian_day(jd, tz = datetime.timezone.utc) :
+    "returns a datetime object corresponding to the specified Julian day number," \
+    " which can include fractions of a day."
     return \
-        datetime.datetime.fromtimestamp((jd - julian_day_offset - gregorian_day_offset) * seconds_per_day, tz = tz)
+        datetime.datetime.fromtimestamp \
+          (
+            timestamp = (jd - julian_day_offset - gregorian_day_offset) * seconds_per_day,
+            tz = tz
+          )
 #end from_julian_day
 
-def GetJulianEphemerisCentury(julian_ephemeris_day):
+def get_julian_ephemeris_century(julian_ephemeris_day):
     return (julian_ephemeris_day - 2451545.0) / 36525.0
 
-def GetJulianEphemerisMillenium(julian_ephemeris_century):
+def get_julian_ephemeris_millennium(julian_ephemeris_century):
     return (julian_ephemeris_century / 10.0)

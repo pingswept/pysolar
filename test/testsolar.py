@@ -38,11 +38,11 @@ class testSolar(unittest.TestCase):
 		self.temperature = 11.0 # degrees Celsius
 		self.slope = 30.0 # degrees
 		self.slope_orientation = -10.0 # degrees east from south
-		self.jd = julian.GetJulianDay(self.d)
-		self.jc = julian.GetJulianCentury(self.jd)
-		self.jde = julian.GetJulianEphemerisDay(self.jd)
-		self.jce = julian.GetJulianEphemerisCentury(self.jde)
-		self.jme = julian.GetJulianEphemerisMillenium(self.jce)
+		self.jd = julian.get_julian_day(self.d)
+		self.jc = julian.get_julian_century(self.jd)
+		self.jde = julian.get_julian_ephemeris_day(self.jd)
+		self.jce = julian.get_julian_ephemeris_century(self.jde)
+		self.jme = julian.get_julian_ephemeris_millennium(self.jce)
 		self.geocentric_longitude = solar.GetGeocentricLongitude(self.jme)
 		self.geocentric_latitude = solar.GetGeocentricLatitude(self.jme)
 		self.nutation = solar.GetNutation(self.jde)
@@ -68,16 +68,16 @@ class testSolar(unittest.TestCase):
 		self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
 		self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
 
-	def testGetJulianDay(self):
+	def test_get_julian_day(self):
 		self.assertAlmostEqual(2452930.312847, self.jd, 6) # value from Reda and Andreas (2005)
 
-	def testGetJulianEphemerisDay(self):
+	def test_get_julian_ephemeris_day(self):
 		self.assertAlmostEqual(2452930.3136, self.jde, 4) # value not validated
 
-	def testGetJulianCentury(self):
+	def test_get_julian_century(self):
 		self.assertAlmostEqual(0.03792779869191517, self.jc, 12) # value not validated
 
-	def testGetJulianEphemerisMillenium(self):
+	def test_get_julian_ephemeris_millennium(self):
 		self.assertAlmostEqual(0.0037927819143886397, self.jme, 12) # value not validated
 
 	def testGetGeocentricLongitude(self):
