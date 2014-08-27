@@ -236,22 +236,18 @@ def get_mean_sidereal_time(julian_day):
     sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
     return sidereal_time % 360
 
-def get_nutation_aberration_xy(i, x):
-    y = constants.aberration_sin_terms
-    sigmaxy = 0.0
-    for j in range(len(x)):
-        sigmaxy += x[j] * y[i][j]
-    return sigmaxy
-
 def get_nutation(jde):
     abcd = constants.nutation_coefficients
     jce = julian.get_julian_ephemeris_century(jde)
     nutation_long = []
     nutation_oblique = []
     x = precalculate_aberrations(constants.build_poly_dict(), jce)
-
+    y = constants.aberration_sin_terms
     for i in range(len(abcd)):
-        sigmaxy = get_nutation_aberration_xy(i, x)
+        sigmaxy = 0.0
+        for j in range(len(x)):
+            sigmaxy += x[j] * y[i][j]
+        #end for
         nutation_long.append((abcd[i][0] + (abcd[i][1] * jce)) * math.sin(math.radians(sigmaxy)))
         nutation_oblique.append((abcd[i][2] + (abcd[i][3] * jce)) * math.cos(math.radians(sigmaxy)))
 
@@ -259,6 +255,7 @@ def get_nutation(jde):
     nutation = {'longitude' : sum(nutation_long)/36000000.0, 'obliquity' : sum(nutation_oblique)/36000000.0}
 
     return nutation
+#end get_nutation
 
 def get_parallax_sun_right_ascension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination):
     prd = projected_radial_distance
