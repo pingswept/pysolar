@@ -35,7 +35,7 @@ def solar_test():
         timestamp = d.ctime()
         altitude_deg = get_altitude(latitude_deg, longitude_deg, d)
         azimuth_deg = get_azimuth(latitude_deg, longitude_deg, d)
-        power = radiation.GetRadiationDirect(d, altitude_deg)
+        power = radiation.get_radiation_direct(d, altitude_deg)
         if (altitude_deg > 0):
             print(timestamp, "UTC", altitude_deg, azimuth_deg, power)
         d = d + thirty_minutes
