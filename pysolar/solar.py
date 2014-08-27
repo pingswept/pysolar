@@ -141,8 +141,19 @@ def get_azimuth_fast(latitude_deg, longitude_deg, when):
     else:
         return (180 - math.degrees(azimuth_rad))
 
-def get_coeff(jme, constant_array):
-    return sum([constant_array[i-1][0] * math.cos(constant_array[i-1][1] + (constant_array[i-1][2] * jme)) for i in range(len(constant_array))])
+def get_coeff(jme, coeffs):
+    "computes a time-varying coefficient from the given constant coefficients" \
+    " array and the current Julian millennium."
+    return \
+        sum \
+          (
+            [
+                    coeffs[i][0]
+                *
+                    math.cos(coeffs[i][1] + coeffs[i][2] * jme)
+                for i in range(len(coeffs))
+            ]
+          )
 
 def get_declination(day):
     '''The declination of the sun is the angle between
