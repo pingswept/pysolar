@@ -357,11 +357,17 @@ def get_true_ecliptic_obliquity(jme, nutation):
     return (mean_obliquity / 3600.0) + nutation['obliquity']
 
 def precalculate_aberrations(p, jce):
-    x = []
-    # order of 5 x.append lines below is important
-    x.append(p['MeanElongationOfMoon'](jce))
-    x.append(p['MeanAnomalyOfSun'](jce))
-    x.append(p['MeanAnomalyOfMoon'](jce))
-    x.append(p['ArgumentOfLatitudeOfMoon'](jce))
-    x.append(p['LongitudeOfAscendingNode'](jce))
-    return x
+    return \
+        list \
+          (
+            p[k](jce)
+            for k in
+                ( # order is important
+                    'MeanElongationOfMoon',
+                    'MeanAnomalyOfSun',
+                    'MeanAnomalyOfMoon',
+                    'ArgumentOfLatitudeOfMoon',
+                    'LongitudeOfAscendingNode',
+                )
+          )
+#end precalculate_aberrations
