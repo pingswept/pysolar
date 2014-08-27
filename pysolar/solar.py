@@ -236,7 +236,7 @@ def get_mean_sidereal_time(julian_day):
     sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
     return sidereal_time % 360
 
-def get_nutation_aberration_xy(jce, i, x):
+def get_nutation_aberration_xy(i, x):
     y = constants.aberration_sin_terms
     sigmaxy = 0.0
     for j in range(len(x)):
@@ -251,7 +251,7 @@ def get_nutation(jde):
     x = precalculate_aberrations(constants.build_poly_dict(), jce)
 
     for i in range(len(abcd)):
-        sigmaxy = get_nutation_aberration_xy(jce, i, x)
+        sigmaxy = get_nutation_aberration_xy(i, x)
         nutation_long.append((abcd[i][0] + (abcd[i][1] * jce)) * math.sin(math.radians(sigmaxy)))
         nutation_oblique.append((abcd[i][2] + (abcd[i][3] * jce)) * math.cos(math.radians(sigmaxy)))
 
