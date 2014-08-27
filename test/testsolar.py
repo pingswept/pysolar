@@ -150,6 +150,6 @@ class testSolar(unittest.TestCase):
 
 
 if __name__ == "__main__":
-	suite = unittest.TestLoader().loadTestsFromTestCase(testSolar)
+	suite = unittest.defaultTestLoader.loadTestsFromTestCase(testSolar)
 	unittest.TextTestRunner(verbosity=2).run(suite)
 #end if
