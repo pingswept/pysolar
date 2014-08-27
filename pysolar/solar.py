@@ -147,13 +147,12 @@ def get_coeff(jme, coeffs):
     return \
         sum \
           (
-            [
-                    coeffs[i][0]
-                *
-                    math.cos(coeffs[i][1] + coeffs[i][2] * jme)
-                for i in range(len(coeffs))
-            ]
+                coeffs[i][0]
+            *
+                math.cos(coeffs[i][1] + coeffs[i][2] * jme)
+            for i in range(len(coeffs))
           )
+#end get_coeff
 
 def get_declination(day):
     '''The declination of the sun is the angle between
