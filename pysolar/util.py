@@ -206,8 +206,8 @@ def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
     bc = math.sin(2 * math.pi * (day - 1.0)/(365.0))
     cd = math.cos(2 * (2 * math.pi * (day - 1.0)/(365.0)))
     df = math.sin(2 * (2 * math.pi * (day - 1.0)/(365.0)))
-    decl = solar.GetDeclination(day)
-    ha = solar.GetHourAngle(when, longitude_deg)
+    decl = solar.get_declination(day)
+    ha = solar.get_hour_angle(when, longitude_deg)
     ZA = math.sin(latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(ha)
 
     return SC * ZA * (1.00010 + 0.034221 * ab + 0.001280 * bc + 0.000719 * cd + 0.000077 * df)
@@ -271,7 +271,7 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature_
             and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    altitude = solar.GetAltitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
     return (0.038175 + (1.5458 * (math.sin(altitude))) + ((-0.59980) * (0.5 * (1 - math.cos(2 * (altitude))))))
 
 def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
@@ -314,7 +314,7 @@ def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
         Design of Buildings"
 
     """
-    altitude = solar.GetAltitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
     return ((-0.0067133) + (0.78600 * (math.sin(altitude)))) + (0.22401 * (0.5 * (1 - math.cos(2 * altitude))))
 
 
@@ -376,7 +376,7 @@ def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_
 
     """
     DT = ((-21.657) + (41.752 * (TL)) + (0.51905 * (TL) * (TL)))
-    altitude = solar.GetAltitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
 
     return mean_earth_sun_distance(when) * DT * altitude
 
@@ -417,7 +417,7 @@ def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevati
     DT = ((-21.657) + (41.752 * (TL)) + (0.51905 * (TL) * (TL)))
 
     DIFOC = ((mean_earth_sun_distance(when)
-              )*(DT)*(solar.GetAltitude(latitude_deg,longitude_deg, when, elevation,
+              )*(DT)*(solar.get_altitude(latitude_deg,longitude_deg, when, elevation,
                                         temperature_celsius, pressure_millibars)))
     return DIFOC
 
@@ -468,7 +468,7 @@ def direct_underclear(latitude_deg, longitude_deg, when,
     DEC = declination_degree(when,TY)
 
     DIRC = (1367 * KD * math.exp(-0.8662 * (AM) * (TL) * (DEC)
-                             ) * math.sin(solar.GetAltitude(latitude_deg,longitude_deg,
+                             ) * math.sin(solar.get_altitude(latitude_deg,longitude_deg,
                                                           when,elevation ,
                                                           temperature_celsius , pressure_millibars )))
 
@@ -577,7 +577,7 @@ def global_irradiance_overcast(latitude_deg, longitude_deg, when,
             (2005), pp 1533 - 1549.
 
     """
-    ghioc = (572 * (solar.GetAltitude(latitude_deg, longitude_deg, when,
+    ghioc = (572 * (solar.get_altitude(latitude_deg, longitude_deg, when,
                                     elevation , temperature_celsius , pressure_millibars )))
 
     return ghioc

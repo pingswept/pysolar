@@ -55,8 +55,8 @@ def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_date
 
     angles_list = [(
         time,
-        solar.GetAltitude(latitude_deg, longitude_deg, time, elevation, temperature_celsius, pressure_millibars),
-        solar.GetAzimuth(latitude_deg, longitude_deg, time, elevation)
+        solar.get_altitude(latitude_deg, longitude_deg, time, elevation, temperature_celsius, pressure_millibars),
+        solar.get_azimuth(latitude_deg, longitude_deg, time, elevation)
         ) for time in time_list]
     power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
     return list(filter(check_against_horizon, power_list))

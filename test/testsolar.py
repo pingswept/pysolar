@@ -43,28 +43,28 @@ class testSolar(unittest.TestCase):
 		self.jde = julian.get_julian_ephemeris_day(self.jd)
 		self.jce = julian.get_julian_ephemeris_century(self.jde)
 		self.jme = julian.get_julian_ephemeris_millennium(self.jce)
-		self.geocentric_longitude = solar.GetGeocentricLongitude(self.jme)
-		self.geocentric_latitude = solar.GetGeocentricLatitude(self.jme)
-		self.nutation = solar.GetNutation(self.jde)
-		self.radius_vector = solar.GetRadiusVector(self.jme)
-		self.true_ecliptic_obliquity = solar.GetTrueEclipticObliquity(self.jme, self.nutation)
-		self.aberration_correction = solar.GetAberrationCorrection(self.radius_vector)
-		self.apparent_sun_longitude = solar.GetApparentSunLongitude(self.geocentric_longitude, self.nutation, self.aberration_correction)
-		self.apparent_sidereal_time = solar.GetApparentSiderealTime(self.jd, self.jme, self.nutation)
-		self.geocentric_sun_right_ascension = solar.GetGeocentricSunRightAscension(self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
-		self.geocentric_sun_declination = solar.GetGeocentricSunDeclination(self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
-		self.local_hour_angle = solar.GetLocalHourAngle(318.5119, self.longitude, self.geocentric_sun_right_ascension) #self.apparent_sidereal_time only correct to 5 sig figs, so override
-		self.equatorial_horizontal_parallax = solar.GetEquatorialHorizontalParallax(self.radius_vector)
-		self.projected_radial_distance = solar.GetProjectedRadialDistance(self.elevation, self.latitude)
-		self.projected_axial_distance = solar.GetProjectedAxialDistance(self.elevation, self.latitude)
-		self.topocentric_sun_right_ascension = solar.GetTopocentricSunRightAscension(self.projected_radial_distance,
+		self.geocentric_longitude = solar.get_geocentric_longitude(self.jme)
+		self.geocentric_latitude = solar.get_geocentric_latitude(self.jme)
+		self.nutation = solar.get_nutation(self.jde)
+		self.radius_vector = solar.get_radius_vector(self.jme)
+		self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nutation)
+		self.aberration_correction = solar.get_aberration_correction(self.radius_vector)
+		self.apparent_sun_longitude = solar.get_apparent_sun_longitude(self.geocentric_longitude, self.nutation, self.aberration_correction)
+		self.apparent_sidereal_time = solar.get_apparent_sidereal_time(self.jd, self.jme, self.nutation)
+		self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
+		self.geocentric_sun_declination = solar.get_geocentric_sun_declination(self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
+		self.local_hour_angle = solar.get_local_hour_angle(318.5119, self.longitude, self.geocentric_sun_right_ascension) #self.apparent_sidereal_time only correct to 5 sig figs, so override
+		self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(self.radius_vector)
+		self.projected_radial_distance = solar.get_projected_radial_distance(self.elevation, self.latitude)
+		self.projected_axial_distance = solar.get_projected_axial_distance(self.elevation, self.latitude)
+		self.topocentric_sun_right_ascension = solar.get_topocentric_sun_right_ascension(self.projected_radial_distance,
 		self.equatorial_horizontal_parallax, self.local_hour_angle, self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
-		self.parallax_sun_right_ascension = solar.GetParallaxSunRightAscension(self.projected_radial_distance, self.equatorial_horizontal_parallax, self.local_hour_angle, self.geocentric_sun_declination)
-		self.topocentric_sun_declination = solar.GetTopocentricSunDeclination(self.geocentric_sun_declination, self.projected_axial_distance, self.equatorial_horizontal_parallax, self.parallax_sun_right_ascension, self.local_hour_angle)
-		self.topocentric_local_hour_angle = solar.GetTopocentricLocalHourAngle(self.local_hour_angle, self.parallax_sun_right_ascension)
-		self.topocentric_zenith_angle = solar.GetTopocentricZenithAngle(self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle, self.pressure, self.temperature)
-		self.topocentric_azimuth_angle = solar.GetTopocentricAzimuthAngle(self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
-		self.incidence_angle = solar.GetIncidenceAngle(self.topocentric_zenith_angle, self.slope, self.slope_orientation, self.topocentric_azimuth_angle)
+		self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(self.projected_radial_distance, self.equatorial_horizontal_parallax, self.local_hour_angle, self.geocentric_sun_declination)
+		self.topocentric_sun_declination = solar.get_topocentric_sun_declination(self.geocentric_sun_declination, self.projected_axial_distance, self.equatorial_horizontal_parallax, self.parallax_sun_right_ascension, self.local_hour_angle)
+		self.topocentric_local_hour_angle = solar.get_topocentric_local_hour_angle(self.local_hour_angle, self.parallax_sun_right_ascension)
+		self.topocentric_zenith_angle = solar.get_topocentric_zenith_angle(self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle, self.pressure, self.temperature)
+		self.topocentric_azimuth_angle = solar.get_topocentric_azimuth_angle(self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
+		self.incidence_angle = solar.get_incidence_angle(self.topocentric_zenith_angle, self.slope, self.slope_orientation, self.topocentric_azimuth_angle)
 		self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
 		self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
 
@@ -80,66 +80,66 @@ class testSolar(unittest.TestCase):
 	def test_get_julian_ephemeris_millennium(self):
 		self.assertAlmostEqual(0.0037927819143886397, self.jme, 12) # value not validated
 
-	def testGetGeocentricLongitude(self):
+	def test_get_geocentric_longitude(self):
 		# self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 10) # value from Reda and Andreas (2005)
 		self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 4) # above fails with more accurate Julian Ephemeris correction
 
-	def testGetGeocentricLatitude(self):
+	def test_get_geocentric_latitude(self):
 		# self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9) # value from Reda and Andreas (2005)
 		self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 8) # above fails with more accurate Julian Ephemeris correction
 
-	def testGetNutation(self):
+	def test_get_nutation(self):
 		self.assertAlmostEqual(0.00166657, self.nutation['obliquity'], 8) # value from Reda and Andreas (2005)
 		self.assertAlmostEqual(-0.00399840, self.nutation['longitude'], 8) # value from Reda and Andreas (2005)
 
-	def testGetRadiusVector(self):
+	def test_get_radius_vector(self):
 		self.assertAlmostEqual(0.9965421031, self.radius_vector, 7) # value from Reda and Andreas (2005)
 
-	def testGetTrueEclipticObliquity(self):
+	def test_get_true_ecliptic_obliquity(self):
 		self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6) # value from Reda and Andreas (2005)
 
-	def testGetAberrationCorrection(self):
+	def test_get_aberration_correction(self):
 		self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
 
-	def testGetApparentSunLongitude(self):
+	def test_get_apparent_sun_longitude(self):
 		# self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10) # value from Reda and Andreas (2005)
 		self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4) # above fails with more accurate Julian Ephemeris correction
 
-	def testGetApparentSiderealTime(self):
+	def test_get_apparent_sidreal_time(self):
 		self.assertAlmostEqual(318.5119, self.apparent_sidereal_time, 2) # value derived from Reda and Andreas (2005)
 
-	def testGetGeocentricSunRightAscension(self):
+	def test_get_geocentric_sun_right_ascension(self):
 		self.assertAlmostEqual(202.22741, self.geocentric_sun_right_ascension, 4) # value from Reda and Andreas (2005)
 
-	def testGetGeocentricSunDeclination(self):
+	def test_get_geocentric_sun_declination(self):
 		self.assertAlmostEqual(-9.31434, self.geocentric_sun_declination, 4) # value from Reda and Andreas (2005)
 
-	def testGetLocalHourAngle(self):
+	def test_get_local_hour_angle(self):
 		self.assertAlmostEqual(11.105900, self.local_hour_angle, 4) # value from Reda and Andreas (2005)
 
-	def testGetProjectedRadialDistance(self):
+	def test_get_projected_radial_distance(self):
 		self.assertAlmostEqual(0.7702006, self.projected_radial_distance, 6) # value not validated
 
-	def testGetTopocentricSunRightAscension(self):
+	def test_get_topocentric_sun_right_ascension(self):
 		self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3) # value from Reda and Andreas (2005)
 
-	def testGetParallaxSunRightAscension(self):
+	def test_get_parallax_sun_right_ascension(self):
 		self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12) # value not validated
 		
-	def testGetTopocentricSunDeclination(self):
+	def test_get_topocentric_sun_declination(self):
 		self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3) # value from Reda and Andreas (2005)
 
-	def testGetTopocentricLocalHourAngle(self):
+	def test_get_topocentric_local_hour_angle(self):
 		self.assertAlmostEqual(11.10629, self.topocentric_local_hour_angle, 4) # value from Reda and Andreas (2005)
 
-	def testGetTopocentricZenithAngle(self):
+	def test_get_topocentric_zenith_angle(self):
 		self.assertAlmostEqual(50.11162, self.topocentric_zenith_angle, 3) # value from Reda and Andreas (2005)
 
-	def testGetTopocentricAzimuthAngle(self):
+	def test_get_topocentric_azimuth_angle(self):
 		# self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5) # value from Reda and Andreas (2005)
 		self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 4) # above fails with more accurate Julian Ephemeris correction
 
-	def testGetIncidenceAngle(self):
+	def test_get_incidence_angle(self):
 		self.assertAlmostEqual(25.18700, self.incidence_angle, 3) # value from Reda and Andreas (2005)
 
 	def testPressureWithElevation(self):

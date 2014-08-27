@@ -85,9 +85,9 @@ def RequestEphemerisData(datum):
     return result
 
 def ComparePysolarToUSNO(datum):
-    alt = pysolar.GetAltitude(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+    alt = pysolar.get_altitude(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
     pysolar_alt = (90.0 - alt)
-    az = pysolar.GetAzimuth(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+    az = pysolar.get_azimuth(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
     pysolar_az = (180.0 - az)%360.0
 
 #   print(pysolar_alt)
