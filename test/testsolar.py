@@ -39,7 +39,7 @@ class testSolar(unittest.TestCase):
 		self.latitude = 39.742476
 		self.pressure = 82000.0 # pascals
 		self.elevation = 1830.14 # meters
-		self.temperature = 11.0 # degrees Celsius
+		self.temperature = 11.0 + constants.celsius_offset # kelvin
 		self.slope = 30.0 # degrees
 		self.slope_orientation = -10.0 # degrees east from south
 		self.jd = time.get_julian_day(self.d)
