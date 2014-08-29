@@ -18,49 +18,44 @@
 """Support functions for horizon calculation
 
 """
+import math
 import datetime
+from . import constants
 from . import radiation
 from . import solar
-from .constants import \
-    seconds_per_day, \
-    standard_pressure, \
-    standard_temperature
-import math
 
-def build_time_list(start_datetime, end_datetime, step_minutes):
-    '''Create a list of sample points evenly spaced apart by step_minutes.'''
+def datetime_range(start_datetime, end_datetime, step_minutes):
+    '''yields a sequence of datetimes evenly spaced apart by step_minutes.'''
     step = step_minutes * 60
     time_list = []
     span = end_datetime - start_datetime
     dt = datetime.timedelta(seconds = step)
-    return [start_datetime + dt * n for n in range((span.days * seconds_per_day + span.seconds) // step)]
+    for n in range((span.days * constants.seconds_per_day + span.seconds) // step) :
+        yield start_datetime + dt * n
+    #end for
+#end datetime_range
 
-def check_against_horizon(power):
-    (time, alt, az, radiation, shade) = power
-    alt_zero = 380
-
-    if shade < alt_zero - int(alt_zero * math.sin(math.radians(alt))):
-        radiation = 0
-
-    return (time, alt, az, radiation, shade)
-
-def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature = standard_temperature, pressure = standard_pressure):
-    '''Simulate the motion of the sun over a time span and location of your choosing.
+def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature = constants.standard_temperature, pressure = constants.standard_pressure):
+    '''simulates the motion of the sun over a time span and location of your choosing.
 
     The start and end points are set by datetime objects, which can be created with
     the standard Python datetime module like this:
     import datetime
     start = datetime.datetime(2008, 12, 23, 23, 14, 0)
     '''
-    time_list = build_time_list(start_datetime, end_datetime, step_minutes)
-
-    angles_list = [(
-        time,
-        solar.get_altitude(latitude_deg, longitude_deg, time, elevation, temperature, pressure),
-        solar.get_azimuth(latitude_deg, longitude_deg, time, elevation)
-        ) for time in time_list]
-    power_list = [(time, alt, az, radiation.get_radiation_direct(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
-    return list(filter(check_against_horizon, power_list))
+    alt_zero = 380
+    for time in datetime_range(start_datetime, end_datetime, step_minutes) :
+        alt = solar.get_altitude(latitude_deg, longitude_deg, time, elevation, temperature, pressure)
+        azi = solar.get_azimuth(latitude_deg, longitude_deg, time, elevation)
+        shade = horizon[round(azi)]
+        if shade < alt_zero - round(alt_zero * math.sin(math.radians(alt))) :
+            rad = 0
+        else :
+            rad = radiation.get_radiation_direct(time, alt)
+        #end if
+        yield time, alt, azi, rad, shade
+    #end for
+#end simulate_span
 
 #       xs = shade.GetXShade(width, 120, azimuth_deg)
 #       ys = shade.GetYShade(height, 120, altitude_deg)
