@@ -33,7 +33,8 @@ class testSolar(unittest.TestCase):
 		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo = datetime.timezone.utc)
 		self.d += datetime.timedelta(seconds = time.get_delta_t(self.d) - time.tt_offset - time.get_leap_seconds(self.d))
 		  # Reda & Andreas say that this time is in “Local Standard Time”, which they
-		  # define as 7 hours behind UT (not UTC). Hence the adjustment.
+		  # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
+		  # to UTC.
 		self.longitude = -105.1786
 		self.latitude = 39.742476
 		self.pressure = 820.0 # millibars
