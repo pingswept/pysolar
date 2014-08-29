@@ -90,8 +90,8 @@ def get_altitude_fast(latitude_deg, longitude_deg, when):
     second_term = math.sin(latitude_rad) * math.sin(declination_rad)
     return math.degrees(math.asin(first_term + second_term))
 
-def get_apparent_sidereal_time(julian_day, jme, nutation):
-    return get_mean_sidereal_time(julian_day) + nutation['longitude'] * math.cos(get_true_ecliptic_obliquity(jme, nutation))
+def get_apparent_sidereal_time(jd, jme, nutation):
+    return get_mean_sidereal_time(jd) + nutation['longitude'] * math.cos(get_true_ecliptic_obliquity(jme, nutation))
 
 def get_apparent_sun_longitude(geocentric_longitude, nutation, ab_correction):
     return geocentric_longitude + nutation['longitude'] + ab_correction
@@ -230,10 +230,10 @@ def get_incidence_angle(topocentric_zenith_angle, slope, slope_orientation, topo
 def get_local_hour_angle(apparent_sidereal_time, longitude, geocentric_sun_right_ascension):
     return (apparent_sidereal_time + longitude - geocentric_sun_right_ascension) % 360
 
-def get_mean_sidereal_time(julian_day):
+def get_mean_sidereal_time(jd):
     # This function doesn't agree with Andreas and Reda as well as it should. Works to ~5 sig figs in current unit test
-    jc = time.get_julian_century(julian_day)
-    sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
+    jc = time.get_julian_century(jd)
+    sidereal_time =  280.46061837 + (360.98564736629 * (jd - 2451545.0)) + 0.000387933 * jc * jc * (1 - jc / 38710000)
     return sidereal_time % 360
 
 def get_nutation(jde):
