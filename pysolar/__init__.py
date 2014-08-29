@@ -1,6 +1,6 @@
 from . import \
     constants, \
-    julian, \
+    time, \
     radiation, \
     util, \
     solar

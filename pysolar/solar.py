@@ -23,7 +23,7 @@ This module contains the most important functions for calculation of the positio
 import math
 import datetime
 from . import constants
-from . import julian
+from . import time
 from . import radiation
 
 def solar_test():
@@ -55,10 +55,10 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_c
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = julian.get_julian_day(when)
-    jde = julian.get_julian_ephemeris_day(jd)
-    jce = julian.get_julian_ephemeris_century(jde)
-    jme = julian.get_julian_ephemeris_millennium(jce)
+    jd = time.get_julian_day(when)
+    jde = time.get_julian_ephemeris_day(when)
+    jce = time.get_julian_ephemeris_century(jde)
+    jme = time.get_julian_ephemeris_millennium(jce)
     geocentric_latitude = get_geocentric_latitude(jme)
     geocentric_longitude = get_geocentric_longitude(jme)
     radius_vector = get_radius_vector(jme)
@@ -103,10 +103,10 @@ def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = julian.get_julian_day(when)
-    jde = julian.get_julian_ephemeris_day(jd)
-    jce = julian.get_julian_ephemeris_century(jde)
-    jme = julian.get_julian_ephemeris_millennium(jce)
+    jd = time.get_julian_day(when)
+    jde = time.get_julian_ephemeris_day(when)
+    jce = time.get_julian_ephemeris_century(jde)
+    jme = time.get_julian_ephemeris_millennium(jce)
     geocentric_latitude = get_geocentric_latitude(jme)
     geocentric_longitude = get_geocentric_longitude(jme)
     radius_vector = get_radius_vector(jme)
@@ -232,13 +232,13 @@ def get_local_hour_angle(apparent_sidereal_time, longitude, geocentric_sun_right
 
 def get_mean_sidereal_time(julian_day):
     # This function doesn't agree with Andreas and Reda as well as it should. Works to ~5 sig figs in current unit test
-    jc = julian.get_julian_century(julian_day)
+    jc = time.get_julian_century(julian_day)
     sidereal_time =  280.46061837 + (360.98564736629 * (julian_day - 2451545.0)) + (0.000387933 * jc ** 2) - (jc ** 3 / 38710000)
     return sidereal_time % 360
 
 def get_nutation(jde):
     abcd = constants.nutation_coefficients
-    jce = julian.get_julian_ephemeris_century(jde)
+    jce = time.get_julian_ephemeris_century(jde)
     nutation_long = []
     nutation_oblique = []
     x = precalculate_aberrations(constants.get_poly_dict(), jce)

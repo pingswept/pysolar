@@ -25,9 +25,9 @@ horizon.py
 .. automodule:: horizon
     :members:
 
-julian.py
+time.py
 ---------
-.. automodule:: julian
+.. automodule:: time
     :members:
 
 radiation.py

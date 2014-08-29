@@ -22,7 +22,7 @@
 from pysolar import \
 	solar, \
 	constants, \
-	julian, \
+	time, \
 	elevation
 import datetime
 import unittest
@@ -31,6 +31,9 @@ class testSolar(unittest.TestCase):
 
 	def setUp(self):
 		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo = datetime.timezone.utc)
+		self.d += datetime.timedelta(seconds = time.get_delta_t(self.d) - time.tt_offset - time.get_leap_seconds(self.d))
+		  # Reda & Andreas say that this time is in “Local Standard Time”, which they
+		  # define as 7 hours behind UT (not UTC). Hence the adjustment.
 		self.longitude = -105.1786
 		self.latitude = 39.742476
 		self.pressure = 820.0 # millibars
@@ -38,11 +41,11 @@ class testSolar(unittest.TestCase):
 		self.temperature = 11.0 # degrees Celsius
 		self.slope = 30.0 # degrees
 		self.slope_orientation = -10.0 # degrees east from south
-		self.jd = julian.get_julian_day(self.d)
-		self.jc = julian.get_julian_century(self.jd)
-		self.jde = julian.get_julian_ephemeris_day(self.jd)
-		self.jce = julian.get_julian_ephemeris_century(self.jde)
-		self.jme = julian.get_julian_ephemeris_millennium(self.jce)
+		self.jd = time.get_julian_day(self.d)
+		self.jc = time.get_julian_century(self.jd)
+		self.jde = time.get_julian_ephemeris_day(self.d)
+		self.jce = time.get_julian_ephemeris_century(self.jde)
+		self.jme = time.get_julian_ephemeris_millennium(self.jce)
 		self.geocentric_longitude = solar.get_geocentric_longitude(self.jme)
 		self.geocentric_latitude = solar.get_geocentric_latitude(self.jme)
 		self.nutation = solar.get_nutation(self.jde)
