@@ -37,7 +37,7 @@ class testSolar(unittest.TestCase):
 		  # to UTC.
 		self.longitude = -105.1786
 		self.latitude = 39.742476
-		self.pressure = 820.0 # millibars
+		self.pressure = 82000.0 # pascals
 		self.elevation = 1830.14 # meters
 		self.temperature = 11.0 # degrees Celsius
 		self.slope = 30.0 # degrees

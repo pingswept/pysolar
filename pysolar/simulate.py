@@ -43,7 +43,7 @@ def check_against_horizon(power):
 
     return (time, alt, az, radiation, shade)
 
-def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure_millibars = standard_pressure / 100):
+def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature_celsius = 25, pressure = standard_pressure):
     '''Simulate the motion of the sun over a time span and location of your choosing.
 
     The start and end points are set by datetime objects, which can be created with
@@ -55,7 +55,7 @@ def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_date
 
     angles_list = [(
         time,
-        solar.get_altitude(latitude_deg, longitude_deg, time, elevation, temperature_celsius, pressure_millibars),
+        solar.get_altitude(latitude_deg, longitude_deg, time, elevation, temperature_celsius, pressure),
         solar.get_azimuth(latitude_deg, longitude_deg, time, elevation)
         ) for time in time_list]
     power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]

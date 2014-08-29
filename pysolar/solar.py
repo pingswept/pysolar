@@ -48,7 +48,7 @@ def equation_of_time(day):
 def get_aberration_correction(radius_vector):     # r is earth radius vector [astronomical units]
     return -20.4898/(3600.0 * radius_vector)
 
-def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_celsius = 25, pressure_millibars = constants.standard_pressure / 100):
+def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_celsius = 25, pressure = constants.standard_pressure):
     '''See also the faster, but less accurate, get_altitude_fast()'''
     # location-dependent calculations
     projected_radial_distance = get_projected_radial_distance(elevation, latitude_deg)
@@ -77,7 +77,7 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature_c
     topocentric_local_hour_angle = get_topocentric_local_hour_angle(local_hour_angle, parallax_sun_right_ascension)
     topocentric_sun_declination = get_topocentric_sun_declination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
     topocentric_elevation_angle = get_topocentric_elevation_angle(latitude_deg, topocentric_sun_declination, topocentric_local_hour_angle)
-    refraction_correction = get_refraction_correction(pressure_millibars, temperature_celsius, topocentric_elevation_angle)
+    refraction_correction = get_refraction_correction(pressure, temperature_celsius, topocentric_elevation_angle)
     return topocentric_elevation_angle + refraction_correction
 
 def get_altitude_fast(latitude_deg, longitude_deg, when):
@@ -286,10 +286,10 @@ def get_radius_vector(jme):
 
     return (r0 + r1 * jme + r2 * jme ** 2 + r3 * jme ** 3 + r4 * jme ** 4) / 10 ** 8
 
-def get_refraction_correction(pressure_millibars, temperature_celsius, topocentric_elevation_angle):
+def get_refraction_correction(pressure, temperature_celsius, topocentric_elevation_angle):
     tea = topocentric_elevation_angle
     temperature_kelvin = temperature_celsius + 273.15
-    a = pressure_millibars * 283.0 * 1.02
+    a = pressure * 2.830 * 1.02
     b = 1010.0 * temperature_kelvin * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
     return a / b
 
@@ -341,9 +341,9 @@ def get_topocentric_sun_right_ascension(projected_radial_distance, equatorial_ho
     gsra = get_geocentric_sun_right_ascension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
     return psra + gsra
 
-def get_topocentric_zenith_angle(latitude, topocentric_sun_declination, topocentric_local_hour_angle, pressure_millibars, temperature_celsius):
+def get_topocentric_zenith_angle(latitude, topocentric_sun_declination, topocentric_local_hour_angle, pressure, temperature_celsius):
     tea = get_topocentric_elevation_angle(latitude, topocentric_sun_declination, topocentric_local_hour_angle)
-    return 90 - tea - get_refraction_correction(pressure_millibars, temperature_celsius, tea)
+    return 90 - tea - get_refraction_correction(pressure, temperature_celsius, tea)
 
 def get_true_ecliptic_obliquity(jme, nutation):
     u = jme/10.0

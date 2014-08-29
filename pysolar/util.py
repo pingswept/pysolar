@@ -40,7 +40,6 @@ TL_default = 1.0             # Default Linke turbidity factor is 1.0
 SC_default = 1367.0          # Solar constant in W/m^2 is 1367.0. Note that this value could vary by +/-4 W/m^2
 TY_default = 365             # Total year number from 1 to 365 days
 elevation_default = 0.0      # Default elevation is 0.0
-default_pressure_millibars = constants.standard_pressure / 100
 default_temperature_celsius = 25
 
 # Useful equations for analysis
@@ -239,7 +238,7 @@ def declination_degree(when, TY = TY_default ):
 
 
 def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature_celsius = default_temperature_celsius,
-                                  pressure_millibars = default_pressure_millibars,  elevation = elevation_default):
+                                  pressure = constants.standard_pressure,  elevation = elevation_default):
     """Equation calculates Solar elevation function for clear sky type.
 
     Parameters
@@ -254,8 +253,8 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature_
         date/time for which to do the calculation
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
-    pressure_millibars : float
-        pressure_millibars
+   pressure : float
+        pressure in pascals
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean
         sea level.
@@ -271,12 +270,12 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature_
             and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure)
     return (0.038175 + (1.5458 * (math.sin(altitude))) + ((-0.59980) * (0.5 * (1 - math.cos(2 * (altitude))))))
 
 def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
                                      elevation = elevation_default, temperature_celsius = default_temperature_celsius,
-                                     pressure_millibars = default_pressure_millibars):
+                                     pressure = constants.standard_pressure):
     """ The function calculates solar elevation function for overcast sky type.
     This associated hourly overcast radiation model is based on the estimation of the
     overcast sky transmittance with the sun directly overhead combined with the application
@@ -297,8 +296,8 @@ def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
-    pressure_millibars : float
-        pressure_millibars
+    pressure : float
+        pressure in pascals
 
     Returns
     -------
@@ -314,7 +313,7 @@ def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
         Design of Buildings"
 
     """
-    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure)
     return ((-0.0067133) + (0.78600 * (math.sin(altitude)))) + (0.22401 * (0.5 * (1 - math.cos(2 * altitude))))
 
 
@@ -342,7 +341,7 @@ def diffuse_transmittance(TL = TL_default):
 
 
 def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_default,
-                       temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TL=TL_default):
+                       temperature_celsius = default_temperature_celsius, pressure = constants.standard_pressure, TL=TL_default):
     """Equation calculates diffuse radiation under clear sky conditions.
 
     Parameters
@@ -359,8 +358,8 @@ def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
-    pressure_millibars : float
-        pressure_millibars
+    pressure : float
+        pressure in pascals
     TL : float
         Linke turbidity factor
 
@@ -376,12 +375,12 @@ def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_
 
     """
     DT = ((-21.657) + (41.752 * (TL)) + (0.51905 * (TL) * (TL)))
-    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure_millibars)
+    altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature_celsius,pressure)
 
     return mean_earth_sun_distance(when) * DT * altitude
 
 def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevation_default,
-                          temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars,TL=TL_default):
+                          temperature_celsius = default_temperature_celsius, pressure = constants.standard_pressure,TL=TL_default):
     """Function calculates the diffuse radiation under overcast conditions.
 
     Parameters
@@ -398,8 +397,8 @@ def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevati
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
-    pressure_millibars : float
-        pressure_millibars
+    pressure : float
+        pressure in pascals
     TL : float
         Linke turbidity factor
 
@@ -418,11 +417,11 @@ def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevati
 
     DIFOC = ((mean_earth_sun_distance(when)
               )*(DT)*(solar.get_altitude(latitude_deg,longitude_deg, when, elevation,
-                                        temperature_celsius, pressure_millibars)))
+                                        temperature_celsius, pressure)))
     return DIFOC
 
 def direct_underclear(latitude_deg, longitude_deg, when,
-                      temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TY = TY_default,
+                      temperature_celsius = default_temperature_celsius, pressure = constants.standard_pressure, TY = TY_default,
                       AM = AM_default, TL = TL_default,elevation = elevation_default):
     """Equation calculates direct radiation under clear sky conditions.
 
@@ -438,8 +437,8 @@ def direct_underclear(latitude_deg, longitude_deg, when,
         date/time for which to do the calculation
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
-    pressure_millibars : float
-        pressure_millibars
+    pressure : float
+        pressure in pascals
     TY : float
         Total number of days in a year. eg. 365 days per year,(no leap days)
     AM : float
@@ -470,12 +469,12 @@ def direct_underclear(latitude_deg, longitude_deg, when,
     DIRC = (1367 * KD * math.exp(-0.8662 * (AM) * (TL) * (DEC)
                              ) * math.sin(solar.get_altitude(latitude_deg,longitude_deg,
                                                           when,elevation ,
-                                                          temperature_celsius , pressure_millibars )))
+                                                          temperature_celsius , pressure )))
 
     return DIRC
 
 def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
-                            temperature_celsius = default_temperature_celsius, pressure_millibars = default_pressure_millibars, TY = TY_default,
+                            temperature_celsius = default_temperature_celsius, pressure = constants.standard_pressure, TY = TY_default,
                             AM = AM_default, TL = TL_default, elevation = elevation_default):
 
     """Equation calculates global irradiance under clear sky conditions.
@@ -497,8 +496,8 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
         date/time for which to do the calculation
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and cold.
-    pressure_millibars : float
-        pressure_millibars
+    pressure : float
+        pressure in pascals
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the
         mean sea level.
@@ -528,10 +527,10 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
     """
     DIRC =  direct_underclear(latitude_deg, longitude_deg, when,
                               TY, AM, TL, elevation, temperature_celsius = default_temperature_celsius,
-                              pressure_millibars = default_pressure_millibars)
+                              pressure = constants.standard_pressure)
 
     DIFFC = diffuse_underclear(latitude_deg, longitude_deg, when,
-                               elevation, temperature_celsius = default_temperature_celsius, pressure_millibars= default_pressure_millibars)
+                               elevation, temperature_celsius = default_temperature_celsius, pressure= constants.standard_pressure)
 
     ghic = (DIRC + DIFFC)
 
@@ -540,7 +539,7 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
 
 def global_irradiance_overcast(latitude_deg, longitude_deg, when,
                                elevation = elevation_default, temperature_celsius = default_temperature_celsius,
-                               pressure_millibars = default_pressure_millibars):
+                               pressure = constants.standard_pressure):
     """Calculated Global is used to compare to the Diffuse under overcast conditions.
     Under overcast skies, global and diffuse are expected to be equal due to the absence of the beam
     component.
@@ -561,8 +560,8 @@ def global_irradiance_overcast(latitude_deg, longitude_deg, when,
     temperature_celsius : float
         Temperature is a physical property of a system that underlies the common notions of hot and
         cold.
-    pressure_millibars : float
-        pressure_millibars
+    pressure : float
+        pressure in pascals
 
     Returns
     -------
@@ -578,7 +577,7 @@ def global_irradiance_overcast(latitude_deg, longitude_deg, when,
 
     """
     ghioc = (572 * (solar.get_altitude(latitude_deg, longitude_deg, when,
-                                    elevation , temperature_celsius , pressure_millibars )))
+                                    elevation , temperature_celsius , pressure )))
 
     return ghioc
 
