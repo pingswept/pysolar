@@ -38,25 +38,19 @@ See also ftp://ftp.imcce.fr/pub/ephem/planets/vsop87/VSOP87D.ear
 
 """
 
-poly_dict = None
+aberration_coeffs = None
 
-def get_poly_dict():
+def get_aberration_coeffs():
     """This function builds a dictionary of polynomial functions from a list of
     coefficients, so that the functions can be called by name. This is used in
     calculating nutation.
 
     """
-
-    def build_poly_fit(a, b, c, d):
-        return lambda x: a + b * x + c * x ** 2 + (x ** 3) / d
-    #end build_poly_fit
-
-#begin get_poly_dict
-    global poly_dict
-    if poly_dict == None :
-        poly_dict = dict \
+    global aberration_coeffs
+    if aberration_coeffs == None :
+        aberration_coeffs = dict \
           (
-            (name, build_poly_fit(*coeffs))
+            (name, (lambda a, b, c, d : lambda x : a + b * x + c * x ** 2 + (x ** 3) / d)(*coeffs))
             for name, coeffs in
                 (
                     ('ArgumentOfLatitudeOfMoon', (93.27191, 483202.017538, -0.0036825, 327270.0)),
@@ -68,8 +62,8 @@ def get_poly_dict():
           )
     #end if
     return \
-        poly_dict
-#end get_poly_dict
+        aberration_coeffs
+#end get_aberration_coeffs
 
 earth_radius = 6378140.0 # meters
 earth_axis_inclination = 23.45 # degrees

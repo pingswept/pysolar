@@ -241,7 +241,7 @@ def get_nutation(jde):
     jce = time.get_julian_ephemeris_century(jde)
     nutation_long = []
     nutation_oblique = []
-    x = precalculate_aberrations(constants.get_poly_dict(), jce)
+    x = precalculate_aberrations(constants.get_aberration_coeffs(), jce)
     y = constants.aberration_sin_terms
     for i in range(len(abcd)):
         sigmaxy = 0.0
