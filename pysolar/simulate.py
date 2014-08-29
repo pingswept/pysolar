@@ -59,7 +59,7 @@ def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_date
         solar.get_altitude(latitude_deg, longitude_deg, time, elevation, temperature, pressure),
         solar.get_azimuth(latitude_deg, longitude_deg, time, elevation)
         ) for time in time_list]
-    power_list = [(time, alt, az, radiation.GetRadiationDirect(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
+    power_list = [(time, alt, az, radiation.get_radiation_direct(time, alt), horizon[int(az)]) for (time, alt, az) in angles_list]
     return list(filter(check_against_horizon, power_list))
 
 #       xs = shade.GetXShade(width, 120, azimuth_deg)
