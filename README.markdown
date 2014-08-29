@@ -43,6 +43,7 @@ This fork of Pysolar makes a large number of changes to Brandon’s code, among 
   * lower-case names more in keeping with traditional Python usage (including the package name, `Pysolar` → `pysolar`)
   * concentration on Python 3
   * relying on Python’s `datetime` module to manage most date calculations. This simplifies the code, and (together with the [`pytz`](https://pypi.python.org/pypi/pytz/) add-on package) allows for free use of local timezones for specifying dates and times.
+  * consistent use of SI pressure (pascals) and temperature (kelvin) units throughout
 
 Unfortunately, these changes make the code incompatible with the original.
 
