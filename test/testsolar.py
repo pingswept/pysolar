@@ -50,15 +50,15 @@ class testSolar(unittest.TestCase):
 		self.geocentric_longitude = solar.get_geocentric_longitude(self.jme)
 		self.geocentric_latitude = solar.get_geocentric_latitude(self.jme)
 		self.nutation = solar.get_nutation(self.jde)
-		self.radius_vector = solar.get_radius_vector(self.jme)
+		self.sun_earth_distance = solar.get_sun_earth_distance(self.jme)
 		self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nutation)
-		self.aberration_correction = solar.get_aberration_correction(self.radius_vector)
+		self.aberration_correction = solar.get_aberration_correction(self.sun_earth_distance)
 		self.apparent_sun_longitude = solar.get_apparent_sun_longitude(self.geocentric_longitude, self.nutation, self.aberration_correction)
 		self.apparent_sidereal_time = solar.get_apparent_sidereal_time(self.jd, self.jme, self.nutation)
 		self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
 		self.geocentric_sun_declination = solar.get_geocentric_sun_declination(self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
 		self.local_hour_angle = solar.get_local_hour_angle(318.5119, self.longitude, self.geocentric_sun_right_ascension) #self.apparent_sidereal_time only correct to 5 sig figs, so override
-		self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(self.radius_vector)
+		self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(self.sun_earth_distance)
 		self.projected_radial_distance = solar.get_projected_radial_distance(self.elevation, self.latitude)
 		self.projected_axial_distance = solar.get_projected_axial_distance(self.elevation, self.latitude)
 		self.topocentric_sun_right_ascension = solar.get_topocentric_sun_right_ascension(self.projected_radial_distance,
@@ -96,8 +96,8 @@ class testSolar(unittest.TestCase):
 		self.assertAlmostEqual(0.00166657, self.nutation['obliquity'], 8) # value from Reda and Andreas (2005)
 		self.assertAlmostEqual(-0.00399840, self.nutation['longitude'], 8) # value from Reda and Andreas (2005)
 
-	def test_get_radius_vector(self):
-		self.assertAlmostEqual(0.9965421031, self.radius_vector, 7) # value from Reda and Andreas (2005)
+	def test_get_sun_earth_distance(self):
+		self.assertAlmostEqual(0.9965421031, self.sun_earth_distance, 7) # value from Reda and Andreas (2005)
 
 	def test_get_true_ecliptic_obliquity(self):
 		self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6) # value from Reda and Andreas (2005)

@@ -45,8 +45,8 @@ def equation_of_time(day):
     b = 2 * math.pi / 364.0 * (day - 81)
     return 9.87 * math.sin(2 * b) - 7.53 * math.cos(b) - 1.5 * math.sin(b)
 
-def get_aberration_correction(radius_vector):     # r is earth radius vector [astronomical units]
-    return -20.4898/(3600.0 * radius_vector)
+def get_aberration_correction(sun_earth_distance):     # sun-earth distance is in astronomical units
+    return -20.4898/(3600.0 * sun_earth_distance)
 
 def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature = constants.standard_temperature, pressure = constants.standard_pressure):
     '''See also the faster, but less accurate, get_altitude_fast()'''
@@ -61,9 +61,9 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature =
     jme = time.get_julian_ephemeris_millennium(jce)
     geocentric_latitude = get_geocentric_latitude(jme)
     geocentric_longitude = get_geocentric_longitude(jme)
-    radius_vector = get_radius_vector(jme)
-    aberration_correction = get_aberration_correction(radius_vector)
-    equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(radius_vector)
+    sun_earth_distance = get_sun_earth_distance(jme)
+    aberration_correction = get_aberration_correction(sun_earth_distance)
+    equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(sun_earth_distance)
     nutation = get_nutation(jde)
     apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
     true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
@@ -109,9 +109,9 @@ def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):
     jme = time.get_julian_ephemeris_millennium(jce)
     geocentric_latitude = get_geocentric_latitude(jme)
     geocentric_longitude = get_geocentric_longitude(jme)
-    radius_vector = get_radius_vector(jme)
-    aberration_correction = get_aberration_correction(radius_vector)
-    equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(radius_vector)
+    sun_earth_distance = get_sun_earth_distance(jme)
+    aberration_correction = get_aberration_correction(sun_earth_distance)
+    equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(sun_earth_distance)
     nutation = get_nutation(jde)
     apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
     true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
@@ -162,8 +162,8 @@ def get_declination(day):
     '''
     return constants.earth_axis_inclination * math.sin((2 * math.pi / 365.0) * (day - 81))
 
-def get_equatorial_horizontal_parallax(radius_vector):
-    return 8.794 / (3600 / radius_vector)
+def get_equatorial_horizontal_parallax(sun_earth_distance):
+    return 8.794 / (3600 / sun_earth_distance)
 
 def get_flattened_latitude(latitude):
     latitude_rad = math.radians(latitude)
@@ -277,7 +277,7 @@ def get_projected_axial_distance(elevation, latitude):
     latitude_rad = math.radians(latitude)
     return 0.99664719 * math.sin(flattened_latitude_rad) + (elevation * math.sin(latitude_rad) / constants.earth_radius)
 
-def get_radius_vector(jme):
+def get_sun_earth_distance(jme):
     r0 = get_coeff(jme, constants.R0)
     r1 = get_coeff(jme, constants.R1)
     r2 = get_coeff(jme, constants.R2)
