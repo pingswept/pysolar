@@ -42,7 +42,7 @@ class testSolar(unittest.TestCase):
 		self.temperature = 11.0 + constants.celsius_offset # kelvin
 		self.slope = 30.0 # degrees
 		self.slope_orientation = -10.0 # degrees east from south
-		self.jd = time.get_julian_day(self.d)
+		self.jd = time.get_julian_solar_day(self.d)
 		self.jc = time.get_julian_century(self.jd)
 		self.jde = time.get_julian_ephemeris_day(self.d)
 		self.jce = time.get_julian_ephemeris_century(self.jde)
@@ -72,7 +72,7 @@ class testSolar(unittest.TestCase):
 		self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
 		self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
 
-	def test_get_julian_day(self):
+	def test_get_julian_solar_day(self):
 		self.assertAlmostEqual(2452930.312847, self.jd, 6) # value from Reda and Andreas (2005)
 
 	def test_get_julian_ephemeris_day(self):

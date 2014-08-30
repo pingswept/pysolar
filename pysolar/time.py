@@ -726,7 +726,7 @@ def get_delta_t(when) :
           # don't bother doing any fancy interpolation
 #end get_delta_t
 
-def get_julian_day(when):
+def get_julian_solar_day(when):
     "returns the UT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
     " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
@@ -741,7 +741,7 @@ def get_julian_day(when):
         +
             julian_day_offset
         )
-#end get_julian_day
+#end get_julian_solar_day
 
 def get_julian_ephemeris_day(when) :
     "returns the TT Julian day number (including fraction of a day) corresponding to" \

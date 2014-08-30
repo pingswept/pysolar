@@ -55,7 +55,7 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature =
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = time.get_julian_day(when)
+    jd = time.get_julian_solar_day(when)
     jde = time.get_julian_ephemeris_day(when)
     jce = time.get_julian_ephemeris_century(jde)
     jme = time.get_julian_ephemeris_millennium(jce)
@@ -103,7 +103,7 @@ def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = time.get_julian_day(when)
+    jd = time.get_julian_solar_day(when)
     jde = time.get_julian_ephemeris_day(when)
     jce = time.get_julian_ephemeris_century(jde)
     jme = time.get_julian_ephemeris_millennium(jce)
