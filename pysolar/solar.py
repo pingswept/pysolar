@@ -64,7 +64,7 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature =
     sun_earth_distance = get_sun_earth_distance(jme)
     aberration_correction = get_aberration_correction(sun_earth_distance)
     equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(sun_earth_distance)
-    nutation = get_nutation(jde)
+    nutation = get_nutation(jce)
     apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
     true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
 
@@ -112,7 +112,7 @@ def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):
     sun_earth_distance = get_sun_earth_distance(jme)
     aberration_correction = get_aberration_correction(sun_earth_distance)
     equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(sun_earth_distance)
-    nutation = get_nutation(jde)
+    nutation = get_nutation(jce)
     apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
     true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
 
@@ -230,12 +230,23 @@ def get_mean_sidereal_time(jd):
     sidereal_time =  280.46061837 + (360.98564736629 * (jd - 2451545.0)) + 0.000387933 * jc * jc * (1 - jc / 38710000)
     return sidereal_time % 360
 
-def get_nutation(jde):
+def get_nutation(jce):
     abcd = constants.nutation_coefficients
-    jce = time.get_julian_ephemeris_century(jde)
     nutation_long = []
     nutation_oblique = []
-    x = precalculate_aberrations(constants.get_aberration_coeffs(), jce)
+    p = constants.get_aberration_coeffs()
+    x = list \
+      (
+        p[k](jce)
+        for k in
+            ( # order is important
+                'MeanElongationOfMoon',
+                'MeanAnomalyOfSun',
+                'MeanAnomalyOfMoon',
+                'ArgumentOfLatitudeOfMoon',
+                'LongitudeOfAscendingNode',
+            )
+      )
     y = constants.aberration_sin_terms
     for i in range(len(abcd)):
         sigmaxy = 0.0
@@ -338,19 +349,3 @@ def get_true_ecliptic_obliquity(jme, nutation):
     - (51.38 * u ** 4) -(249.67 * u ** 5) - (39.05 * u ** 6) + (7.12 * u ** 7) \
     + (27.87 * u ** 8) + (5.79 * u ** 9) + (2.45 * u ** 10)
     return (mean_obliquity / 3600.0) + nutation['obliquity']
-
-def precalculate_aberrations(p, jce):
-    return \
-        list \
-          (
-            p[k](jce)
-            for k in
-                ( # order is important
-                    'MeanElongationOfMoon',
-                    'MeanAnomalyOfSun',
-                    'MeanAnomalyOfMoon',
-                    'ArgumentOfLatitudeOfMoon',
-                    'LongitudeOfAscendingNode',
-                )
-          )
-#end precalculate_aberrations

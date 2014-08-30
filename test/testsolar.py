@@ -49,7 +49,7 @@ class testSolar(unittest.TestCase):
 		self.jme = time.get_julian_ephemeris_millennium(self.jce)
 		self.geocentric_longitude = solar.get_geocentric_longitude(self.jme)
 		self.geocentric_latitude = solar.get_geocentric_latitude(self.jme)
-		self.nutation = solar.get_nutation(self.jde)
+		self.nutation = solar.get_nutation(self.jce)
 		self.sun_earth_distance = solar.get_sun_earth_distance(self.jme)
 		self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nutation)
 		self.aberration_correction = solar.get_aberration_correction(self.sun_earth_distance)
