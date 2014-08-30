@@ -142,16 +142,20 @@ def get_azimuth_fast(latitude_deg, longitude_deg, when):
         return (180 - math.degrees(azimuth_rad))
 
 def get_coeff(jme, coeffs):
-    "computes a time-varying coefficient from the given constant coefficients" \
-    " array and the current Julian millennium."
+    "computes a polynomial with time-varying coefficients from the given constant" \
+    " coefficients array and the current Julian millennium."
+    result = 0.0
+    x = 1.0
+    for line in coeffs :
+        c = 0.0
+        for l in line :
+            c += l[0] * math.cos(l[1] + l[2] * jme)
+        #end for
+        result += c * x
+        x *= jme
+    #end for
     return \
-        sum \
-          (
-                coeffs[i][0]
-            *
-                math.cos(coeffs[i][1] + coeffs[i][2] * jme)
-            for i in range(len(coeffs))
-          )
+        result
 #end get_coeff
 
 def get_declination(day):
@@ -201,20 +205,10 @@ def get_geocentric_sun_right_ascension(apparent_sun_longitude, true_ecliptic_obl
 # Heliocentric functions calculate angles relative to the center of the sun.
 
 def get_heliocentric_latitude(jme):
-    b0 = get_coeff(jme, constants.B0)
-    b1 = get_coeff(jme, constants.B1)
-    return math.degrees((b0 + (b1 * jme)) / 10 ** 8)
+    return math.degrees(get_coeff(jme, constants.heliocentric_latitude_coeffs) / 1e8)
 
 def get_heliocentric_longitude(jme):
-    l0 = get_coeff(jme, constants.L0)
-    l1 = get_coeff(jme, constants.L1)
-    l2 = get_coeff(jme, constants.L2)
-    l3 = get_coeff(jme, constants.L3)
-    l4 = get_coeff(jme, constants.L4)
-    l5 = get_coeff(jme, constants.L5)
-
-    l = (l0 + l1 * jme + l2 * jme ** 2 + l3 * jme ** 3 + l4 * jme ** 4 + l5 * jme ** 5) / 10 ** 8
-    return math.degrees(l) % 360
+    return math.degrees(get_coeff(jme, constants.heliocentric_longitude_coeffs) / 1e8) % 360
 
 def get_hour_angle(when, longitude_deg):
     solar_time = get_solar_time(longitude_deg, when)
@@ -278,13 +272,7 @@ def get_projected_axial_distance(elevation, latitude):
     return 0.99664719 * math.sin(flattened_latitude_rad) + (elevation * math.sin(latitude_rad) / constants.earth_radius)
 
 def get_sun_earth_distance(jme):
-    r0 = get_coeff(jme, constants.R0)
-    r1 = get_coeff(jme, constants.R1)
-    r2 = get_coeff(jme, constants.R2)
-    r3 = get_coeff(jme, constants.R3)
-    r4 = get_coeff(jme, constants.R4)
-
-    return (r0 + r1 * jme + r2 * jme ** 2 + r3 * jme ** 3 + r4 * jme ** 4) / 10 ** 8
+    return get_coeff(jme, constants.sun_earth_distance_coeffs) / 1e8
 
 def get_refraction_correction(pressure, temperature, topocentric_elevation_angle):
     tea = topocentric_elevation_angle
