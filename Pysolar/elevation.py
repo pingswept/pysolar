@@ -20,7 +20,6 @@
 """Various elevation-related calculations
 
 """
-import math
 
 def GetPressureWithElevation(h, Ps=101325.00, Ts=288.15, Tl=-0.0065, Hb=0.0, R=8.31432, g=9.80665, M=0.0289644):
 	#This function returns an estimate of the pressure in pascals as a function of elevation above sea level
