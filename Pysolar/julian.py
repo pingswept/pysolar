@@ -22,6 +22,12 @@ are used in calculating the position of the sun relative to the earth
 
 """
 import math
+import datetime
+
+def GetDayOfYear(utc_datetime):
+	year_start = datetime.datetime(utc_datetime.year, 1, 1, tzinfo=utc_datetime.tzinfo)
+	delta = (utc_datetime - year_start)
+	return delta.days
 
 def GetJulianCentury(julian_day):
     return (julian_day - 2451545.0) / 36525.0

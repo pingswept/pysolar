@@ -33,6 +33,7 @@
 from datetime import datetime as dt
 from datetime import timedelta
 import math
+import julian
 import pytz
 from pytz import all_timezones
 from . import solar
@@ -90,7 +91,7 @@ def GetSunriseSunset(latitude_deg, longitude_deg, utc_datetime, timezone):
     """
 
     # Day of the year
-    day = solar.GetDayOfYear(utc_datetime)
+    day = julian.GetDayOfYear(utc_datetime)
 
     # Solar hour angle
     SHA = ((timezone)* 15.0 - longitude_deg)
@@ -153,7 +154,7 @@ def mean_earth_sun_distance(utc_datetime):
             radiation models, p.113
     """   
 
-    return (1 - (0.0335 * math.sin(360 * ((solar.GetDayOfYear(utc_datetime)) - 94)) / (365)))
+    return (1 - (0.0335 * math.sin(360 * ((julian.GetDayOfYear(utc_datetime)) - 94)) / (365)))
 
 def extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg,SC=SC_default):
     """Equation calculates Extratrestrial radiation. Solar radiation incident outside the earth's
@@ -188,11 +189,12 @@ def extraterrestrial_irrad(utc_datetime, latitude_deg, longitude_deg,SC=SC_defau
     .. [2] Dr. J. Schumacher and et al,"INSEL LE(Integrated Simulation Environment Language)Block reference",p.68
         
     """
-    day = solar.GetDayOfYear(utc_datetime)
-    ab = math.cos(2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0))
-    bc = math.sin(2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0))
-    cd = math.cos(2 * (2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0)))
-    df = math.sin(2 * (2 * math.pi * (solar.GetDayOfYear(utc_datetime) - 1.0)/(365.0)))
+    day = julian.GetDayOfYear(utc_datetime)
+    day_ratio = (julian.GetDayOfYear(utc_datetime) - 1.0)/(365.0)
+    ab = math.cos(2 * math.pi * day_ratio)
+    bc = math.sin(2 * math.pi * day_ratio)
+    cd = math.cos(2 * (2 * math.pi * day_ratio))
+    df = math.sin(2 * (2 * math.pi * day_ratio))
     decl = solar.GetDeclination(day)
     ha = solar.GetHourAngle(utc_datetime, longitude_deg)
     ZA = math.sin(latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(ha)
@@ -222,7 +224,7 @@ def declination_degree(utc_datetime, TY = TY_default ):
     .. [1] http://pysolar.org/
              
     """    
-    return 23.45 * math.sin((2 * math.pi / (TY)) * ((solar.GetDayOfYear(utc_datetime)) - 81))
+    return 23.45 * math.sin((2 * math.pi / (TY)) * ((julian.GetDayOfYear(utc_datetime)) - 81))
 
 
 def solarelevation_function_clear(latitude_deg, longitude_deg, utc_datetime,temperature_celsius = 25,
