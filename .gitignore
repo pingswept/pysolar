@@ -2,7 +2,7 @@
 *.pyc
 
 # Output of Sphinx documentation generator
-doc/.build
+doc/_build
 
 # Output from setuptools
 /build/

@@ -1,7 +1,17 @@
-.. Pysolar documentation master file
+.. Pysolar documentation master file, created by
+   sphinx-quickstart on Sun Dec  7 10:41:31 2014.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Pysolar's documentation!
+===================================
+
+Contents:
 
 .. toctree::
    :maxdepth: 2
+
+
 
 Indices and tables
 ==================
@@ -10,52 +20,3 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Descriptions of modules and function reference
-==============================================
-
-The core functions are in solar.py.
-
-constants.py
-------------
-.. automodule:: constants
-    :members:
-
-horizon.py
-----------
-.. automodule:: horizon
-    :members:
-
-time.py
----------
-.. automodule:: time
-    :members:
-
-radiation.py
-------------
-.. automodule:: radiation
-    :members:
-
-shade.py
---------
-.. automodule:: shade
-    :members:
-
-shade_test.py
--------------
-.. automodule:: shade_test
-    :members:
-
-simulate.py
------------
-.. automodule:: simulate
-    :members:
-
-solar.py
---------
-.. automodule:: solar
-    :members:
-
-util.py
--------
-.. automodule:: util
-    :members:
