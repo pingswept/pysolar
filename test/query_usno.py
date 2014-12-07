@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
  
 # Copyright Brandon Stafford
 #
@@ -29,7 +29,7 @@ except:
   from urllib2 import Request,urlopen
   from urllib import urlencode
 
-import Pysolar as solar
+import pysolar
 
 
 
@@ -68,8 +68,8 @@ def RequestEphemerisData(datum):
 
     lines = response.readlines()
     response.close()
-    #print lines
-    #print lines[21] # should not we do some try catch here?
+    #print(lines)
+    #print(lines[21]) # should not we do some try catch here?
     result = lines[21]
     tokens = [x for x in result.split(b' ') if x not in b' ']
     print('Tokens: \n', tokens)
@@ -77,24 +77,24 @@ def RequestEphemerisData(datum):
     usno_alt = float(tokens[4]) + float(tokens[5])/60.0 + float(tokens[6])/3600.0
     usno_az = float(tokens[7]) + float(tokens[8])/60.0 + float(tokens[9])/3600.0
 
-#   print usno_alt
-#   print usno_az
+#   print(usno_alt)
+#   print(usno_az)
 
     result  = Ephemeris(datum.timestamp, datum.latitude, datum.longitude, datum.elevation, usno_az, usno_alt)
 
     return result
 
 def ComparePysolarToUSNO(datum):
-    alt = solar.GetAltitude(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+    alt = pysolar.get_altitude(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
     pysolar_alt = (90.0 - alt)
-    az = solar.GetAzimuth(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+    az = pysolar.get_azimuth(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
     pysolar_az = (180.0 - az)%360.0
 
-#   print pysolar_alt
-#   print pysolar_az
+#   print(pysolar_alt)
+#   print(pysolar_az)
 
-    pysolar = Ephemeris(datum.timestamp, datum.latitude, datum.longitude, datum.elevation, pysolar_az, pysolar_alt)
-    c = EphemerisComparison('pysolar', pysolar, 'usno', datum)
+    py_solar = Ephemeris(datum.timestamp, datum.latitude, datum.longitude, datum.elevation, pysolar_az, pysolar_alt)
+    c = EphemerisComparison('pysolar', py_solar, 'usno', datum)
     return c
 
 def EncodeRequest(latitude, longitude, timestamp, elevation):
@@ -103,7 +103,7 @@ def EncodeRequest(latitude, longitude, timestamp, elevation):
     Note that the degree arguments must be integers, or the USNO script chokes."""
     params = {}
     params['FFX'] = '2' # use worldwide locations script
-    params['ID'] = 'Pysolar'
+    params['ID'] = 'pysolar'
     params['pos'] = '9'
     params['obj'] = '10' # Sun
     params['xxy'] = str(timestamp.year)

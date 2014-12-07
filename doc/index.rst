@@ -25,14 +25,9 @@ horizon.py
 .. automodule:: horizon
     :members:
 
-julian.py
+time.py
 ---------
-.. automodule:: julian
-    :members:
-
-query_usno.py
--------------
-.. automodule:: query_usno
+.. automodule:: time
     :members:
 
 radiation.py
@@ -58,11 +53,6 @@ simulate.py
 solar.py
 --------
 .. automodule:: solar
-    :members:
-
-testsolar.py
-------------
-.. automodule:: testsolar
     :members:
 
 util.py

@@ -3,3 +3,7 @@
 
 # Output of Sphinx documentation generator
 doc/.build
+
+# Output from setuptools
+/build/
+/pysolar.egg-info/

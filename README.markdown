@@ -37,3 +37,14 @@ If you use Pysolar, please let me know how accurate it is. It's difficult to mea
 
 brandon at pingswept org
 
+## About This Fork ##
+
+This fork of Pysolar makes a large number of changes to Brandon’s code, among them:
+  * lower-case names more in keeping with traditional Python usage (including the package name, `Pysolar` → `pysolar`)
+  * concentration on Python 3
+  * relying on Python’s `datetime` module to manage most date calculations. This simplifies the code, and (together with the [`pytz`](https://pypi.python.org/pypi/pytz/) add-on package) allows for free use of local timezones for specifying dates and times.
+  * consistent use of SI pressure (pascals) and temperature (kelvin) units throughout
+
+Unfortunately, these changes make the code incompatible with the original.
+
+Lawrence D’Oliveiro <ldo@geek-central.gen.nz>
