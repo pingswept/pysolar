@@ -1,5 +1,9 @@
 Pysolar is a collection of Python libraries for simulating the irradiation of any point on earth by the sun. It includes code for extremely precise ephemeris calculations, and more.
 
+# Note: it appears that as of Dec. 7, 2014, Pysolar is a little screwed up. #
+
+* The latest release, 0.6, is still good: https://github.com/pingswept/pysolar/releases/tag/0.6 but HEAD has just had bunch of changes that need some validation. *
+
 Rough steps for use, until either forever or I have time to 
 write more documentation:
 

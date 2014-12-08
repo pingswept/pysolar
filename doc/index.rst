@@ -3,15 +3,167 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Pysolar's documentation!
-===================================
+Pysolar: staring directly at the sun since 2007
+===============================================
 
-Contents:
+Pysolar is a collection of Python libraries for simulating the irradiation of any point on earth by the sun. It includes code for extremely precise ephemeris calculations, and more.
+
+Difference from PyEphem
+-----------------------
+
+Pysolar is similar to `PyEphem <http://rhodesmill.org/pyephem/>`_, with a few key differences. Both libraries compute the location of the sun based on `Bretagnon's VSOP 87 theory <http://articles.adsabs.harvard.edu/cgi-bin/nph-iarticle_query?1988A%26A...202..309B>`_. Pysolar is aimed at modeling photovoltaic systems, while PyEphem is targeted at astronomers. Pysolar is written in pure Python, while PyEphem is a Python wrapper for the libastro library, written in C, which is part of `XEphem <http://www.clearskyinstitute.com/xephem/>`_.
+
+Prerequisites for use
+---------------------
+
+Pysolar requires Python, which comes preinstalled on most Unix machines, including Apple's OS X. You can check to see if you have it installed on a Unix machine by typing python at a command prompt. If the result is something like::
+
+    Python 2.5.1c1 (release25-maint, Apr 12 2007, 21:00:25)
+    [GCC 4.1.2 (Ubuntu 4.1.2-0ubuntu4)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>>
+
+you have Python. (You can escape from the Python prompt with Ctrl-D.)
+
+If the result is more like::
+
+    bash: python: command not found
+
+you probably don't have Python.
+
+If you need to, you can download Python from the `Python.org download page <http://python.org/download/>`_.
+
+Examples
+========
+
+Location calculation
+--------------------
+
+You can figure out your latitude and longitude from the URL from the "Link to this page" link on Google maps. Find your location on the map, click on the "Link to this page" link, and then look at the URL in the address bar of your browser. In between ampersands, you should see something like ll=89.123456,-78.912345. The first number is your latitude; the second is your longitude.
+
+The reference frame for Pysolar is shown in the figure below. Altitude is reckoned with zero at the horizon. The altitude is positive when the sun is above the horizon. Azimuth is reckoned with zero corresponding to south. Positive azimuth estimates correspond to estimates east of south; negative estimates are west of south. In the northern hemisphere, if we speak in terms of (altitude, azimuth), the sun comes up around (0, 90), reaches (70, 0) around noon, and sets around (0, -90).
+
+.. image:: img/reference_frame.png
+
+Then, use the solar.GetAltitude() function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
+
+    host:~/pysolar$ python
+    Python 3.4.0 (default, Apr 11 2014, 13:05:18) 
+    [GCC 4.8.2] on linux
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> from pysolar.solar import *
+    >>> import datetime
+    >>> d = datetime.datetime.utcnow() # create a datetime object for now
+    >>> get_altitude(42.206, -71.382, d)
+    -61.667157438795066 # This is what the library currently returns, but it seems wrong
+    >>> d = datetime.datetime(2007, 2, 18, 20, 13, 1, 130320) # try another date
+    >>> get_altitude(42.206, -71.382, d)
+    -32.248108920023505 # This is what the library currently returns, but it seems wrong 
+    19.551710266768644
+
+You can also calculate the azimuth of the sun, as shown below.::
+
+    >>> get_azimuth(42.206, -71.382, datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
+    -105.71914049480682 # This is what the library currently returns, but it seems wrong
+    -51.622484299859529
+
+Estimate of clear-sky radiation
+-------------------------------
+
+Once you calculate azimuth and altitude of the sun, you can predict the direct irradiation from the sun using Pysolar.GetRadiationDirect(), which returns a value in watts per square meter. As of version 0.2, the function is *not* smart enough to return zeros at night (thus the crazy 1814 W/m^2^ output below). It does account for the scattering of light by the atmosphere, though it uses an atmospheric model based on data taken in the United States.::
+
+    >>> latitude_deg = 42.3 # positive in the northern hemisphere
+    >>> longitude_deg = -71.4 # negative reckoning west from prime meridian in Greenwich, England
+    >>> altitude_deg = Pysolar.GetAltitude(latitude_deg, longitude_deg, d)
+    >>> azimuth_deg = Pysolar.GetAzimuth(latitude_deg, longitude_deg, d)
+    >>> solar.radiation.GetRadiationDirect(d, altitude_deg)
+    1814.2039909409739
+
+Validation
+==========
+
+Pysolar has been validated against similar ephemeris code maintained by the United States Naval Observatory (USNO). In a random sampling of 6000 locations distributed across the northern hemisphere at random times in 2008, Pysolar matched the observatory's predictions very accurately. The azimuth estimations correlated much more closely than the altitude estimations, but both agreed with the naval observatory's to within less than 0.1 degrees on average.
+
+Using the script included in Pysolar called query_usno.py, around 6200 datapoints were gathered from the website of the US Naval Observatory. The datapoints were randomly distributed in time and space, with the following restrictions:
+
+* Times were limited to 2008 and, to match the USNO's resolution, rounded to the nearest second.
+* Locations were limited to integral degrees of latitude and longitude in the northern hemisphere to match USNO's resolution. (In theory, the USNO script should accept locations in the southern hemisphere; in practice, negative latitudes caused the script to fail.)
+* Elevation was limited to sea level to make the search space smaller.
+
+Error statistics (units are degrees)
+------------------------------------
+
+The statistics below are generated by query_usno.py when run on the data file usno_data_6259.txt, as in::
+
+    python -i query_usno.py usno_data_6259.txt
+
+Azimuth error
+-------------
+
+* Mean error: 0.00295
+* Standard deviation of error: 0.00355
+* Minimum error: 1.1836 x 10e-6
+* Maximum error: 0.12369
+
+Altitude error
+--------------
+
+* Mean error: 0.07125
+* Standard deviation: 0.12109
+* Minimum error: 7.88452 x 10e-6
+* Maximum error: 1.2755
+
+Validation data
+---------------
+
+The full validation data files are included in Pysolar. See the files: usno_data_6259.txt and pysolar_v_usno.csv.
+
+Click on charts for larger versions.
+
+.. image:: img/chart_Pysolar_error_v_altitude_2008-07-21.png
+   :scale: 50%
+
+.. image:: img/chart_Pysolar_error_v_azimuth_2008-07-21.png
+   :scale: 50%
+
+.. image:: img/chart_Pysolar_error_v_longitude_2008-07-21.png
+   :scale: 50%
+
+.. image:: img/chart_Pysolar_error_v_latitude_2008-07-21.png
+   :scale: 50%
+
+References
+==========
+
+`Abstract <http://www.osti.gov/bridge/product.biblio.jsp?query_id=1&amp;page=0&amp;osti_id=15003974>`_ `1.1 MB PDF <http://www.osti.gov/bridge/servlets/purl/15003974-iP3z6k/native/15003974.PDF>`_ I. Reda and A. Andreas, "Solar Position Algorithm for Solar Radiation Applications," National Renewable Energy Laboratory, NREL/TP-560-34302, revised November 2005.
+
+`Online book <http://onlinelibrary.wiley.com/book/10.1002/0471668826>`_ G. Masters, "Renewable and Efficient Electric Power Systems," Wiley-IEEE Press, 2004.
+
+`Abstract <http://pubs.giss.nasa.gov/abs/bi03000u.html>`_ `4.6 MB PDF <http://pubs.giss.nasa.gov/docs/1997/1997_Bishop_etal_1.pdf>`_ J. K. B.
+Bishop, W. B. Rossow, and E. G. Dutton, "Surface solar irradiance from the International Satellite Cloud Climatology Project 1983-1991," Journal of Geophysical Research, vol. 102, no. D6, March 27, 1997, pp. 6883-6910.
+
+Hosting history
+===============
+
+Pysolar was initially hosted on Sourceforge with Subversion, but we switched to git and Github in 2008. Earlier releases are still on `the Sourceforge site <http://pysolar.sf.net>`_ for now, but you're probably wrong if you think you want to download them.
+
+Contributors
+============
+
+Many people have contributed to Pysolar since its inception.
+
+Thanks to Holger Zebner, Pietro Zambelli, Sean Taylor, Simeon Obinna Nwaogaidu, Tim Michelsen, Jon Little, and Lahmeyer International for their contributions of code, bugfixes, documentation, and general encouragement.
+
+Pysolar has been used at several universities, including the University of Oldenburg in Germany, the University of Trento in Italy, and the University of Texas at Austin. It is also deployed in at least one commercial solar tracking system.
+
+Old download statistics
+=======================
+
+* version 0.1.0: 22 downloads, 2007-04-18 - 2007-07-01
+* version 0.2.0: 97 downloads, 2007-07-01 - 2008-03-10
 
 .. toctree::
    :maxdepth: 2
-
-
 
 Indices and tables
 ==================
