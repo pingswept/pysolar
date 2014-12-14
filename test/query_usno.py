@@ -20,7 +20,9 @@
 """Tool for requesting data from US Naval Observatory
 
 """
-import datetime, random, time
+import datetime, random
+from time import strptime
+import pytz
 
 try:
   from urllib.request import Request,urlopen
@@ -29,7 +31,7 @@ except:
   from urllib2 import Request,urlopen
   from urllib import urlencode
 
-import pysolar
+from pysolar.solar import *
 
 
 
@@ -85,9 +87,9 @@ def RequestEphemerisData(datum):
     return result
 
 def ComparePysolarToUSNO(datum):
-    alt = pysolar.get_altitude(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+    alt = get_altitude(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
     pysolar_alt = (90.0 - alt)
-    az = pysolar.get_azimuth(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
+    az = get_azimuth(float(datum.latitude), float(datum.longitude), datum.timestamp, datum.elevation)
     pysolar_az = (180.0 - az)%360.0
 
 #   print(pysolar_alt)
@@ -158,7 +160,8 @@ def ReadEphemeridesLog(logname):
     log.close()
     for line in lines:
         args = line.split(' ')
-        d = datetime.datetime(*(time.strptime(args[0] + ' ' + args[1], '%Y-%m-%d %H:%M:%S')[0:6]))
+        unaware = datetime.datetime(*(strptime(args[0] + ' ' + args[1], '%Y-%m-%d %H:%M:%S')[0:6]))
+        d = unaware.replace(tzinfo=pytz.UTC)
         e = Ephemeris(d, args[2], args[3], args[4], args[5], args[6])
         data.append(e)
     return data
