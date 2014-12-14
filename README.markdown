@@ -23,7 +23,7 @@ Documentation now appears at [docs.pysolar.org](http://docs.pysolar.org).
 
 All contributions go through pull requests on Github.
 
-Editing the documentation is particularly easy-- just click the "Edit on Github" link at the top of any page.
+Editing [the documentation](http://docs.pysolar.org) is particularly easy-- just click the "Edit on Github" link at the top of any page.
 
 Code contributions are welcome under the terms of the GPLv3 license. If you're unfamiliar with Github, you could start with [this guide to working on open source projects](https://guides.github.com/activities/contributing-to-open-source/).
 
@@ -31,7 +31,7 @@ Code contributions are welcome under the terms of the GPLv3 license. If you're u
 
 You can email the original author [Brandon Stafford](http://rascalmicro.com) at brandon at pingswept org. Please understand that I wrote (most of) Pysolar around a decade ago when I worked in the solar industry. Now, I'm an electrical engineer who just maintains Pysolar as a fun hobby.
 
-Please report bugs to the issue tracker on Github; I am automatically notified when a new issue is opened.
+Please report bugs to [the issue tracker on Github](https://github.com/pingswept/pysolar/issues); I am automatically notified when a new issue is opened.
 
 ## License ##
 
