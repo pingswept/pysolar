@@ -13,6 +13,11 @@ Difference from PyEphem
 
 Pysolar is similar to `PyEphem <http://rhodesmill.org/pyephem/>`_, with a few key differences. Both libraries compute the location of the sun based on `Bretagnon's VSOP 87 theory <http://articles.adsabs.harvard.edu/cgi-bin/nph-iarticle_query?1988A%26A...202..309B>`_. Pysolar is aimed at modeling photovoltaic systems, while PyEphem is targeted at astronomers. Pysolar is written in pure Python, while PyEphem is a Python wrapper for the libastro library, written in C, which is part of `XEphem <http://www.clearskyinstitute.com/xephem/>`_.
 
+Difference from Sunpy
+---------------------
+
+Pysolar is similar to the sun position module in `Sunpy <http://sunpy.org>`_, which is a project focused on solar physics modeling. See, for example, their beautiful gallery of `sun image renderings <http://sunpy.org/gallery/index.html>`_. The Sunpy position module is based on the same algorithm originally described by Jean Meeus, but it appears to omit the later work by Reda and Andreas at NREL that Pysolar uses, or at least the code is shorter. In any case, Sunpy is aimed at solar physics; Pysolar is aimed at modeling solar radiation on the earth. 
+
 Prerequisites for use
 ---------------------
 
@@ -39,7 +44,7 @@ Examples
 Location calculation
 --------------------
 
-You can figure out your latitude and longitude from the URL from the "Link to this page" link on Google maps. Find your location on the map, click on the "Link to this page" link, and then look at the URL in the address bar of your browser. In between ampersands, you should see something like ll=89.123456,-78.912345. The first number is your latitude; the second is your longitude.
+You can figure out your latitude and longitude from the URL from the "Link to this page" link on Google maps. Find your location on the map, click on the "Link to this page" link, and then look at the URL in the address bar of your browser. In between ampersands, you should see something like ``ll=89.123456,-78.912345``. The first number is your latitude; the second is your longitude.
 
 The reference frame for Pysolar is shown in the figure below. Altitude is reckoned with zero at the horizon. The altitude is positive when the sun is above the horizon. Azimuth is reckoned with zero corresponding to south. Positive azimuth estimates correspond to estimates east of south; negative estimates are west of south. In the northern hemisphere, if we speak in terms of (altitude, azimuth), the sun comes up around (0, 90), reaches (70, 0) around noon, and sets around (0, -90).
 
@@ -47,90 +52,98 @@ The reference frame for Pysolar is shown in the figure below. Altitude is reckon
 
 Then, use the solar.GetAltitude() function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
 
-    host:~/pysolar$ python
+    host:~/pysolar$ python3
     Python 3.4.0 (default, Apr 11 2014, 13:05:18) 
     [GCC 4.8.2] on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> from pysolar.solar import *
     >>> import datetime
-    >>> d = datetime.datetime.utcnow() # create a datetime object for now
+    >>> d = datetime.datetime.now()
     >>> get_altitude(42.206, -71.382, d)
-    -61.667157438795066 # This is what the library currently returns, but it seems wrong
-    >>> d = datetime.datetime(2007, 2, 18, 20, 13, 1, 130320) # try another date
+    24.39867440096082
+    >>> d = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320)
     >>> get_altitude(42.206, -71.382, d)
-    -32.248108920023505 # This is what the library currently returns, but it seems wrong 
-    19.551710266768644
+    20.374937135509537
 
 You can also calculate the azimuth of the sun, as shown below.::
 
-    >>> get_azimuth(42.206, -71.382, datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
-    -105.71914049480682 # This is what the library currently returns, but it seems wrong
-    -51.622484299859529
+    >>> get_azimuth(42.206, -71.382, datetime.datetime(2007, 2, 18, 15, 18, 0, 0))
+    -52.418308823492794
 
 Estimate of clear-sky radiation
 -------------------------------
 
-Once you calculate azimuth and altitude of the sun, you can predict the direct irradiation from the sun using Pysolar.GetRadiationDirect(), which returns a value in watts per square meter. As of version 0.2, the function is *not* smart enough to return zeros at night (thus the crazy 1814 W/m^2^ output below). It does account for the scattering of light by the atmosphere, though it uses an atmospheric model based on data taken in the United States.::
+Once you calculate azimuth and altitude of the sun, you can predict the direct irradiation from the sun using Pysolar. ``get_radiation_direct()`` returns a value in watts per square meter. As of version 0.7, the function is *not* smart enough to return zeros at night. It does account for the scattering of light by the atmosphere, though it uses an atmospheric model based on data taken in the United States.::
 
     >>> latitude_deg = 42.3 # positive in the northern hemisphere
     >>> longitude_deg = -71.4 # negative reckoning west from prime meridian in Greenwich, England
-    >>> altitude_deg = Pysolar.GetAltitude(latitude_deg, longitude_deg, d)
-    >>> azimuth_deg = Pysolar.GetAzimuth(latitude_deg, longitude_deg, d)
-    >>> solar.radiation.GetRadiationDirect(d, altitude_deg)
-    1814.2039909409739
+    >>> d = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320)
+    >>> altitude_deg = get_altitude(latitude_deg, longitude_deg, d)
+    >>> azimuth_deg = get_azimuth(latitude_deg, longitude_deg, d)
+    >>> radiation.get_radiation_direct(d, altitude_deg)
+    793.0379291685598
 
 Validation
 ==========
 
 Pysolar has been validated against similar ephemeris code maintained by the United States Naval Observatory (USNO). In a random sampling of 6000 locations distributed across the northern hemisphere at random times in 2008, Pysolar matched the observatory's predictions very accurately. The azimuth estimations correlated much more closely than the altitude estimations, but both agreed with the naval observatory's to within less than 0.1 degrees on average.
 
-Using the script included in Pysolar called query_usno.py, around 6200 datapoints were gathered from the website of the US Naval Observatory. The datapoints were randomly distributed in time and space, with the following restrictions:
+Using the script included in Pysolar called ``query_usno.py``, around 6200 datapoints were gathered from the website of the US Naval Observatory. The datapoints were randomly distributed in time and space, with the following restrictions:
 
 * Times were limited to 2008 and, to match the USNO's resolution, rounded to the nearest second.
 * Locations were limited to integral degrees of latitude and longitude in the northern hemisphere to match USNO's resolution. (In theory, the USNO script should accept locations in the southern hemisphere; in practice, negative latitudes caused the script to fail.)
 * Elevation was limited to sea level to make the search space smaller.
 
-Error statistics (units are degrees)
-------------------------------------
+Error statistics
+----------------
 
-The statistics below are generated by query_usno.py when run on the data file usno_data_6259.txt, as in::
+The statistics below are generated by ``query_usno.py`` when run on the data file ``usno_data_6259.txt``, as in::
 
-    python -i query_usno.py usno_data_6259.txt
+    python3 -i query_usno.py usno_data_6259.txt
 
 Azimuth error
 -------------
 
-* Mean error: 0.00295
-* Standard deviation of error: 0.00355
-* Minimum error: 1.1836 x 10e-6
-* Maximum error: 0.12369
+* Mean error: 0.00463 degrees
+* Standard deviation of error: 0.00550 degrees
+* Minimum error: 6.10 x 10e-6 degrees
+* Maximum error: 0.176 degrees
 
 Altitude error
 --------------
 
-* Mean error: 0.07125
-* Standard deviation: 0.12109
-* Minimum error: 7.88452 x 10e-6
-* Maximum error: 1.2755
+* Mean error: 0.0736 degrees
+* Standard deviation: 0.124 degrees
+* Minimum error: 7.02 x 10e-5 degrees
+* Maximum error: 0.737 degrees
 
 Validation data
 ---------------
 
-The full validation data files are included in Pysolar. See the files: usno_data_6259.txt and pysolar_v_usno.csv.
+The full validation data files are included in Pysolar. See the files: ``usno_data_6259.txt`` and ``pysolar_v_usno.csv``.
 
 Click on charts for larger versions.
 
-.. image:: img/chart_Pysolar_error_v_altitude_2008-07-21.png
+.. image:: img/chart_Pysolar_error_v_altitude_2014-12-13.png
    :scale: 50%
 
-.. image:: img/chart_Pysolar_error_v_azimuth_2008-07-21.png
+.. image:: img/chart_Pysolar_error_v_azimuth_2014-12-13.png
    :scale: 50%
 
-.. image:: img/chart_Pysolar_error_v_longitude_2008-07-21.png
+.. image:: img/chart_Pysolar_error_v_longitude_2014-12-13.png
    :scale: 50%
 
-.. image:: img/chart_Pysolar_error_v_latitude_2008-07-21.png
+.. image:: img/chart_Pysolar_error_v_latitude_2014-12-13.png
    :scale: 50%
+
+Validation procedure
+--------------------
+
+You can check the accuracy of Pysolar yourself using the iPython Notebook file ``test/validation.ipynb``. The validation steps are:
+
+1. Run ``python3 -i query_usno.py usno_data_6259.txt``
+
+2. Run the code in ``test/validation.ipynb``, which will calculate the error statistics and generate the graphs shown above.
 
 References
 ==========
