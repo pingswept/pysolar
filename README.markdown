@@ -1,35 +1,15 @@
 Pysolar is a collection of Python libraries for simulating the irradiation of any point on earth by the sun. It includes code for extremely precise ephemeris calculations, and more.
 
-# Note: it appears that as of Dec. 7, 2014, Pysolar is a little screwed up. #
+# Note: right now, the latest commits of Pysolar don't work with Python 2.x #
 
-* The latest release, 0.6, is still good: https://github.com/pingswept/pysolar/releases/tag/0.6 but HEAD has just had bunch of changes that need some validation. *
+* The latest release, 0.6, is still good: https://github.com/pingswept/pysolar/releases/tag/0.6 but HEAD has just had bunch of changes. They have been validated for Python 3.4, but not the 2.x series. *
 
-Rough steps for use, until either forever or I have time to 
-write more documentation:
+Also, the API has changed slightly:
 
-1. Install python.
-2. Get to a Python prompt.
-3. Execute code:
-<pre>
-    import datetime, solar
-    d = datetime.datetime.utcnow()
-    lat = 42.0
-    long = -71.0
-    solar.GetAltitude(lat, long, d)
-    solar.GetAzimuth(lat, long, d)
-</pre>
+  * Pysolar now expects you to supply a **timezone-aware datetime**, rather than a naive datetime in UTC. If your results seem crazy, this is probably why.
+  * Function names are now `lowercase_separated_by_underscores`, in compliance with [PEP8](https://www.python.org/dev/peps/pep-0008/#function-names).
 
-For better examples of usage, see [the examples on Github](http://wiki.github.com/pingswept/pysolar/examples).
-
-## Difference from PyEphem ##
-
-Pysolar is similar to [PyEphem](http://rhodesmill.org/pyephem/), with a few key differences. Both libraries compute the location of the sun based on [Bretagnon's VSOP 87 theory](http://articles.adsabs.harvard.edu/cgi-bin/nph-iarticle_query?1988A%26A...202..309B). Pysolar is aimed at modeling photovoltaic systems, while PyEphem is targeted at astronomers. Pysolar is written in pure Python, while PyEphem is a Python wrapper for the libastro library, written in C, which is part of [XEphem](http://www.clearskyinstitute.com/xephem/).
-
-## Validation ##
-
-Pysolar has recently been validated against similar ephemeris code maintained by the US Naval Observatory. In a random sampling of 6000 locations distributed across the Northern Hemisphere at random times in 2008, Pysolar matched the observatory’s predictions very accurately. The azimuth estimations correlated much more closely than the altitude estimations, but both agreed with the naval observatory’s to within less than 0.1 degrees on average.
-
-More details on [the validation page on Github](http://wiki.github.com/pingswept/pysolar/validation).
+Documentation now appears on [docs.pysolar.org](http://docs.pysolar.org).
 
 ## A request ##
 
@@ -40,15 +20,3 @@ If you use Pysolar, please let me know how accurate it is. It's difficult to mea
 [Brandon Stafford](http://pingswept.org)
 
 brandon at pingswept org
-
-## About This Fork ##
-
-This fork of Pysolar makes a large number of changes to Brandon’s code, among them:
-  * lower-case names more in keeping with traditional Python usage (including the package name, `Pysolar` → `pysolar`)
-  * concentration on Python 3
-  * relying on Python’s `datetime` module to manage most date calculations. This simplifies the code, and (together with the [`pytz`](https://pypi.python.org/pypi/pytz/) add-on package) allows for free use of local timezones for specifying dates and times.
-  * consistent use of SI pressure (pascals) and temperature (kelvin) units throughout
-
-Unfortunately, these changes make the code incompatible with the original.
-
-Lawrence D’Oliveiro <ldo@geek-central.gen.nz>
