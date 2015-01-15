@@ -286,19 +286,20 @@ def get_sun_earth_distance(jme):
     return get_coeff(jme, constants.sun_earth_distance_coeffs) / 1e8
 
 def get_refraction_correction(pressure, temperature, topocentric_elevation_angle):
-    
     #function and default values according to original NREL SPA C code
     #http://www.nrel.gov/midc/spa/ 
     
     sun_radius = 0.26667  
     atmos_refract = 0.5667
-    
     del_e = 0.0   
     tea = topocentric_elevation_angle
 
-    #approximation only valid if sun is not close to horizon
-    if (tea >= -1.0*(sun_radius + atmos_refract)):
+    # Approximation only valid if sun is not well below horizon
+    # This approximation could be improved; see history at https://github.com/pingswept/pysolar/pull/23
+    # Better method could come from Auer and Standish [2000]:
+    # http://iopscience.iop.org/1538-3881/119/5/2472/pdf/1538-3881_119_5_2472.pdf
     
+    if (tea >= -1.0*(sun_radius + atmos_refract)):
         a = pressure * 2.830 * 1.02
         b = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
         del_e = a / b
