@@ -141,9 +141,15 @@ Validation procedure
 
 You can check the accuracy of Pysolar yourself using the iPython Notebook file ``test/validation.ipynb``. The validation steps are:
 
-1. Run ``python3 -i query_usno.py usno_data_6259.txt``
+1. Install IPython Notebook: http://ipython.org/install.html
 
-2. Run the code in ``test/validation.ipynb``, which will calculate the error statistics and generate the graphs shown above.
+2. Make sure you have installed only the version of Pysolar that you want to validate.
+
+3. Run ``python3 -i test/query_usno.py test/usno_data_6259.txt``. This runs Pysolar's ``get_altitude()`` and ``get_azimuth()`` functions repeatedly, compares the results to a file included in Pysolar of data pulled from the USNO website, and writes the results to a .CSV file.
+
+4. Start IPython Notebook and open ``validation.ipynb``.
+
+5. Run the code in ``test/validation.ipynb``, which will calculate the error statistics and generate the graphs shown above.
 
 References
 ==========
