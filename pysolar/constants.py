@@ -71,7 +71,7 @@ seconds_per_day = 86400
 
 standard_pressure = 101325.00 # pascals
 standard_temperature = 288.15 # kelvin
-celsius_offset = 273.15 # subtract from kelvin to get °C, add to °C to get kelvin
+celsius_offset = 273.15 # subtract from kelvin to get deg C, add to deg C to get kelvin
 earth_temperature_lapse_rate = -0.0065 # change in temperature with height, kelvin/metre
 air_gas_constant = 8.31432 # N*m/s^2
 earth_gravity = 9.80665 # m/s^2 or N/kg
