@@ -79,6 +79,7 @@ leap_seconds_adjustments = \
       (+1, 0), # 2012
       (0, 0), # 2013
       (0, 0), # 2014
+      (+1, 0), #2015
     ]
 
 def get_leap_seconds(when) :
