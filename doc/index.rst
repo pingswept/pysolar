@@ -83,6 +83,13 @@ Once you calculate azimuth and altitude of the sun, you can predict the direct i
     >>> radiation.get_radiation_direct(d, altitude_deg)
     793.0379291685598
 
+Troubleshooting
+===============
+
+If you find yourself getting errors like `AttributeError: 'datetime.datetime' object has no attribute 'timestamp'`, this probably means that you are using Python 2 instead of Python 3.
+
+Pysolar no longer supports Python 2. So far, nobody has volunteered to do the work to backport the code to Python 2. If you're stuck on Python 2 because of some other dependency, you should use Pysolar 0.6, which is the last version that works with Python 2.
+
 Validation
 ==========
 
