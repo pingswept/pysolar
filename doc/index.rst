@@ -150,9 +150,7 @@ You can check the accuracy of Pysolar yourself using the iPython Notebook file `
 
 1. Install `IPython Notebook <http://ipython.org/install.html>`_, plus a few Python dependencies.
 
-``sudo apt-get install ipython-notebook python3 python3-pip python3-scipy``
-
-``sudo pip3 install pytz``
+``sudo apt-get install ipython-notebook python3 python3-matplotlib python3-pandas python3-scipy python3-tz``
 
 2. Make sure you have installed only the version of Pysolar that you want to validate.
 
