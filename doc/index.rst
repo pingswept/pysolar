@@ -21,20 +21,20 @@ Pysolar is similar to the sun position module in `Sunpy <http://sunpy.org>`_, wh
 Prerequisites for use
 ---------------------
 
-Pysolar requires Python, which comes preinstalled on most Unix machines, including Apple's OS X. You can check to see if you have it installed on a Unix machine by typing python at a command prompt. If the result is something like::
+Pysolar requires Python, which comes preinstalled on most Unix machines, including Apple's OS X. You can check to see if you have it installed on a Unix machine by typing python3 at a command prompt. If the result is something like::
 
-    Python 2.5.1c1 (release25-maint, Apr 12 2007, 21:00:25)
-    [GCC 4.1.2 (Ubuntu 4.1.2-0ubuntu4)] on linux2
+    Python 3.4.2 (default, Oct  8 2014, 14:38:51) 
+    [GCC 4.9.1] on linux
     Type "help", "copyright", "credits" or "license" for more information.
-    >>>
+    >>> 
 
-you have Python. (You can escape from the Python prompt with Ctrl-D.)
+you have Python 3. (You can escape from the Python prompt with Ctrl-D.)
 
 If the result is more like::
 
-    bash: python: command not found
+    bash: python3: command not found
 
-you probably don't have Python.
+you probably don't have Python 3.
 
 If you need to, you can download Python from the `Python.org download page <http://python.org/download/>`_.
 
@@ -119,10 +119,10 @@ Azimuth error
 Altitude error
 --------------
 
-* Mean error: 0.0736 degrees
-* Standard deviation: 0.124 degrees
-* Minimum error: 7.02 x 10e-5 degrees
-* Maximum error: 0.737 degrees
+* Mean error: 0.0379 degrees
+* Standard deviation: 0.0795 degrees
+* Minimum error: 1.04 x 10e-6 degrees
+* Maximum error: 0.604 degrees
 
 Validation data
 ---------------
@@ -131,16 +131,16 @@ The full validation data files are included in Pysolar. See the files: ``usno_da
 
 Click on charts for larger versions.
 
-.. image:: img/chart_Pysolar_error_v_altitude_2014-12-13.png
+.. image:: img/chart_Pysolar_error_v_altitude_2015-04-17.png
    :scale: 50%
 
-.. image:: img/chart_Pysolar_error_v_azimuth_2014-12-13.png
+.. image:: img/chart_Pysolar_error_v_azimuth_2015-04-17.png
    :scale: 50%
 
-.. image:: img/chart_Pysolar_error_v_longitude_2014-12-13.png
+.. image:: img/chart_Pysolar_error_v_longitude_2015-04-17.png
    :scale: 50%
 
-.. image:: img/chart_Pysolar_error_v_latitude_2014-12-13.png
+.. image:: img/chart_Pysolar_error_v_latitude_2015-04-17.png
    :scale: 50%
 
 Validation procedure
@@ -148,11 +148,16 @@ Validation procedure
 
 You can check the accuracy of Pysolar yourself using the iPython Notebook file ``test/validation.ipynb``. The validation steps are:
 
-1. Install IPython Notebook: http://ipython.org/install.html
+1. Install `IPython Notebook <http://ipython.org/install.html>`, plus a few Python dependencies.
+
+``sudo apt-get install ipython-notebook python3 python3-pip python3-scipy``
+``sudo pip3 install pytz``
 
 2. Make sure you have installed only the version of Pysolar that you want to validate.
 
-3. Run ``python3 -i test/query_usno.py test/usno_data_6259.txt``. This runs Pysolar's ``get_altitude()`` and ``get_azimuth()`` functions repeatedly, compares the results to a file included in Pysolar of data pulled from the USNO website, and writes the results to a .CSV file.
+3. Change to the test directory: `cd pysolar/test/`
+
+3. Run ``python3 -i query_usno.py usno_data_6259.txt``. This runs Pysolar's ``get_altitude()`` and ``get_azimuth()`` functions repeatedly, compares the results to a file included in Pysolar of data pulled from the USNO website, and writes the results to the file ``test/pysolar_v_usno.csv``.
 
 4. Start IPython Notebook and open ``validation.ipynb``.
 
