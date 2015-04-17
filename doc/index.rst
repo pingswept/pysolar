@@ -148,7 +148,7 @@ Validation procedure
 
 You can check the accuracy of Pysolar yourself using the iPython Notebook file ``test/validation.ipynb``. The validation steps are:
 
-1. Install `IPython Notebook <http://ipython.org/install.html>_`, plus a few Python dependencies.
+1. Install `IPython Notebook <http://ipython.org/install.html>`_, plus a few Python dependencies.
 
 ``sudo apt-get install ipython-notebook python3 python3-pip python3-scipy``
 
