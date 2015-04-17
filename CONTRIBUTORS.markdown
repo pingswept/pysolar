@@ -6,6 +6,7 @@ Many people have contributed to Pysolar since its inception.
 Thanks to:
 
 * Lawrence d'Oliveiro (ldo)
+* Naz Gassiep (mrnaz)
 * David V. Hill
 * Will Hardy
 * Poul-Henning Kamp
