@@ -50,7 +50,7 @@ The reference frame for Pysolar is shown in the figure below. Altitude is reckon
 
 .. image:: img/reference_frame.png
 
-Then, use the solar.GetAltitude() function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
+Then, use the solar.get_altitude() function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
 
     host:~/pysolar$ python3
     Python 3.4.0 (default, Apr 11 2014, 13:05:18) 
