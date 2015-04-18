@@ -58,7 +58,7 @@ Then, use the solar.GetAltitude() function to calculate the angle between the su
     Type "help", "copyright", "credits" or "license" for more information.
     >>> from pysolar.solar import *
     >>> import datetime
-    >>> d = datetime.datetime.now()
+    >>> d = datetime.datetime.utcnow()
     >>> get_altitude(42.206, -71.382, d)
     24.39867440096082
     >>> d = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320)
