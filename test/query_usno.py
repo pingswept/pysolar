@@ -172,7 +172,8 @@ def WriteEphemerisDatumToFile(d, filename):
     log.close()
 
 def WriteComparisonsToCSV(comps, filename):
-    out = open(filename, 'a')
+    out = open(filename, 'w')
+    out.write('timestamp,latitude,longitude,elevation,alt1,alt2,alt_error,az1,az2,az_error\n')
     for c in comps:
         out.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (c.timestamp, c.latitude, c.longitude, c.elevation, c.alt1, c.alt2, c.alt_error, c.az1, c.az2, c.az_error))
     out.close()
