@@ -70,13 +70,13 @@ def get_aerosol_scattering_transmittance(band, ma, tau_a):
     # returns Tas
     return math.exp(-ma * albedo[band] * tau_a)
 
-
+# Change to use get_broadband_direct_normal_irradiance() instead of Ebn?
 def get_beam_broadband_irradiance(Ebn, altitude_deg):
     Z = 90 - altitude_deg
     return Ebn * math.cos(math.radians(Z))
 
 
-def get_diffuse_irradiance():
+def get_diffuse_broadband_irradiance():
     return get_diffuse_irradiance_by_band("high-frequency") + get_diffuse_irradiance_by_band("low-frequency")
 
 
@@ -110,7 +110,7 @@ def get_diffuse_irradiance_by_band(band, air_mass=1.66, turbidity_alpha=1.3, tur
     return Edp + Edd
 
 
-def get_direct_normal_irradiance(altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
+def get_broadband_direct_normal_irradiance(altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
     high = get_direct_normal_irradiance_by_band("high-frequency", altitude_deg, pressure_millibars,
                                            ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
     low = get_direct_normal_irradiance_by_band("low-frequency", altitude_deg, pressure_millibars,
@@ -167,7 +167,11 @@ def get_gas_transmittance(band, mRprime):
         return (1 + 0.27284 * mRprime - 0.00063699 * mRprime ** 2) / (1 + 0.30306 * mRprime)
 
 
-def get_broadband_global_irradiance(Ebn, altitude_deg, Ed):
+# Change to use: Ebn -> get_broadband_direct_normal_irradiance()
+#                Ed = Edp + Edd = get_diffuse_broadband_irradiance() + get_backscattered_diffuse_broadband_irradiance()
+#                Still have to write: get_backscattered_diffuse_broadband_irradiance()
+
+def get_global_broadband_irradiance(Ebn, altitude_deg, Ed):
     return get_beam_broadband_irradiance(Ebn, altitude_deg) + Ed
 
 
