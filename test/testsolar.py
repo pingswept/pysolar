@@ -109,7 +109,7 @@ class testSolar(unittest.TestCase):
 		# self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10) # value from Reda and Andreas (2005)
 		self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4) # above fails with more accurate Julian Ephemeris correction
 
-	def test_get_apparent_sidreal_time(self):
+	def test_get_apparent_sidereal_time(self):
 		self.assertAlmostEqual(318.5119, self.apparent_sidereal_time, 2) # value derived from Reda and Andreas (2005)
 
 	def test_get_geocentric_sun_right_ascension(self):
