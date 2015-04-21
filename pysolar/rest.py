@@ -18,14 +18,13 @@
 import math
 from .constants import standard_pressure
 
-# single-scattering albedo used to calculate aerosol scattering transmittance
+# single-scattering albedo used to calculate aerosol scattering transmittance;
+# not used for sky or ground albedo for backscattering estimate
 albedo = {}
 
 albedo["high-frequency"] = 0.92
 albedo["low-frequency"] = 0.84
 standard_pressure_millibars = standard_pressure / 100
-
-rhogi = 0.150  # mean ground albedo from [Gueymard, 2008], Table 1
 
 E0n = {"high-frequency": 635.4,  # extra-atmospheric irradiance, 290-700 nm (UV and visible)
        "low-frequency":  709.7}  # extra-atmospheric irradiance, 700-4000 nm (short infrared)
@@ -70,14 +69,28 @@ def get_aerosol_scattering_transmittance(band, ma, tau_a):
     # returns Tas
     return math.exp(-ma * albedo[band] * tau_a)
 
-# Change to use get_broadband_direct_normal_irradiance() instead of Ebn?
-def get_beam_broadband_irradiance(Ebn, altitude_deg):
+def get_backscattered_diffuse_broadband_irradiance(band, turbidity_alpha=1.3, turbidity_beta=0.6):
+    return get_backscattered_diffuse_broadband_irradiance_by_band("high-frequency", turbidity_alpha, turbidity_beta) + get_backscattered_diffuse_broadband_irradiance_by_band("low-frequency", turbidity_alpha, turbidity_beta)
+
+def get_backscattered_diffuse_irradiance_by_band(band, Ebi, Edpi, turbidity_alpha=1.3, turbidity_beta=0.6):
+    rhos = get_sky_albedo(band, turbidity_alpha, turbidity_beta)
+    rhog = get_ground_albedo(band)
+    Eddi = rhog * rhos * (Ebi + Edpi) / (1 - rhog * rhos)
+    return Eddi
+
+
+def get_beam_broadband_irradiance(altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
     Z = 90 - altitude_deg
+    Ebn = get_broadband_direct_normal_irradiance(altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
     return Ebn * math.cos(math.radians(Z))
 
+def get_beam_irradiance_by_band(band, altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
+    Z = 90 - altitude_deg
+    Ebni = get_direct_normal_irradiance_by_band(band, altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
+    return Ebni * math.cos(math.radians(Z))
 
-def get_diffuse_broadband_irradiance():
-    return get_diffuse_irradiance_by_band("high-frequency") + get_diffuse_irradiance_by_band("low-frequency")
+def get_diffuse_broadband_irradiance(air_mass=1.66, turbidity_alpha=1.3, turbidity_beta=0.6):
+    return get_diffuse_irradiance_by_band("high-frequency", air_mass, turbidity_alpha, turbidity_beta) + get_diffuse_irradiance_by_band("low-frequency", air_mass, turbidity_alpha, turbidity_beta)
 
 
 def get_diffuse_irradiance_by_band(band, air_mass=1.66, turbidity_alpha=1.3, turbidity_beta=0.6):
@@ -85,8 +98,6 @@ def get_diffuse_irradiance_by_band(band, air_mass=1.66, turbidity_alpha=1.3, tur
     effective_wavelength = get_effective_aerosol_wavelength(band, turbidity_alpha)
     tau_a = get_aerosol_optical_depth(
         turbidity_beta, effective_wavelength, turbidity_alpha)
-    rhosi = get_sky_albedo(band, turbidity_alpha, turbidity_beta)
-
     ma = get_optical_mass_aerosol(altitude_deg)
     mo = get_optical_mass_ozone(altitude_deg)
     mR = get_optical_mass_rayleigh(altitude_deg, pressure_millibars)
@@ -103,11 +114,10 @@ def get_diffuse_irradiance_by_band(band, air_mass=1.66, turbidity_alpha=1.3, tur
     Ba = get_aerosol_forward_scatterance_factor(altitude_deg)
     F = get_aerosol_scattering_correction_factor(band, ma, tau_a)
 
-    Edp = To * Tg * Tn * Tw * \
+    Edpi = To * Tg * Tn * Tw * \
         (BR * (1 - TR) * Ta ** 0.25 + Ba * F * TR * (1 - Tas ** 0.25)) * \
         E0n[band]
-    Edd = rhogi * rhosi * (Eb + Edp) / (1 - rhogi * rhosi)
-    return Edp + Edd
+    return Edpi
 
 
 def get_broadband_direct_normal_irradiance(altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
@@ -166,13 +176,22 @@ def get_gas_transmittance(band, mRprime):
     else:
         return (1 + 0.27284 * mRprime - 0.00063699 * mRprime ** 2) / (1 + 0.30306 * mRprime)
 
+def get_global_broadband_irradiance(altitude_deg, pressure_millibars=standard_pressure_millibars, ozone_atm_cm=0.35, nitrogen_atm_cm=0.0002, precipitable_water_cm=5.0, turbidity_alpha=1.3, turbidity_beta=0.6):
+    Eb_high = get_beam_irradiance_by_band("high-frequency", altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
+    Eb_low  = get_beam_irradiance_by_band("low-frequency",  altitude_deg, pressure_millibars, ozone_atm_cm, nitrogen_atm_cm, precipitable_water_cm, turbidity_alpha, turbidity_beta)
 
-# Change to use: Ebn -> get_broadband_direct_normal_irradiance()
-#                Ed = Edp + Edd = get_diffuse_broadband_irradiance() + get_backscattered_diffuse_broadband_irradiance()
-#                Still have to write: get_backscattered_diffuse_broadband_irradiance()
+    Edp_high = get_diffuse_irradiance_by_band("high-frequency", air_mass, turbidity_alpha, turbidity_beta)
+    Edp_low  = get_diffuse_irradiance_by_band("low-frequency",  air_mass, turbidity_alpha, turbidity_beta)
 
-def get_global_broadband_irradiance(Ebn, altitude_deg, Ed):
-    return get_beam_broadband_irradiance(Ebn, altitude_deg) + Ed
+    Edd_high = get_backscattered_diffuse_irradiance_by_band("high-frequency", Eb_high, Edp_high, turbidity_alpha, turbidity_beta)
+    Edd_low  = get_backscattered_diffuse_irradiance_by_band("low-frequency", Eb_low, Edp_low, turbidity_alpha, turbidity_beta)
+
+    return Eb_high + Eb_low + Edp_high + Edp_low + Edd_high + Edd_low
+
+def get_ground_albedo(band):
+    # This could probably be improved with [Gueymard, 1993: Mathematically integrable parameterization of clear-sky beam and global irradiances and its use in daily irradiation applications]
+    # http://www.sciencedirect.com/science/article/pii/0038092X9390059W]
+    return 0.150  # mean ground albedo from [Gueymard, 2008], Table 1
 
 
 def get_nitrogen_transmittance(band, mw, nitrogen_atm_cm):
