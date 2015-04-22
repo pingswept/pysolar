@@ -25,6 +25,7 @@ albedo = {}
 albedo["high-frequency"] = 0.92
 albedo["low-frequency"] = 0.84
 standard_pressure_millibars = standard_pressure / 100
+un = 0.0003  # atm*cm, from [Gueymard 2008], p. 280
 
 E0n = {"high-frequency": 635.4,  # extra-atmospheric irradiance, 290-700 nm (UV and visible)
        "low-frequency":  709.7}  # extra-atmospheric irradiance, 700-4000 nm (short infrared)
@@ -38,7 +39,6 @@ def get_aerosol_forward_scatterance_factor(altitude_deg):
 def get_aerosol_optical_depth(turbidity_beta, effective_wavelength, turbidity_alpha):
     # returns tau_a
     return turbidity_beta * effective_wavelength ** -turbidity_alpha
-
 
 def get_aerosol_scattering_correction_factor(band, ma, tau_a):
     # returns F
@@ -151,6 +151,7 @@ def get_direct_normal_irradiance_by_band(band, altitude_deg, pressure_millibars=
 
 
 def get_effective_aerosol_wavelength(band, ma, turbidity_alpha, turbidity_beta):
+    # This function has an error somewhere. It returns negative values sometimes, but wavelength should always be positive.
     ua = math.log(1 + ma * turbidity_beta)
     if band == "high-frequency":
         a1 = turbidity_alpha  # just renaming to keep equations short
@@ -233,10 +234,10 @@ def get_optical_mass_aerosol(altitude_deg):  # from Appendix B of [Gueymard, 200
 
 def get_ozone_transmittance(band, mo, uo):
     if band == "high-frequency":
-        f1 = uo(10.979 - 8.5421 * uo) / (1 + 2.0115 * uo + 40.189 * uo ** 2)
-        f2 = uo(-0.027589 - 0.005138 * uo) / \
+        f1 = uo * (10.979 - 8.5421 * uo) / (1 + 2.0115 * uo + 40.189 * uo ** 2)
+        f2 = uo * (-0.027589 - 0.005138 * uo) / \
             (1 - 2.4857 * uo + 13.942 * uo ** 2)
-        f3 = uo(10.995 - 5.5001 * uo) / (1 + 1.6784 * uo + 42.406 * uo ** 2)
+        f3 = uo * (10.995 - 5.5001 * uo) / (1 + 1.6784 * uo + 42.406 * uo ** 2)
         return (1 + f1 * mo + f2 * mo ** 2) / (1 + f3 * mo)
     else:
         return 1.0
