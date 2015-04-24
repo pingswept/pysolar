@@ -7,9 +7,10 @@ Thanks to:
 
 * Lawrence d'Oliveiro (ldo)
 * Naz Gassiep (mrnaz)
-* David V. Hill
+* Sean T. Hammond (seanth)
 * Will Hardy
 * Poul-Henning Kamp
+* David V. Hill
 * PJ Kundert
 * Lahmeyer International
 * Jon Little
@@ -21,7 +22,7 @@ Thanks to:
 * Francois Rogez
 * Arnaldo Russo
 * Sean Taylor
-* Sean T. Hammond (seanth)
+* Andrew Benedict Wallace
 * Robin Wilson
 * Pietro Zambelli
 * Holger Zebner
