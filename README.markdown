@@ -4,7 +4,7 @@ Pysolar is a collection of Python libraries for simulating the irradiation of an
 
 # Note: right now, the latest commits of Pysolar don't work with Python 2.x #
 
-* The latest release, 0.6, is still good: https://github.com/pingswept/pysolar/releases/tag/0.6 but HEAD has just had bunch of changes. They have been validated for Python 3.4, but not the 2.x series. *
+* Release 0.6 works with 2.x: https://github.com/pingswept/pysolar/releases/tag/0.6 but 0.7 and later have a bunch of changes. They have been validated for Python 3.4, but releases 3.2 or earlier are missing features that the changes require. *
 
 Also, the API has changed slightly:
 
