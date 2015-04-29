@@ -29,7 +29,17 @@ Code contributions are welcome under the terms of the GPLv3 license. If you're u
 
 ## Support ##
 
-You can email the original author [Brandon Stafford](http://rascalmicro.com) at brandon at pingswept org. Please understand that I wrote (most of) Pysolar around a decade ago when I worked in the solar industry. Now, I'm an electrical engineer who just maintains Pysolar as a fun hobby.
+Your first move should be to read the [documentation](http://docs.pysolar.org) and think. But you've probably already tried that.
+
+Your second move is to ask a question on the [pysolar-discuss](http://lists.pysolar.org) mailing list. The original author of Pysolar, [Brandon Stafford](http://rascalmicro.com), monitors the mailing list. Please understand that I wrote (most of) Pysolar around a decade ago when I worked in the solar industry. Now, I'm an electrical engineer who just maintains Pysolar as a fun hobby. The other people on the list are other users like you-- some are experts; some are amateurs. None of them are getting paid for this.
+
+To subscribe to the mailing list, send a blank email to pysolar-discuss+subscribe@pysolar.org. After a few minutes, you'll get a confirmation message; reply to the confirmation to complete the subscription.
+
+In order to post to the list, you have to subscribe. You also have to pass a threshold of civil discourse regulated by me.
+
+The archive of the list is publicly available here: http://lists.pysolar.org/.
+
+If you ever want to unsubscribe, send an email to pysolar-discuss+unsubscribe@pysolar.org and reply to the confirmation message. If you run into trouble, just send me an email at brandon@pingswept.org, and I'll remove your address manually.
 
 Please report bugs to [the issue tracker on Github](https://github.com/pingswept/pysolar/issues); I am automatically notified when a new issue is opened.
 
