@@ -168,7 +168,7 @@ def get_effective_aerosol_wavelength(band, ma, turbidity_alpha, turbidity_beta):
         e1 = (-0.50003 - 0.18329 * a2 + 0.23835 * a2 ** 2) / (1 + 1.6756 * a2)
         e2 = (-0.50001 + 1.1414 * a2 + 0.0083589 * a2 ** 2) / (1 + 11.168 * a2)
         e3 = (-0.70003 - 0.73587 * a2 + 0.51509 * a2 ** 2) / (1 + 4.7665 * a2)
-        return (e0 + e1 * ua + e2 * ua ** 2) / (1 + e3 * ua ** 2)
+        return (e0 + e1 * ua + e2 * ua ** 2) / (1 + e3 * ua)
 
 
 def get_gas_transmittance(band, mRprime):
