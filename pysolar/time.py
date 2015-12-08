@@ -20,6 +20,7 @@
 import warnings
 import math
 import datetime
+import time
 from .constants import \
     seconds_per_day
 
@@ -735,7 +736,7 @@ def timestamp(when):
     print(when)
     "Return POSIX timestamp as float"
     if when.tzinfo is None:
-        return _time.mktime((when.year, when.month, when.day,
+        return time.mktime((when.year, when.month, when.day,
                              when.hour, when.minute, when.second,
                              -1, -1, -1)) + when.microsecond / 1e6
     else:
