@@ -727,6 +727,20 @@ def get_delta_t(when) :
           # don't bother doing any fancy interpolation
 #end get_delta_t
 
+def timestamp(when):
+    """ Return POSIX timestamp as a float.
+    cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py in order to work on python 3.2
+    """
+    _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+    print(when)
+    "Return POSIX timestamp as float"
+    if when.tzinfo is None:
+        return _time.mktime((when.year, when.month, when.day,
+                             when.hour, when.minute, when.second,
+                             -1, -1, -1)) + when.microsecond / 1e6
+    else:
+        return (when - _EPOCH).total_seconds()
+
 def get_julian_solar_day(when):
     "returns the UT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
@@ -734,7 +748,7 @@ def get_julian_solar_day(when):
     " happened over such wildly varying times in different regions."
     return \
         (
-                (when.timestamp() + get_leap_seconds(when) + tt_offset - get_delta_t(when))
+                (timestamp(when) + get_leap_seconds(when) + tt_offset - get_delta_t(when))
             /
                 seconds_per_day
         +
@@ -751,7 +765,7 @@ def get_julian_ephemeris_day(when) :
     " happened over such wildly varying times in different regions."
     return \
         (
-                (when.timestamp() + get_leap_seconds(when) + tt_offset)
+                (timestamp(when) + get_leap_seconds(when) + tt_offset)
             /
                 seconds_per_day
         +
