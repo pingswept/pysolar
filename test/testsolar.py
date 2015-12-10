@@ -32,7 +32,7 @@ class testSolar(unittest.TestCase):
 	def setUp(self):
 		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo = datetime.timezone.utc)
 		self.d += datetime.timedelta(seconds = time.get_delta_t(self.d) - time.tt_offset - time.get_leap_seconds(self.d))
-		  # Reda & Andreas say that this time is in “Local Standard Time”, which they
+		  # Reda & Andreas say that this time is in "Local Standard Time", which they
 		  # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
 		  # to UTC.
 		self.longitude = -105.1786
@@ -71,6 +71,11 @@ class testSolar(unittest.TestCase):
 		self.incidence_angle = solar.get_incidence_angle(self.topocentric_zenith_angle, self.slope, self.slope_orientation, self.topocentric_azimuth_angle)
 		self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
 		self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
+  
+	def test_timestamp(self):
+		no_tzinfo = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=None)
+		print('d', time.timestamp(self.d))
+		print('no tzinfo', time.timestamp(no_tzinfo))
 
 	def test_get_julian_solar_day(self):
 		self.assertAlmostEqual(2452930.312847, self.jd, 6) # value from Reda and Andreas (2005)
