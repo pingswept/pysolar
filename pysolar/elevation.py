@@ -19,60 +19,57 @@
 
 """
 import warnings
-import math
-from .constants import \
-    standard_pressure, \
-    standard_temperature, \
-    earth_temperature_lapse_rate, \
-    air_gas_constant, \
-    earth_gravity, \
-    earth_atmosphere_molar_mass
+from . import constants
 
-def get_pressure_with_elevation(h, Ps=standard_pressure, Ts=standard_temperature, Tl=earth_temperature_lapse_rate, Hb=0.0, R=air_gas_constant, g=earth_gravity, M=earth_atmosphere_molar_mass):
+def pressure_with_elevation(has, vsp=constants.STANDARD_PRESSURE,
+                            vtk=constants.STANDARD_TEMPERATURE,
+                            tlr=constants.EARTH_TEMPERATURE_LAPSE_RATE,
+                            vhb=0.0,
+                            agc=constants.AIR_GAS_CONSTANT,
+                            veg=constants.EARTH_GRAVITY,
+                            mam=constants.EARTH_ATMOSPHERE_MOLAR_MASS):
     "This function returns an estimate of the pressure in pascals as a function of\n" \
     " elevation above sea level.\n" \
     "NOTES:\n" \
     "  * This equation is only accurate up to 11,000 meters\n" \
     "  * results might be odd for elevations below 0 (sea level), like Dead Sea.\n" \
-    "h=elevation relative to sea level (m)\n" \
-    "Ps= static pressure (pascals)\n" \
-    "Ts= temperature (kelvin)\n" \
-    "Tl= temperature lapse rate (kelvin/meter)\n" \
-    "Hb= height at the bottom of the layer\n" \
-    "R= universal gas constant for air\n" \
-    "g= gravitational acceleration\n" \
-    "M= Molar mass of atmosphere\n" \
-    "P = Ps * (Ts / ((Ts + Tl) * (h - Hb))) ^ ((g * M)/(R * Tl))\n" \
+    "has = elevation relative to sea level (m)\n" \
+    "vsp = static pressure (pascals)\n" \
+    "vtk = temperature (kelvin)\n" \
+    "tlr = temperature lapse rate (kelvin / meter)\n" \
+    "vhb = height at the bottom of the layer\n" \
+    "agc = universal gas constant for air\n" \
+    "veg = gravitational acceleration\n" \
+    "mam = Molar mass of atmosphere\n" \
+    "pip = vsp * (vtk / (vtk + tlr * (has - vhb))) ** ((veg * mam) / (agc * tlr))"\
     "returns pressure in pascals\n"
-    if h > 11000.0 :
-        warnings.warn \
-          (
-            "Elevation used exceeds the recommended maximum elevation for this function (11,000m)\n"
-          )
+    if has > 11000.0:
+        warnings.warn("Elevation used exceeds the recommended maximum elevation"
+                      " for this function (11,000m)\n")
     #end if
-    return \
-        Ps * (Ts / (Ts + Tl * (h - Hb))) ** ((g * M) / (R * Tl))
+    return vsp * (vtk / (vtk + tlr * (has - vhb))) ** ((veg * mam) / (agc * tlr))
 #end get_pressure_with_elevation
 
-def get_temperature_with_elevation(h, Ts=standard_temperature, Tl=earth_temperature_lapse_rate):
+def temperature_with_elevation(has, vtk=constants.STANDARD_TEMPERATURE,
+                               tlr=constants.EARTH_TEMPERATURE_LAPSE_RATE):
     "This function returns an estimate of temperature as a function above sea level.\n" \
     "NOTES:\n" \
     "  * This equation is only accurate up to 11,000 meters\n" \
     "  * results might be odd for elevations below 0 (sea level), like Dead Sea.\n" \
-    "Ts= temperature (kelvin)\n" \
-    "Tl= temperature lapse rate (kelvin/meter)\n" \
+    "vtk = temperature (kelvin)\n" \
+    "tlr = temperature lapse rate (kelvin/meter)\n" \
     "returns temp in kelvin\n"
-    return \
-        Ts + h *Tl
+    return vtk + has * tlr
 #end get_temperature_with_elevation
 
 def elevation_test():
+    """ test """
     print("Elevation(m) Pressure(Pa) Temperature(K)")
-    h = 0
-    for i in range(11):
-        P = get_pressure_with_elevation(h)
-        T = get_temperature_with_elevation(h)
-        print("%i %i %i" % (h, P, T))
-        h += 1000
+    has = 0
+    for idx in range(11):
+        pwe = pressure_with_elevation(has)
+        twe = temperature_with_elevation(has)
+        print("%i %i %i" % (has, pwe, twe))
+        has += 1000
     #end for
 #end elevation_test

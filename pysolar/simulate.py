@@ -29,7 +29,7 @@ def datetime_range(start_datetime, end_datetime, step_minutes):
     step = step_minutes * 60
     time_list = []
     span = end_datetime - start_datetime
-    dt = datetime.timedelta(seconds = step)
+    dt = datetime.timedelta(seconds=step)
     for n in range((span.days * constants.seconds_per_day + span.seconds) // step) :
         yield start_datetime + dt * n
     #end for
