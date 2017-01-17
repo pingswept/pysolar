@@ -38,6 +38,20 @@ def solar_test():
             print(timestamp, "UTC", altitude_deg, azimuth_deg, power)
         when = when + thirty_minutes
 
+def my_eot(day):
+    """ under dev so first we need the right time entry. Year day needs to be converted to a
+      Julian day number with time added as EOT is not just for lunch
+      https://equationoftime.herokuapp.com/ """
+    jdn = day
+    jct = time.julian_century(jdn)
+    vma = 357.52772 + \
+      35999.050340 * jct + \
+      -0.0001603 * jct * jct + \
+      -300000.0 * jct * jct * jct
+    print(vma % 360)
+    # delta angle = mean anomally - true anomally + true longitude - right ascension
+    return None
+
 def equation_of_time(day):
     "returns the number of minutes to add to mean solar time to get actual solar time."
     return 9.87 * \
@@ -369,12 +383,14 @@ def topocentric_azimuth_angle(topo_local_hour_angle, lat, topo_declination):
     return 180.0 + math.degrees(math.atan2(sin_lha, cos_lha * sin_lat - tan_dec * cos_lat)) % 360
 
 def topocentric_elevation_angle(lat, dec, local_hr_angle):
-    """ pending docs """
-    sin_lat = math.sin(math.radians(lat))
-    cos_lat = math.cos(math.radians(lat))
-    sin_dec = math.sin(math.radians(dec))
+    """ 3.14.3. Calculate the topocentric elevation angle, e (in degrees),
+    e = e0 + ∆e .	 (43)  """
     cos_dec = math.cos(math.radians(dec))
+    cos_lat = math.cos(math.radians(lat))
     cos_lha = math.cos(math.radians(local_hr_angle))
+    sin_dec = math.sin(math.radians(dec))
+    sin_lat = math.sin(math.radians(lat))
+
     return math.degrees(math.asin(sin_lat * sin_dec + cos_lat * cos_dec * cos_lha))
 
 def topocentric_local_hour_angle(local_hr_angle, solar_ra_parallax):
@@ -402,8 +418,7 @@ def topocentric_sun_right_ascension(p_radial_distance,
                                     solar_longitude,
                                     true_obliquity,
                                     geo_latitude):
-    """
-      """
+    """ 3.12. Calculate the topocentric sun right ascension α' = α + ∆α (in degrees): """
     gsd = geocentric_declination(solar_longitude,
                                  true_obliquity,
                                  geo_latitude)
