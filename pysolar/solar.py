@@ -50,7 +50,7 @@ def my_eot(day):
       -300000.0 * jct * jct * jct
     print(vma % 360)
     # delta angle = mean anomally - true anomally + true longitude - right ascension
-    return None
+    return math.radians(vma % 360)
 
 def equation_of_time(day):
     "returns the number of minutes to add to mean solar time to get actual solar time."
@@ -113,6 +113,7 @@ def declination(day):
     hitting zero on the equinoxes and peaking on the solstices.
     '''
     return constants.EARTH_AXIS_INCLINATION * math.sin((2 * math.pi / 365.0) * (day - 81))
+
 
 def equatorial_horizontal_parallax(sun_earth):
     """ pending docs """
@@ -442,7 +443,7 @@ def true_ecliptic_obliquity(jem, nut):
     """ pending docs """
     jmt = jem / 10.0
     mean_obliquity = 84381.448 - (4680.93 * jmt) - (1.55 * jmt ** 2) + (1999.25 * jmt ** 3) \
-    - (51.38 * jmt ** 4) -(249.67 * jmt ** 5) - (39.05 * jmt ** 6) + (7.12 * jmt ** 7) \
+    - (51.38 * jmt ** 4) - (249.67 * jmt ** 5) - (39.05 * jmt ** 6) + (7.12 * jmt ** 7) \
     + (27.87 * jmt ** 8) + (5.79 * jmt ** 9) + (2.45 * jmt ** 10)
     return (mean_obliquity / 3600.0) + nut['obliquity']
 

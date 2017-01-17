@@ -751,7 +751,7 @@ def timestamp(when):
         in order to work on python 3.2
     """
 
-    print(when)
+    # print(when)
     if when.tzinfo is None:
         return time.mktime((when.year, when.month, when.day,
                             when.hour, when.minute, when.second,
