@@ -49,6 +49,7 @@ def my_eot(day):
       -0.0001603 * jct * jct + \
       -300000.0 * jct * jct * jct
     print(vma % 360)
+
     # delta angle = mean anomally - true anomally + true longitude - right ascension
     return math.radians(vma % 360)
 
@@ -132,7 +133,7 @@ def geocentric_latitude(jme):
 
 def geocentric_longitude(jme):
     """ pending docs """
-    return (heliocentric_longitude(jme) + 180) % 360
+    return (heliocentric_longitude(jme) - 180) % 360
 
 def geocentric_declination(true_longitude,
                            true_obliquity,

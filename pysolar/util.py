@@ -89,7 +89,7 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
         utc_offset = 0
     #end if
     day = when.utctimetuple().tm_yday # Day of the year
-    SHA = utc_offset / 3600 * 15.0 - longitude_deg # Solar hour angle
+    SHA = utc_offset / 3600 * 15.0 - longitude_deg  # Solar hour angle
     TT = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
     time_adst = \
         (
