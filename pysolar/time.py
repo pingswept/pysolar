@@ -734,7 +734,7 @@ def timestamp(when):
     cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py in order to work on python 3.2
     """
     _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-    print(when)
+    # print(when)
     "Return POSIX timestamp as float"
     if when.tzinfo is None:
         return time.mktime((when.year, when.month, when.day,
@@ -785,3 +785,33 @@ def get_julian_ephemeris_century(julian_ephemeris_day):
 
 def get_julian_ephemeris_millennium(julian_ephemeris_century):
     return (julian_ephemeris_century / 10.0)
+
+def julian_day(now):
+    """
+    1. check for month = January or February
+    2. check for Julian or Gregorian calendar (starts Oct 4th 1582)
+    3. add a fraction of hours, minutes and secs to days
+    4. then calculate julian day number
+
+    """
+    year = now.year
+    month = now.month
+    day = now.day
+    day_fraction = now.hour + now.minute / 60.0 + now.second / 3600.0 / 24.0
+
+    march_on = month < 3
+    if march_on:
+        year -= 1
+        month += 12
+
+    ymd_condition = year > 1582 or year == 1582 and month > 10 or month == 10 and day >= 4
+    if ymd_condition:
+        tmp = year / 100
+        reform = 2 - tmp + tmp / 4
+    else:
+        reform = 0
+
+    jdn = (math.floor(365.25 * (year + 4716)) + math.floor(30.6001 * (month + 1))
+           + day + reform - 1524.5)
+
+    return jdn + day_fraction
