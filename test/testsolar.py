@@ -74,6 +74,7 @@ class TestSolar(unittest.TestCase):# classes are like constants.
         self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
 
     def test_timestamp(self):
+        """ you could put what to expect in here """
         no_tzinfo = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=None)
         print('d', time.timestamp(self.now))
         print('no tzinfo', time.timestamp(no_tzinfo))
