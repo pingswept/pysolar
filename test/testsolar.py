@@ -28,8 +28,8 @@ from pysolar import \
     elevation
 
 
-class TestSolar(unittest.TestCase):# classes are like constants.
-    """ docmd(cmd, args='') """ # a snippit
+class TestSolar(unittest.TestCase):
+    """ Test solar and time methods """
     def setUp(self):
         self.now = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
         self.now += datetime.timedelta(seconds=time.get_delta_t(self.now) - time.tt_offset
