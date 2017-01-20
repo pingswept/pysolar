@@ -768,9 +768,10 @@ def get_delta_t(when) :
           # don't bother doing any fancy interpolation
 #end get_delta_t
 
-def timestamp(when):
+def timestamp(now):
     """ Return POSIX timestamp as a float.
     cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py in order to work on python 3.2
+
     """
     _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
     # print(when) ok for tests but I shut it off because it is tested
@@ -782,7 +783,7 @@ def timestamp(when):
     else:
         return (when - _EPOCH).total_seconds()
 
-def get_julian_solar_day(when):
+def get_julian_solar_day(now):
     "returns the UT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
     " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
@@ -799,7 +800,7 @@ def get_julian_solar_day(when):
         )
 #end get_julian_solar_day
 
-def get_julian_ephemeris_day(when) :
+def get_julian_ephemeris_day(now) :
     "returns the TT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
     " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
@@ -829,8 +830,8 @@ def julian_day(now):
     """
     1. check for month = January or February
     2. check for Julian or Gregorian calendar (starts Oct 4th 1582)
-    3. add a fraction of hours, minutes and secs to days
-    4. then calculate julian day number
+    3. then calculate julian day number
+    4. add a fraction of hours, minutes and secs to days
 
     """
     year = now.year
@@ -854,3 +855,13 @@ def julian_day(now):
            + day + reform - 1524.5)
 
     return jdn + day_fraction
+    """
+    from C source code
+    /* midnight 1.1.1970 = JD 2440587.5 */
+    #define EJD (double) 2440588.0
+
+    int epoc_days = (int) time(0) / 86400.0;
+    double jd_today = epoc_days + EJD;
+    double jd_days = epoc_days + EJD - J2000;
+    double jd = epoc_days + EJD - J2000 - lon / 360.0;
+    """
