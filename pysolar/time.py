@@ -37,17 +37,17 @@ leap_seconds_adjustments = \
     [ # two entries per year starting from 1972, first for 23:59:59 June 30,
       # second for 23:59:59 December 31. +1 indicates that 23:59:60 follows,
       # -1 indicates that 23:59:59 does not exist, not that the latter has ever occurred.
-      (+1, +1), # 1972
-      (0, +1), # 1973
-      (0, +1), # 1974
-      (0, +1), # 1975
-      (0, +1), # 1976
-      (0, +1), # 1977
-      (0, +1), # 1978
-      (0, +1), # 1979
-      (0, 0), # 1980
-      (+1, 0), # 1981
-      (+1, 0), # 1982
+        (+1, +1), # 1972 message: 'C0330:Wrong hanging indentation (add 2 spaces).'
+        (0, +1), # 1973
+        (0, +1), # 1974
+        (0, +1), # 1975
+        (0, +1), # 1976
+        (0, +1), # 1977
+        (0, +1), # 1978
+        (0, +1), # 1979
+        (0, 0), # 1980
+        (+1, 0), # 1981
+        (+1, 0), # 1982
       (+1, 0), # 1983
       (0, 0), # 1984
       (+1, 0), # 1985
@@ -773,7 +773,7 @@ def timestamp(when):
     cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py in order to work on python 3.2
     """
     _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-    # print(when)
+    # print(when) ok for tests but I shut it off because it is tested
     "Return POSIX timestamp as float"
     if when.tzinfo is None:
         return time.mktime((when.year, when.month, when.day,
