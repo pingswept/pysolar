@@ -26,19 +26,19 @@ from . import constants
 from . import time
 from . import radiation
 
-def solar_test():
+def solar_test():# Missing function docstring
     latitude_deg = 42.364908
     longitude_deg = -71.112828
-    d = datetime.datetime.utcnow()
-    thirty_minutes = datetime.timedelta(hours = 0.5)
-    for i in range(48):
+    d = datetime.datetime.utcnow()# Invalid variable name d
+    thirty_minutes = datetime.timedelta(hours = 0.5)# No space allowed around keyword assinments
+    for i in range(48):# Unused variable i
         timestamp = d.ctime()
         altitude_deg = get_altitude(latitude_deg, longitude_deg, d)
         azimuth_deg = get_azimuth(latitude_deg, longitude_deg, d)
         power = radiation.get_radiation_direct(d, altitude_deg)
-        if (altitude_deg > 0):
+        if (altitude_deg > 0):# Unnecessary parens after if keyword
             print(timestamp, "UTC", altitude_deg, azimuth_deg, power)
-        d = d + thirty_minutes
+        d = d + thirty_minutes# Invalid variable name d
 
 def equation_of_time(day):
     "returns the number of minutes to add to mean solar time to get actual solar time."

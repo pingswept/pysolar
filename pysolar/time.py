@@ -28,6 +28,7 @@ from .constants import \
 DJ00 = 2451545.0
 
 # add to datetime.datetime.toordinal() to get Julian day number
+# math.floor(JD − 1721424.5)
 julian_day_offset = 1721425 - 0.5 # C0103: Invalid constant name
 
 # number of days to add to datetime.datetime.timestamp() / seconds_per_day
