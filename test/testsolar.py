@@ -108,83 +108,84 @@ class TestSolar(unittest.TestCase):
         """ needs some work not getting the right jdn """
         self.assertAlmostEqual(2452948.9778472222, self.jdn, 12)
 
-    def test_get_julian_solar_day(self):
+    def testget_julian_solar_day(self):
         """ 2452930.312847 """
         self.assertAlmostEqual(2452930.312847, self.jsd, 6) # value from Reda and Andreas (2005)
 
-    def test_get_julian_ephemeris_day(self):
+    def testget_julian_ephemeris_day(self):
         """ 2452930.3136 """
         self.assertAlmostEqual(2452930.3136, self.jde, 4) # value not validated
 
-    def test_get_julian_century(self):
+    def testget_julian_century(self):
         """ 0.03792779869191517 """
         self.assertAlmostEqual(0.03792779869191517, self.jct, 12) # value not validated
-    #severity: 'Info' message: 'C0103:Invalid method name "test_get_julian_ephemeris_millennium"'
-    # at: '123,4' source: 'pylint'
-    def test_get_julian_ephemeris_millennium(self): # Missing method docstring
+
+    def testget_julian_ephemeris_millennium(self):
+        """ 0.0037927819143886397 """
+
         self.assertAlmostEqual(0.0037927819143886397, self.jme, 12) # value not validated
 
-    def get_geocentric_longitude(self): # removing test shuts off test
+    def testget_geocentric_longitude(self):
         """ 204.0182635175 """
         # self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 10) # value from Reda and Andreas (2005)
         self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 4) # above fails with more accurate Julian Ephemeris correction
 
-    def test_get_geocentric_latitude(self):
+    def testget_geocentric_latitude(self):
         # self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9) # value from Reda and Andreas (2005)
         self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 8) # above fails with more accurate Julian Ephemeris correction
 
-    def test_get_nutation(self):
+    def testget_nutation(self):
         self.assertAlmostEqual(0.00166657, self.nutation['obliquity'], 8) # value from Reda and Andreas (2005)
         self.assertAlmostEqual(-0.00399840, self.nutation['longitude'], 8) # value from Reda and Andreas (2005)
 
-    def test_get_sun_earth_distance(self):
+    def testget_sun_earth_distance(self):
         self.assertAlmostEqual(0.9965421031, self.sun_earth_distance, 7) # value from Reda and Andreas (2005)
 
-    def test_get_true_ecliptic_obliquity(self): # C0103:Invalid method name
+    def testget_true_ecliptic_obliquity(self): # C0103:Invalid method name
         self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6) # value from Reda and Andreas (2005)
 
-    def test_get_aberration_correction(self):
+    def testget_aberration_correction(self):
         self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
 
-    def test_get_apparent_sun_longitude(self):
+    def testget_apparent_sun_longitude(self):
         # self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10) # value from Reda and Andreas (2005)
         self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4) # above fails with more accurate Julian Ephemeris correction
 
-    def test_get_apparent_sidereal_time(self):
+    def testget_apparent_sidereal_time(self):
         self.assertAlmostEqual(318.5119, self.apparent_sidereal_time, 2) # value derived from Reda and Andreas (2005)
 
-    def test_get_geocentric_sun_right_ascension(self): # C0103:Invalid method name
+    def testget_geocentric_sun_right_ascension(self): # C0103:Invalid method name
         self.assertAlmostEqual(202.22741, self.geocentric_sun_right_ascension, 4) # value from Reda and Andreas (2005)
 
-    def test_get_geocentric_sun_declination(self): # C0103:Invalid method name
+    def testget_geocentric_sun_declination(self): # C0103:Invalid method name
         self.assertAlmostEqual(-9.31434, self.geocentric_sun_declination, 4) # value from Reda and Andreas (2005)
 
-    def test_get_local_hour_angle(self):
+    def testget_local_hour_angle(self):
         self.assertAlmostEqual(11.105900, self.local_hour_angle, 4) # value from Reda and Andreas (2005)
 
-    def test_get_projected_radial_distance(self): # C0103:Invalid method name
+    def testget_projected_radial_distance(self): # C0103:Invalid method name
         self.assertAlmostEqual(0.7702006, self.projected_radial_distance, 6) # value not validated
 
-    def test_get_topocentric_sun_right_ascension(self): # C0103:Invalid method name
+    def testget_topocentric_sun_right_ascension(self): # C0103:Invalid method name
         self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3) # value from Reda and Andreas (2005)
 
-    def test_get_parallax_sun_right_ascension(self): # C0103:Invalid method name
+    def testget_parallax_sun_right_ascension(self): # C0103:Invalid method name
         self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12) # value not validated
 
-    def test_get_topocentric_sun_declination(self): # C0103:Invalid method name
+    def testget_topocentric_sun_declination(self): # C0103:Invalid method name
         self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3) # value from Reda and Andreas (2005)
 
-    def test_get_topocentric_local_hour_angle(self): # C0103:Invalid method name
+    def testget_topocentric_local_hour_angle(self): # C0103:Invalid method name
         self.assertAlmostEqual(11.10629, self.topocentric_local_hour_angle, 4) # value from Reda and Andreas (2005)
 
-    def test_get_topocentric_zenith_angle(self):
+    def testget_topocentric_zenith_angle(self):
         self.assertAlmostEqual(50.11162, self.topocentric_zenith_angle, 3) # value from Reda and Andreas (2005)
 
-    def test_get_topocentric_azimuth_angle(self):
+    def testget_topocentric_azimuth_angle(self):
         # self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5) # value from Reda and Andreas (2005)
         self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 4) # above fails with more accurate Julian Ephemeris correction
 
-    def test_get_incidence_angle(self):
+    def testget_incidence_angle(self):
         self.assertAlmostEqual(25.18700, self.incidence_angle, 3) # value from Reda and Andreas (2005)
 
     def testPressureWithElevation(self):
@@ -195,6 +196,6 @@ class TestSolar(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar) # Invalid constant name "suite"
-    unittest.TextTestRunner(verbosity=2).run(suite) # test suite needs to be a constant.
+    SUITE = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
 #end if

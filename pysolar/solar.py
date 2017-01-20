@@ -80,14 +80,16 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature =
     refraction_correction = get_refraction_correction(pressure, temperature, topocentric_elevation_angle)
     return topocentric_elevation_angle + refraction_correction
 
-def get_altitude_fast(latitude_deg, longitude_deg, when):
+def get_altitude_fast(latitude, longitude, when):
 # expect 19 degrees for solar.get_altitude(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
     day = when.utctimetuple().tm_yday
-    declination_rad = math.radians(get_declination(day))
-    latitude_rad = math.radians(latitude_deg)
-    hour_angle = get_hour_angle(when, longitude_deg)
-    first_term = math.cos(latitude_rad) * math.cos(declination_rad) * math.cos(math.radians(hour_angle))
-    second_term = math.sin(latitude_rad) * math.sin(declination_rad)
+    cos_ha = math.cos(math.radians(get_hour_angle(when, longitude)))
+    cos_dec = math.cos(math.radians(get_declination(day)))
+    sin_dec = math.sin(math.radians(get_declination(day)))
+    cos_lat = math.cos(math.radians(latitude))
+    sin_lat = math.sin(math.radians(latitude))
+    first_term = cos_lat * cos_dec * cos_ha
+    second_term = sin_lat * sin_dec
     return math.degrees(math.asin(first_term + second_term))
 
 def get_apparent_sidereal_time(jd, jme, nutation):
@@ -287,23 +289,23 @@ def get_sun_earth_distance(jme):
 
 def get_refraction_correction(pressure, temperature, topocentric_elevation_angle):
     #function and default values according to original NREL SPA C code
-    #http://www.nrel.gov/midc/spa/ 
-    
-    sun_radius = 0.26667  
+    #http://www.nrel.gov/midc/spa/
+
+    sun_radius = 0.26667
     atmos_refract = 0.5667
-    del_e = 0.0   
+    del_e = 0.0
     tea = topocentric_elevation_angle
 
     # Approximation only valid if sun is not well below horizon
     # This approximation could be improved; see history at https://github.com/pingswept/pysolar/pull/23
     # Better method could come from Auer and Standish [2000]:
     # http://iopscience.iop.org/1538-3881/119/5/2472/pdf/1538-3881_119_5_2472.pdf
-    
+
     if (tea >= -1.0*(sun_radius + atmos_refract)):
         a = pressure * 2.830 * 1.02
         b = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
         del_e = a / b
-        
+
     return del_e
 
 def get_solar_time(longitude_deg, when):

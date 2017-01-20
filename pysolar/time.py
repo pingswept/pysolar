@@ -84,21 +84,21 @@ leap_seconds_adjustments = \
       (+1, 0), # 2016
     ]
 
-def get_leap_seconds(when) :
+def get_leap_seconds(now) :
     "returns adjustment to be added to UTC at the specified datetime to produce TAI."
-    when = when.utctimetuple()
+    now = now.utctimetuple()
     adj = 10 # as decreed from 1972
     year = leap_seconds_base_year
     while True :
-        if year > when.tm_year :
+        if year > now.tm_year :
             break
         if year - leap_seconds_base_year >= len(leap_seconds_adjustments) :
             if (
-                    when.tm_year - leap_seconds_base_year > len(leap_seconds_adjustments)
+                    now.tm_year - leap_seconds_base_year > len(leap_seconds_adjustments)
                 or
-                        when.tm_year - leap_seconds_base_year == len(leap_seconds_adjustments)
+                        now.tm_year - leap_seconds_base_year == len(leap_seconds_adjustments)
                     and
-                        when.tm_mon > 6
+                        now.tm_mon > 6
             ) :
                 warnings.warn \
                   (
@@ -110,8 +110,8 @@ def get_leap_seconds(when) :
             break
         #end if
         entry = leap_seconds_adjustments[year - leap_seconds_base_year]
-        if year == when.tm_year :
-            if when.tm_mon > 6 :
+        if year == now.tm_year :
+            if now.tm_mon > 6 :
                 adj += entry[0]
             #end if
             break
@@ -748,10 +748,10 @@ delta_t = \
         ],
     ] # delta_t
 
-def get_delta_t(when) :
+def get_delta_t(now) :
     "returns a suitable value for delta_t for the given datetime."
-    when = when.utctimetuple()
-    year, month = when.tm_year, when.tm_mon
+    now = now.utctimetuple()
+    year, month = now.tm_year, now.tm_mon
     if year < delta_t_base_year :
         year = delta_t_base_year
         month = 1
@@ -774,23 +774,23 @@ def timestamp(now):
 
     """
     _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-    # print(when) ok for tests but I shut it off because it is tested
+    # print(now) ok for tests but I shut it off because it is tested
     "Return POSIX timestamp as float"
-    if when.tzinfo is None:
-        return time.mktime((when.year, when.month, when.day,
-                             when.hour, when.minute, when.second,
-                             -1, -1, -1)) + when.microsecond / 1e6
+    if now.tzinfo is None:
+        return time.mktime((now.year, now.month, now.day,
+                             now.hour, now.minute, now.second,
+                             -1, -1, -1)) + now.microsecond / 1e6
     else:
-        return (when - _EPOCH).total_seconds()
+        return (now - _EPOCH).total_seconds()
 
 def get_julian_solar_day(now):
     "returns the UT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
-    " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
+    " trying to adjust for pre-Gregorian dates/times seems pointless now the changeover" \
     " happened over such wildly varying times in different regions."
     return \
         (
-                (timestamp(when) + get_leap_seconds(when) + tt_offset - get_delta_t(when))
+                (timestamp(now) + get_leap_seconds(now) + tt_offset - get_delta_t(now))
             /
                 seconds_per_day
         +
@@ -803,11 +803,11 @@ def get_julian_solar_day(now):
 def get_julian_ephemeris_day(now) :
     "returns the TT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
-    " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
+    " trying to adjust for pre-Gregorian dates/times seems pointless now the changeover" \
     " happened over such wildly varying times in different regions."
     return \
         (
-                (timestamp(when) + get_leap_seconds(when) + tt_offset)
+                (timestamp(now) + get_leap_seconds(now) + tt_offset)
             /
                 seconds_per_day
         +
