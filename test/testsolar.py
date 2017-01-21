@@ -68,10 +68,7 @@ class TestSolar(unittest.TestCase):
         self.asl = solar.get_apparent_sun_longitude(self.geo_lon, self.nut, self.gac)
         self.gsra = solar.get_geocentric_sun_right_ascension(self.asl, self.teo, self.geo_lat)
         self.gsd = solar.get_geocentric_sun_declination(self.asl, self.teo, self.geo_lat)
-
-        self.local_hour_angle = solar.get_local_hour_angle(
-            318.5119, self.longitude, self.gsra)
-
+        self.lha = solar.get_local_hour_angle(318.5119, self.longitude, self.gsra)
             #self.apparent_sidereal_time only correct to 5 sig figs, so override
         self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(
             self.sed)
@@ -85,23 +82,20 @@ class TestSolar(unittest.TestCase):
 
         self.tsra = solar.get_topocentric_sun_right_ascension(
             self.prd, self.equatorial_horizontal_parallax,
-            self.local_hour_angle, self.asl,
+            self.lha, self.asl,
             self.teo, self.geo_lat)
 
         self.psra = solar.get_parallax_sun_right_ascension(
             self.prd, self.equatorial_horizontal_parallax,
-            self.local_hour_angle, self.gsd)
+            self.lha, self.gsd)
 
         self.tsd = solar.get_topocentric_sun_declination(
             self.gsd, self.projected_axial_distance,
             self.equatorial_horizontal_parallax, self.psra,
-            self.local_hour_angle)
+            self.lha)
 
-        self.tlha = solar.get_topocentric_local_hour_angle(
-            self.local_hour_angle, self.psra)
-
+        self.tlha = solar.get_topocentric_local_hour_angle(self.lha, self.psra)
         self.taa = solar.get_topocentric_azimuth_angle(self.tlha, self.latitude, self.tsd)
-
         self.twe = elevation.get_temperature_with_elevation(1567.7)
 
         self.tza = solar.get_topocentric_zenith_angle(
@@ -189,7 +183,7 @@ class TestSolar(unittest.TestCase):
     def test_get_lha(self):
         """ 11.105900 """
         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(11.105900, self.local_hour_angle, 4)
+        self.assertAlmostEqual(11.105900, self.lha, 4)
 
     def test_get_nut(self):
         """ -0.00399840 """
