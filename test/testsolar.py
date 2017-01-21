@@ -62,9 +62,9 @@ class TestSolar(unittest.TestCase):
         self.geo_lat = solar.get_geocentric_latitude(self.jem)
         self.nut = solar.get_nutation(self.jce)
         self.ast = solar.get_apparent_sidereal_time(self.jsd, self.jem, self.nut)
-        self.sun_earth_distance = solar.get_sun_earth_distance(self.jem)
+        self.sed = solar.get_sun_earth_distance(self.jem)
         self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jem, self.nut)
-        self.gac = solar.get_aberration_correction(self.sun_earth_distance)
+        self.gac = solar.get_aberration_correction(self.sed)
         self.asl = solar.get_apparent_sun_longitude(self.geo_lon, self.nut, self.gac)
 
         self.gsra = solar.get_geocentric_sun_right_ascension(
@@ -75,7 +75,7 @@ class TestSolar(unittest.TestCase):
             318.5119, self.longitude, self.gsra)
             #self.apparent_sidereal_time only correct to 5 sig figs, so override
         self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(
-            self.sun_earth_distance)
+            self.sed)
         self.projected_radial_distance = solar.get_projected_radial_distance(
             self.elevation, self.latitude)
         self.projected_axial_distance = solar.get_projected_axial_distance(
@@ -157,7 +157,7 @@ class TestSolar(unittest.TestCase):
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(25.18700, self.aoi, 3)
 
-    def test_get_jc(self):
+    def test_get_jct(self):
         """ 0.03792779869191517 """
         self.assertAlmostEqual(0.03792779869191517, self.jct, 12) # value not validated
 
@@ -205,7 +205,7 @@ class TestSolar(unittest.TestCase):
     def test_get_sed(self):
         """ 0.9965421031 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(0.9965421031, self.sun_earth_distance, 7)
+        self.assertAlmostEqual(0.9965421031, self.sed, 7)
 
     def test_get_taa(self):  # C0103:Invalid method name
         """ 194.34024 """
