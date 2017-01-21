@@ -67,12 +67,12 @@ class TestSolar(unittest.TestCase):
         self.gac = solar.get_aberration_correction(self.sun_earth_distance)
         self.asl = solar.get_apparent_sun_longitude(self.geo_lon, self.nut, self.gac)
 
-        self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(
+        self.gsra = solar.get_geocentric_sun_right_ascension(
             self.asl, self.true_ecliptic_obliquity, self.geo_lat)
         self.gsd = solar.get_geocentric_sun_declination(
             self.asl, self.true_ecliptic_obliquity, self.geo_lat)
         self.local_hour_angle = solar.get_local_hour_angle(
-            318.5119, self.longitude, self.geocentric_sun_right_ascension)
+            318.5119, self.longitude, self.gsra)
             #self.apparent_sidereal_time only correct to 5 sig figs, so override
         self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(
             self.sun_earth_distance)
@@ -98,7 +98,7 @@ class TestSolar(unittest.TestCase):
             self.pressure, self.temperature)
         self.topocentric_azimuth_angle = solar.get_topocentric_azimuth_angle(
             self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
-        self.incidence_angle = solar.get_incidence_angle(
+        self.aoi = solar.get_incidence_angle(
             self.topocentric_zenith_angle, self.slope, self.slope_orientation,
             self.topocentric_azimuth_angle)
         self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
@@ -150,12 +150,12 @@ class TestSolar(unittest.TestCase):
     def test_get_gsra(self):
         """ 202.22741 """
         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(202.22741, self.geocentric_sun_right_ascension, 4)
+        self.assertAlmostEqual(202.22741, self.gsra, 4)
 
-    def test_get_ia(self):
+    def test_get_aoi(self):
         """ 25.18700 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(25.18700, self.incidence_angle, 3)
+        self.assertAlmostEqual(25.18700, self.aoi, 3)
 
     def test_get_jc(self):
         """ 0.03792779869191517 """
