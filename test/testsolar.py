@@ -76,8 +76,7 @@ class TestSolar(unittest.TestCase):
         self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(
             self.sed)
 
-        self.projected_radial_distance = solar.get_projected_radial_distance(
-            self.elevation, self.latitude)
+        self.prd = solar.get_projected_radial_distance(self.elevation, self.latitude)
 
         self.projected_axial_distance = solar.get_projected_axial_distance(
             self.elevation, self.latitude)
@@ -85,12 +84,12 @@ class TestSolar(unittest.TestCase):
         self.pwe = elevation.get_pressure_with_elevation(1567.7)
 
         self.tsra = solar.get_topocentric_sun_right_ascension(
-            self.projected_radial_distance, self.equatorial_horizontal_parallax,
+            self.prd, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.asl,
             self.teo, self.geo_lat)
 
         self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(
-            self.projected_radial_distance, self.equatorial_horizontal_parallax,
+            self.prd, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.gsd)
 
         self.tsd = solar.get_topocentric_sun_declination(
@@ -205,7 +204,7 @@ class TestSolar(unittest.TestCase):
 
     def test_get_prd(self):
         """ 0.7702006 """
-        self.assertAlmostEqual(0.7702006, self.projected_radial_distance, 6) # value not validated
+        self.assertAlmostEqual(0.7702006, self.prd, 6) # value not validated
 
     def test_get_pwe(self):
         """ 83855.90228 """
