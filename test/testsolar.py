@@ -63,9 +63,9 @@ class TestSolar(unittest.TestCase):
         self.nut = solar.get_nutation(self.jce)
         self.sun_earth_distance = solar.get_sun_earth_distance(self.jme)
         self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nut)
-        self.aberration_correction = solar.get_aberration_correction(self.sun_earth_distance)
+        self.gac = solar.get_aberration_correction(self.sun_earth_distance)
         self.apparent_sun_longitude = solar.get_apparent_sun_longitude(
-            self.geo_lon, self.nut, self.aberration_correction)
+            self.geo_lon, self.nut, self.gac)
         self.apparent_sidereal_time = solar.get_apparent_sidereal_time(
             self.jsd, self.jme, self.nut)
         self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(
@@ -107,7 +107,7 @@ class TestSolar(unittest.TestCase):
 
     def test_get_ac(self):
         """ -0.0057113603 """
-        self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
+        self.assertAlmostEqual(-0.0057113603, self.gac, 9) # value not validated
 
     def test_get_ast(self):
         """ 318.5119 """
