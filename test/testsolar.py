@@ -60,14 +60,14 @@ class TestSolar(unittest.TestCase):
         self.jme = time.get_julian_ephemeris_millennium(self.jce)
         self.geo_lon = solar.get_geocentric_longitude(self.jme)
         self.geo_lat = solar.get_geocentric_latitude(self.jme)
-        self.nutation = solar.get_nutation(self.jce)
+        self.nut = solar.get_nutation(self.jce)
         self.sun_earth_distance = solar.get_sun_earth_distance(self.jme)
-        self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nutation)
+        self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nut)
         self.aberration_correction = solar.get_aberration_correction(self.sun_earth_distance)
         self.apparent_sun_longitude = solar.get_apparent_sun_longitude(
-            self.geo_lon, self.nutation, self.aberration_correction)
+            self.geo_lon, self.nut, self.aberration_correction)
         self.apparent_sidereal_time = solar.get_apparent_sidereal_time(
-            self.jsd, self.jme, self.nutation)
+            self.jsd, self.jme, self.nut)
         self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(
             self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geo_lat)
         self.geocentric_sun_declination = solar.get_geocentric_sun_declination(
@@ -141,7 +141,7 @@ class TestSolar(unittest.TestCase):
          # value from Reda and Andreas (2005)
          # self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9)
          # above fails with more accurate Julian Ephemeris correction
-        self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 8)
+        self.assertAlmostEqual(0.0001011219, self.geo_lat, 8)
 
     def test_get_gsd(self):
         """ -9.31434 """
@@ -187,9 +187,9 @@ class TestSolar(unittest.TestCase):
     def test_get_nut(self):
         """ -0.00399840 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(0.00166657, self.nutation['obliquity'], 8)
+        self.assertAlmostEqual(0.00166657, self.nut['obliquity'], 8)
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(-0.00399840, self.nutation['longitude'], 8)
+        self.assertAlmostEqual(-0.00399840, self.nut['longitude'], 8)
 
     def test_get_psra(self):
         """ -0.0003659911495454668 """
