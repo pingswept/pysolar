@@ -80,6 +80,7 @@ class TestSolar(unittest.TestCase):
             self.elevation, self.latitude)
         self.projected_axial_distance = solar.get_projected_axial_distance(
             self.elevation, self.latitude)
+        self.pwe = elevation.get_pressure_with_elevation(1567.7)
         self.topocentric_sun_right_ascension = solar.get_topocentric_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.asl,
@@ -93,16 +94,18 @@ class TestSolar(unittest.TestCase):
             self.local_hour_angle)
         self.topocentric_local_hour_angle = solar.get_topocentric_local_hour_angle(
             self.local_hour_angle, self.parallax_sun_right_ascension)
+
+        self.taa = solar.get_topocentric_azimuth_angle(
+            self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
+
+
+        self.twe = elevation.get_temperature_with_elevation(1567.7)
         self.tza = solar.get_topocentric_zenith_angle(
             self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle,
             self.pressure, self.temperature)
-        self.taa = solar.get_topocentric_azimuth_angle(
-            self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
         self.aoi = solar.get_incidence_angle(
             self.tza, self.slope, self.slope_orientation,
             self.taa)
-        self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
-        self.twe = elevation.get_temperature_with_elevation(1567.7)
 
     def test_get_ac(self):
         """ -0.0057113603 """
@@ -200,7 +203,7 @@ class TestSolar(unittest.TestCase):
 
     def test_get_pwe(self):
         """ 83855.90228 """
-        self.assertAlmostEqual(83855.90228, self.pressure_with_elevation, 4)
+        self.assertAlmostEqual(83855.90228, self.pwe, 4)
 
     def test_get_sed(self):
         """ 0.9965421031 """
