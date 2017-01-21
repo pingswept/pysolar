@@ -73,7 +73,7 @@ class TestSolar(unittest.TestCase):
         self.ehp = solar.get_equatorial_horizontal_parallax(self.sed)
         self.prd = solar.get_projected_radial_distance(self.elevation, self.latitude)
         self.psra = solar.get_parallax_sun_right_ascension(self.prd, self.ehp, self.lha, self.gsd)
-
+        self.tlha = solar.get_topocentric_local_hour_angle(self.lha, self.psra)
 
         self.projected_axial_distance = solar.get_projected_axial_distance(
             self.elevation, self.latitude)
@@ -89,7 +89,7 @@ class TestSolar(unittest.TestCase):
 
         self.tsd = solar.get_topocentric_sun_declination(
             self.gsd, self.projected_axial_distance,
-            self.equatorial_horizontal_parallax, self.psra,
+            self.ehp, self.psra,
             self.lha)
 
         self.tlha = solar.get_topocentric_local_hour_angle(self.lha, self.psra)
