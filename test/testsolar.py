@@ -57,13 +57,13 @@ class TestSolar(unittest.TestCase):
         self.jct = time.get_julian_century(self.jsd)
         self.jde = time.get_julian_ephemeris_day(self.dio)
         self.jce = time.get_julian_ephemeris_century(self.jde)
-        self.jme = time.get_julian_ephemeris_millennium(self.jce)
-        self.geo_lon = solar.get_geocentric_longitude(self.jme)
-        self.geo_lat = solar.get_geocentric_latitude(self.jme)
+        self.jem = time.get_julian_ephemeris_millennium(self.jce)
+        self.geo_lon = solar.get_geocentric_longitude(self.jem)
+        self.geo_lat = solar.get_geocentric_latitude(self.jem)
         self.nut = solar.get_nutation(self.jce)
-        self.ast = solar.get_apparent_sidereal_time(self.jsd, self.jme, self.nut)
-        self.sun_earth_distance = solar.get_sun_earth_distance(self.jme)
-        self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nut)
+        self.ast = solar.get_apparent_sidereal_time(self.jsd, self.jem, self.nut)
+        self.sun_earth_distance = solar.get_sun_earth_distance(self.jem)
+        self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jem, self.nut)
         self.gac = solar.get_aberration_correction(self.sun_earth_distance)
         self.apparent_sun_longitude = solar.get_apparent_sun_longitude(
             self.geo_lon, self.nut, self.gac)
@@ -172,7 +172,7 @@ class TestSolar(unittest.TestCase):
 
     def test_jem(self): # C0103:Invalid method name
         """ 0.0037927819143886397 """
-        self.assertAlmostEqual(0.0037927819143886397, self.jme, 12) # value not validated
+        self.assertAlmostEqual(0.0037927819143886397, self.jem, 12) # value not validated
 
     def test_get_jsd(self):
         """ 2452930.312847 """
