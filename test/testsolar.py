@@ -102,7 +102,7 @@ class TestSolar(unittest.TestCase):
             self.tza, self.slope, self.slope_orientation,
             self.taa)
         self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
-        self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
+        self.twe = elevation.get_temperature_with_elevation(1567.7)
 
     def test_get_ac(self):
         """ -0.0057113603 """
@@ -243,7 +243,7 @@ class TestSolar(unittest.TestCase):
 
     def test_get_twe(self):
         """ 277.9600 """
-        self.assertAlmostEqual(277.9600, self.temperature_with_elevation, 4)
+        self.assertAlmostEqual(277.9600, self.twe, 4)
 
     def test_get_tza(self):
         """ MID SPA has 115.923120 """
