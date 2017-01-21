@@ -88,17 +88,17 @@ class TestSolar(unittest.TestCase):
             self.local_hour_angle, self.asl,
             self.teo, self.geo_lat)
 
-        self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(
+        self.psra = solar.get_parallax_sun_right_ascension(
             self.prd, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.gsd)
 
         self.tsd = solar.get_topocentric_sun_declination(
             self.gsd, self.projected_axial_distance,
-            self.equatorial_horizontal_parallax, self.parallax_sun_right_ascension,
+            self.equatorial_horizontal_parallax, self.psra,
             self.local_hour_angle)
 
         self.tlha = solar.get_topocentric_local_hour_angle(
-            self.local_hour_angle, self.parallax_sun_right_ascension)
+            self.local_hour_angle, self.psra)
 
         self.taa = solar.get_topocentric_azimuth_angle(self.tlha, self.latitude, self.tsd)
 
@@ -200,7 +200,7 @@ class TestSolar(unittest.TestCase):
 
     def test_get_psra(self):
         """ -0.0003659911495454668 """
-        self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12)
+        self.assertAlmostEqual(-0.0003659911495454668, self.psra, 12)
 
     def test_get_prd(self):
         """ 0.7702006 """
