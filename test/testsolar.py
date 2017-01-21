@@ -65,13 +65,12 @@ class TestSolar(unittest.TestCase):
         self.sun_earth_distance = solar.get_sun_earth_distance(self.jem)
         self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jem, self.nut)
         self.gac = solar.get_aberration_correction(self.sun_earth_distance)
-        self.apparent_sun_longitude = solar.get_apparent_sun_longitude(
-            self.geo_lon, self.nut, self.gac)
+        self.asl = solar.get_apparent_sun_longitude(self.geo_lon, self.nut, self.gac)
 
         self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(
-            self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geo_lat)
+            self.asl, self.true_ecliptic_obliquity, self.geo_lat)
         self.geocentric_sun_declination = solar.get_geocentric_sun_declination(
-            self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geo_lat)
+            self.asl, self.true_ecliptic_obliquity, self.geo_lat)
         self.local_hour_angle = solar.get_local_hour_angle(
             318.5119, self.longitude, self.geocentric_sun_right_ascension)
             #self.apparent_sidereal_time only correct to 5 sig figs, so override
@@ -83,7 +82,7 @@ class TestSolar(unittest.TestCase):
             self.elevation, self.latitude)
         self.topocentric_sun_right_ascension = solar.get_topocentric_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
-            self.local_hour_angle, self.apparent_sun_longitude,
+            self.local_hour_angle, self.asl,
             self.true_ecliptic_obliquity, self.geo_lat)
         self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
@@ -118,7 +117,7 @@ class TestSolar(unittest.TestCase):
         """ 204.0085537528 """
          # value from Reda and Andreas (2005)
         # self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10)
-        self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4)
+        self.assertAlmostEqual(204.0085537528, self.asl, 4)
 
     def test_get_ajd(self):
         """ 2452930.312847222 """
