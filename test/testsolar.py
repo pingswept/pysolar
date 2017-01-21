@@ -63,15 +63,11 @@ class TestSolar(unittest.TestCase):
         self.nut = solar.get_nutation(self.jce)
         self.ast = solar.get_apparent_sidereal_time(self.jsd, self.jem, self.nut)
         self.sed = solar.get_sun_earth_distance(self.jem)
-        self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jem, self.nut)
+        self.teo = solar.get_true_ecliptic_obliquity(self.jem, self.nut)
         self.gac = solar.get_aberration_correction(self.sed)
         self.asl = solar.get_apparent_sun_longitude(self.geo_lon, self.nut, self.gac)
-
-        self.gsra = solar.get_geocentric_sun_right_ascension(
-            self.asl, self.true_ecliptic_obliquity, self.geo_lat)
-
-        self.gsd = solar.get_geocentric_sun_declination(
-            self.asl, self.true_ecliptic_obliquity, self.geo_lat)
+        self.gsra = solar.get_geocentric_sun_right_ascension(self.asl, self.teo, self.geo_lat)
+        self.gsd = solar.get_geocentric_sun_declination(self.asl, self.teo, self.geo_lat)
 
         self.local_hour_angle = solar.get_local_hour_angle(
             318.5119, self.longitude, self.gsra)
@@ -91,7 +87,7 @@ class TestSolar(unittest.TestCase):
         self.tsra = solar.get_topocentric_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.asl,
-            self.true_ecliptic_obliquity, self.geo_lat)
+            self.teo, self.geo_lat)
 
         self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
@@ -229,7 +225,7 @@ class TestSolar(unittest.TestCase):
     def test_get_teo(self):
         """ 23.440465 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6)
+        self.assertAlmostEqual(23.440465, self.teo, 6)
 
     def test_get_tlha(self):
         """ 11.10629 """
