@@ -69,7 +69,7 @@ class TestSolar(unittest.TestCase):
 
         self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(
             self.asl, self.true_ecliptic_obliquity, self.geo_lat)
-        self.geocentric_sun_declination = solar.get_geocentric_sun_declination(
+        self.gsd = solar.get_geocentric_sun_declination(
             self.asl, self.true_ecliptic_obliquity, self.geo_lat)
         self.local_hour_angle = solar.get_local_hour_angle(
             318.5119, self.longitude, self.geocentric_sun_right_ascension)
@@ -86,9 +86,9 @@ class TestSolar(unittest.TestCase):
             self.true_ecliptic_obliquity, self.geo_lat)
         self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
-            self.local_hour_angle, self.geocentric_sun_declination)
+            self.local_hour_angle, self.gsd)
         self.topocentric_sun_declination = solar.get_topocentric_sun_declination(
-            self.geocentric_sun_declination, self.projected_axial_distance,
+            self.gsd, self.projected_axial_distance,
             self.equatorial_horizontal_parallax, self.parallax_sun_right_ascension,
             self.local_hour_angle)
         self.topocentric_local_hour_angle = solar.get_topocentric_local_hour_angle(
@@ -145,7 +145,7 @@ class TestSolar(unittest.TestCase):
     def test_get_gsd(self):
         """ -9.31434 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(-9.31434, self.geocentric_sun_declination, 4)
+        self.assertAlmostEqual(-9.31434, self.gsd, 4)
 
     def test_get_gsra(self):
         """ 202.22741 """
