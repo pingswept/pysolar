@@ -93,13 +93,13 @@ class TestSolar(unittest.TestCase):
             self.local_hour_angle)
         self.topocentric_local_hour_angle = solar.get_topocentric_local_hour_angle(
             self.local_hour_angle, self.parallax_sun_right_ascension)
-        self.topocentric_zenith_angle = solar.get_topocentric_zenith_angle(
+        self.tza = solar.get_topocentric_zenith_angle(
             self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle,
             self.pressure, self.temperature)
         self.taa = solar.get_topocentric_azimuth_angle(
             self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
         self.aoi = solar.get_incidence_angle(
-            self.topocentric_zenith_angle, self.slope, self.slope_orientation,
+            self.tza, self.slope, self.slope_orientation,
             self.taa)
         self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
         self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
@@ -248,7 +248,7 @@ class TestSolar(unittest.TestCase):
     def test_get_tza(self):
         """ MID SPA has 115.923120 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(50.11162, self.topocentric_zenith_angle, 3)
+        self.assertAlmostEqual(50.11162, self.tza, 3)
 
 if __name__ == "__main__":
     SUN = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar)
