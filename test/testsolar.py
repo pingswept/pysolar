@@ -34,13 +34,14 @@ class TestSolar(unittest.TestCase):
         # time at MIDC SPA has no seconds setting so let's consider new test data.
         # the doc says use 67 sec delta t
         # self.now = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
-        self.now = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
-        self.now += datetime.timedelta(seconds=time.get_delta_t(self.now) - time.tt_offset
-                                       - time.get_leap_seconds(self.now))
+        self.dio = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
+        self.dio += datetime.timedelta(seconds=time.get_delta_t(self.dio) - time.tt_offset
+                                      - time.get_leap_seconds(self.dio))
           # Reda & Andreas say that this time is in "Local Standard Time", which they
           # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
           # to UTC.
-        self.dut1 = time.get_delta_t(self.now)
+        self.dut1 = datetime.timedelta(seconds=time.get_delta_t(self.dio) - time.tt_offset
+                                       - time.get_leap_seconds(self.dio))
         self.longitude = -105.1786
         self.latitude = 39.742476
         self.pressure = 82000.0 # pascals
@@ -48,11 +49,11 @@ class TestSolar(unittest.TestCase):
         self.temperature = 11.0 + constants.celsius_offset # kelvin
         self.slope = 30.0 # degrees
         self.slope_orientation = -10.0 # degrees east from south
-        self.jdn = time.jdn(self.now)
-        self.ajd = time.ajd(self.now)
-        self.jsd = time.get_julian_solar_day(self.now)
+        self.jdn = time.jdn(self.dio)
+        self.ajd = time.ajd(self.dio)
+        self.jsd = time.get_julian_solar_day(self.dio)
         self.jct = time.get_julian_century(self.jsd)
-        self.jde = time.get_julian_ephemeris_day(self.now)
+        self.jde = time.get_julian_ephemeris_day(self.dio)
         self.jce = time.get_julian_ephemeris_century(self.jde)
         self.jme = time.get_julian_ephemeris_millennium(self.jce)
         self.geocentric_longitude = solar.get_geocentric_longitude(self.jme)
@@ -103,15 +104,17 @@ class TestSolar(unittest.TestCase):
         self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
 
     def test_dut1(self): # let's call this a constant and assign it
-        """ see DUT1 http://asa.usno.navy.mil/SecM/Glossary.html#ut1 """
-        self.assertEqual(64.5415, self.dut1)
+        """ see DUT1 http://asa.usno.navy.mil/SecM/Glossary.html#ut1
+        datetime.timedelta(0, 0, 357500)
+        """
+        self.assertEqual(datetime.timedelta(0, 0, 357500), self.dut1)
 
     def test_timestamp(self):
         """ you could put what to expect in here """
         # please consider this so we can compare with MIDC SPA not the doc.
         # no_tzinfo = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=None)
         no_tzinfo = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=None)
-        print('d =', time.timestamp(self.now), 'seconds')
+        print('d =', time.timestamp(self.dio), 'seconds')
         print('no tzinfo', time.timestamp(no_tzinfo))
 
     def test_julian_day_number(self):
