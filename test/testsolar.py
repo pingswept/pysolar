@@ -169,7 +169,7 @@ class TestSolar(unittest.TestCase):
         """ 2452930.3136 """
         self.assertAlmostEqual(2452930.3136, self.jde, 4) # value not validated
 
-    def test_jem(self): # C0103:Invalid method name
+    def test_jem(self):
         """ 0.0037927819143886397 """
         self.assertAlmostEqual(0.0037927819143886397, self.jem, 12) # value not validated
 
@@ -194,11 +194,11 @@ class TestSolar(unittest.TestCase):
         """ -0.0003659911495454668 """
         self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12)
 
-    def test_get_prd(self): # C0103:Invalid method name
+    def test_get_prd(self):
         """ 0.7702006 """
         self.assertAlmostEqual(0.7702006, self.projected_radial_distance, 6) # value not validated
 
-    def test_get_pwe(self):   # C0103:Invalid method name
+    def test_get_pwe(self):
         """ 83855.90228 """
         self.assertAlmostEqual(83855.90228, self.pressure_with_elevation, 4)
 
@@ -207,18 +207,18 @@ class TestSolar(unittest.TestCase):
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(0.9965421031, self.sed, 7)
 
-    def test_get_taa(self):  # C0103:Invalid method name
+    def test_get_taa(self):
         """ 194.34024 """
          # value from Reda and Andreas (2005)
         # self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5)
         self.assertAlmostEqual(194.34024, self.taa, 4)
 
-    def test_get_teo(self): # C0103:Invalid method name
+    def test_get_teo(self):
         """ 23.440465 """
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6)
 
-    def test_get_tlha(self): # C0103:Invalid method name
+    def test_get_tlha(self):
         """ 11.10629 """
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(11.10629, self.topocentric_local_hour_angle, 4)
@@ -231,7 +231,7 @@ class TestSolar(unittest.TestCase):
         print('d =', time.timestamp(self.dio), 'seconds')
         print('no tzinfo', time.timestamp(no_tzinfo))
 
-    def test_get_tsd(self): # C0103:Invalid method name
+    def test_get_tsd(self):
         """ -9.316179 """
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3)
@@ -241,11 +241,11 @@ class TestSolar(unittest.TestCase):
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3)
 
-    def test_get_twe(self):   # C0103:Invalid method name
+    def test_get_twe(self):
         """ 277.9600 """
         self.assertAlmostEqual(277.9600, self.temperature_with_elevation, 4)
 
-    def test_get_tza(self):  # C0103:Invalid method name
+    def test_get_tza(self):
         """ MID SPA has 115.923120 """
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(50.11162, self.topocentric_zenith_angle, 3)
