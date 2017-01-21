@@ -44,6 +44,7 @@ class TestSolar(unittest.TestCase):
           # to UTC.
 
         self.longitude = -105.1786
+        self.lon_offset = self.longitude / 360.0
         self.latitude = 39.742476
         self.pressure = 82000.0 # pascals
         self.elevation = 1830.14 # meters
@@ -57,14 +58,14 @@ class TestSolar(unittest.TestCase):
         self.jde = time.get_julian_ephemeris_day(self.dio)
         self.jce = time.get_julian_ephemeris_century(self.jde)
         self.jme = time.get_julian_ephemeris_millennium(self.jce)
-        self.geocentric_longitude = solar.get_geocentric_longitude(self.jme)
+        self.geo_lon = solar.get_geocentric_longitude(self.jme)
         self.geocentric_latitude = solar.get_geocentric_latitude(self.jme)
         self.nutation = solar.get_nutation(self.jce)
         self.sun_earth_distance = solar.get_sun_earth_distance(self.jme)
         self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nutation)
         self.aberration_correction = solar.get_aberration_correction(self.sun_earth_distance)
         self.apparent_sun_longitude = solar.get_apparent_sun_longitude(
-            self.geocentric_longitude, self.nutation, self.aberration_correction)
+            self.geo_lon, self.nutation, self.aberration_correction)
         self.apparent_sidereal_time = solar.get_apparent_sidereal_time(
             self.jsd, self.jme, self.nutation)
         self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(
@@ -104,13 +105,126 @@ class TestSolar(unittest.TestCase):
         self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
         self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
 
-    def test_dut1(self): # let's call this a constant and assign it
+    def test_get_ac(self):
+        """ -0.0057113603 """
+        self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
+
+    def test_get_ast(self):
+        """ 318.5119 """
+        # value derived from Reda and Andreas (2005)
+        self.assertAlmostEqual(318.5119, self.apparent_sidereal_time, 2)
+
+    def test_get_asl(self):
+        """ 204.0085537528 """
+         # value from Reda and Andreas (2005)
+        # self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10)
+        self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4)
+
+    def test_get_ajd(self):
+        """ 2452930.312847222 """
+        self.assertAlmostEqual(2452930.312847222, self.ajd, 12)
+
+    def test_get_dut1(self):
         """ see DUT1 http://asa.usno.navy.mil/SecM/Glossary.html#ut1
         datetime.timedelta(0, 0, 357500)
         """
         self.assertEqual(datetime.timedelta(0, 0, 357500), self.dut1)
 
-    def test_timestamp(self):
+    def test_get_glon(self):
+        """ 204.0182635175 """
+        # value from Reda and Andreas (2005)
+        # self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 10)
+        self.assertAlmostEqual(204.0182635175, self.geo_lon, 4)
+
+    def test_get_glat(self):
+        """ 0.0001011219 """
+         # value from Reda and Andreas (2005)
+         # self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9)
+         # above fails with more accurate Julian Ephemeris correction
+        self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 8)
+
+    def test_get_gsd(self):
+        """ -9.31434 """
+         # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(-9.31434, self.geocentric_sun_declination, 4)
+
+    def test_get_gsra(self):
+        """ 202.22741 """
+        # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(202.22741, self.geocentric_sun_right_ascension, 4)
+
+    def test_get_ia(self):
+        """ 25.18700 """
+         # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(25.18700, self.incidence_angle, 3)
+
+    def test_get_jc(self):
+        """ 0.03792779869191517 """
+        self.assertAlmostEqual(0.03792779869191517, self.jct, 12) # value not validated
+
+    def test_get_jdn(self):
+        """ 2452930.0 """
+        self.assertAlmostEqual(2452930.0, self.jdn, 12)
+
+    def test_get_jed(self):
+        """ 2452930.3136 """
+        self.assertAlmostEqual(2452930.3136, self.jde, 4) # value not validated
+
+    def test_jem(self): # C0103:Invalid method name
+        """ 0.0037927819143886397 """
+        self.assertAlmostEqual(0.0037927819143886397, self.jme, 12) # value not validated
+
+    def test_get_jsd(self):
+        """ 2452930.312847 """
+        # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(2452930.312847222, self.jsd, 12)
+
+    def test_get_lha(self):
+        """ 11.105900 """
+        # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(11.105900, self.local_hour_angle, 4)
+
+    def test_get_nut(self):
+        """ -0.00399840 """
+         # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(0.00166657, self.nutation['obliquity'], 8)
+         # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(-0.00399840, self.nutation['longitude'], 8)
+
+    def test_get_psra(self):
+        """ -0.0003659911495454668 """
+        self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12)
+
+    def test_get_prd(self): # C0103:Invalid method name
+        """ 0.7702006 """
+        self.assertAlmostEqual(0.7702006, self.projected_radial_distance, 6) # value not validated
+
+    def test_get_pwe(self):   # C0103:Invalid method name
+        """ 83855.90228 """
+        self.assertAlmostEqual(83855.90228, self.pressure_with_elevation, 4)
+
+    def test_get_sed(self):
+        """ 0.9965421031 """
+         # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(0.9965421031, self.sun_earth_distance, 7)
+
+    def test_get_taa(self):  # C0103:Invalid method name
+        """ 194.34024 """
+         # value from Reda and Andreas (2005)
+        # self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5)
+        self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 4)
+
+    def test_get_teo(self): # C0103:Invalid method name
+        """ 23.440465 """
+         # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6)
+
+    def test_get_tlha(self): # C0103:Invalid method name
+        """ 11.10629 """
+         # value from Reda and Andreas (2005)
+        self.assertAlmostEqual(11.10629, self.topocentric_local_hour_angle, 4)
+
+    def test_get_ts(self):
         """ you could put what to expect in here """
         # please consider this so we can compare with MIDC SPA not the doc.
         # no_tzinfo = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=None)
@@ -118,140 +232,27 @@ class TestSolar(unittest.TestCase):
         print('d =', time.timestamp(self.dio), 'seconds')
         print('no tzinfo', time.timestamp(no_tzinfo))
 
-    def test_julian_day_number(self):
-        """ 2452930.0 """
-        self.assertAlmostEqual(2452930.0, self.jdn, 12)
-
-    def test_astronomical_julian_day(self):
-        """ 2452930.312847222 """
-        self.assertAlmostEqual(2452930.312847222, self.ajd, 12)
-
-    def testget_julian_solar_day(self):
-        """ 2452930.312847 """
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(2452930.312847222, self.jsd, 12)
-
-    def testget_julian_ephemeris_day(self):
-        """ 2452930.3136 """
-        self.assertAlmostEqual(2452930.3136, self.jde, 4) # value not validated
-
-    def testget_julian_century(self):
-        """ 0.03792779869191517 """
-        self.assertAlmostEqual(0.03792779869191517, self.jct, 12) # value not validated
-
-    def testget_julian_ephemeris_millennium(self): # C0103:Invalid method name
-        """ 0.0037927819143886397 """
-        self.assertAlmostEqual(0.0037927819143886397, self.jme, 12) # value not validated
-
-    def testget_geocentric_longitude(self):
-        """ 204.0182635175 """
-        # value from Reda and Andreas (2005)
-        # self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 10)
-        self.assertAlmostEqual(204.0182635175, self.geocentric_longitude, 4)
-
-    def testget_geocentric_latitude(self):
-        """ 0.0001011219 """
-         # value from Reda and Andreas (2005)
-         # self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 9)
-         # above fails with more accurate Julian Ephemeris correction
-        self.assertAlmostEqual(0.0001011219, self.geocentric_latitude, 8)
-
-    def testget_nutation(self):
-        """ -0.00399840 """
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(0.00166657, self.nutation['obliquity'], 8)
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(-0.00399840, self.nutation['longitude'], 8)
-
-    def testget_sun_earth_distance(self):
-        """ 0.9965421031 """
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(0.9965421031, self.sun_earth_distance, 7)
-
-    def testget_true_ecliptic_obliquity(self): # C0103:Invalid method name
-        """ 23.440465 """
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6)
-
-    def testget_aberration_correction(self):
-        """ -0.0057113603 """
-        self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
-
-    def testget_apparent_sun_longitude(self):
-        """ 204.0085537528 """
-         # value from Reda and Andreas (2005)
-        # self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10)
-        self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 4)
-
-    def testget_apparent_sidereal_time(self):
-        """ 318.5119 """
-        # value derived from Reda and Andreas (2005)
-        self.assertAlmostEqual(318.5119, self.apparent_sidereal_time, 2)
-
-    def testget_geocentric_sun_right_ascension(self): # C0103:Invalid method name
-        """ 202.22741 """
-        # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(202.22741, self.geocentric_sun_right_ascension, 4)
-
-    def testget_geocentric_sun_declination(self): # C0103:Invalid method name
-        """ -9.31434 """
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(-9.31434, self.geocentric_sun_declination, 4)
-
-    def testget_local_hour_angle(self):
-        """ 11.105900 """
-        # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(11.105900, self.local_hour_angle, 4)
-
-    def testget_projected_radial_distance(self): # C0103:Invalid method name
-        """ 0.7702006 """
-        self.assertAlmostEqual(0.7702006, self.projected_radial_distance, 6) # value not validated
-
-    def testget_topocentric_sun_right_ascension(self): # C0103:Invalid method name
-        """ 202.22741 """
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3)
-
-    def testget_parallax_sun_right_ascension(self): # C0103:Invalid method name
-        """ -0.0003659911495454668 """  # value not validated
-        self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12)
-
-    def testget_topocentric_sun_declination(self): # C0103:Invalid method name
+    def test_get_tsd(self): # C0103:Invalid method name
         """ -9.316179 """
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3)
 
-    def testget_topocentric_local_hour_angle(self): # C0103:Invalid method name
-        """ 11.10629 """
+    def test_get_tsra(self):
+        """ 202.22741 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(11.10629, self.topocentric_local_hour_angle, 4)
+        self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3)
 
-    def testget_topocentric_zenith_angle(self):  # C0103:Invalid method name
+    def test_get_twe(self):   # C0103:Invalid method name
+        """ 277.9600 """
+        self.assertAlmostEqual(277.9600, self.temperature_with_elevation, 4)
+
+    def test_get_tza(self):  # C0103:Invalid method name
         """ MID SPA has 115.923120 """
          # value from Reda and Andreas (2005)
         self.assertAlmostEqual(50.11162, self.topocentric_zenith_angle, 3)
 
-    def testget_topocentric_azimuth_angle(self):  # C0103:Invalid method name
-        """ 194.34024 """
-         # value from Reda and Andreas (2005)
-        # self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 5)
-        self.assertAlmostEqual(194.34024, self.topocentric_azimuth_angle, 4)
-
-    def testget_incidence_angle(self):
-        """ 25.18700 """
-         # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(25.18700, self.incidence_angle, 3)
-
-    def testPressureWithElevation(self):   # C0103:Invalid method name
-        """ 83855.90228 """
-        self.assertAlmostEqual(83855.90228, self.pressure_with_elevation, 4)
-
-    def testTemperatureWithElevation(self):   # C0103:Invalid method name
-        """ 277.9600 """
-        self.assertAlmostEqual(277.9600, self.temperature_with_elevation, 4)
-
-
 if __name__ == "__main__":
-    SUITE = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar)
-    unittest.TextTestRunner(verbosity=2).run(SUITE)
+    SUN = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar)
+    TIME = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar)
+    unittest.TextTestRunner(verbosity=2).run(SUN)
 #end if
