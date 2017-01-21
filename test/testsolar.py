@@ -33,15 +33,16 @@ class TestSolar(unittest.TestCase):
     def setUp(self):
         # time at MIDC SPA has no seconds setting so let's consider new test data.
         # the doc says use 67 sec delta t
-        # self.now = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
+        # self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
+        self.dut1 = datetime.timedelta(seconds=time.get_delta_t(self.dio) - time.tt_offset
+                                       - time.get_leap_seconds(self.dio))
         self.dio += datetime.timedelta(seconds=time.get_delta_t(self.dio) - time.tt_offset
                                        - time.get_leap_seconds(self.dio))
           # Reda & Andreas say that this time is in "Local Standard Time", which they
           # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
           # to UTC.
-        self.dut1 = datetime.timedelta(seconds=time.get_delta_t(self.dio) - time.tt_offset
-                                       - time.get_leap_seconds(self.dio))
+
         self.longitude = -105.1786
         self.latitude = 39.742476
         self.pressure = 82000.0 # pascals
