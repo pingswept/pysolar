@@ -69,41 +69,50 @@ class TestSolar(unittest.TestCase):
 
         self.gsra = solar.get_geocentric_sun_right_ascension(
             self.asl, self.true_ecliptic_obliquity, self.geo_lat)
+
         self.gsd = solar.get_geocentric_sun_declination(
             self.asl, self.true_ecliptic_obliquity, self.geo_lat)
+
         self.local_hour_angle = solar.get_local_hour_angle(
             318.5119, self.longitude, self.gsra)
+
             #self.apparent_sidereal_time only correct to 5 sig figs, so override
         self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(
             self.sed)
+
         self.projected_radial_distance = solar.get_projected_radial_distance(
             self.elevation, self.latitude)
+
         self.projected_axial_distance = solar.get_projected_axial_distance(
             self.elevation, self.latitude)
+
         self.pwe = elevation.get_pressure_with_elevation(1567.7)
+
         self.tsra = solar.get_topocentric_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.asl,
             self.true_ecliptic_obliquity, self.geo_lat)
+
         self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.gsd)
-        self.topocentric_sun_declination = solar.get_topocentric_sun_declination(
+
+        self.tsd = solar.get_topocentric_sun_declination(
             self.gsd, self.projected_axial_distance,
             self.equatorial_horizontal_parallax, self.parallax_sun_right_ascension,
             self.local_hour_angle)
-        self.topocentric_local_hour_angle = solar.get_topocentric_local_hour_angle(
+
+        self.tlha = solar.get_topocentric_local_hour_angle(
             self.local_hour_angle, self.parallax_sun_right_ascension)
 
-        self.taa = solar.get_topocentric_azimuth_angle(
-            self.topocentric_local_hour_angle, self.latitude, self.topocentric_sun_declination)
-
+        self.taa = solar.get_topocentric_azimuth_angle(self.tlha, self.latitude, self.tsd)
 
         self.twe = elevation.get_temperature_with_elevation(1567.7)
 
         self.tza = solar.get_topocentric_zenith_angle(
-            self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle,
+            self.latitude, self.tsd, self.tlha,
             self.pressure, self.temperature)
+
         self.aoi = solar.get_incidence_angle(
             self.tza, self.slope, self.slope_orientation,
             self.taa)
@@ -225,7 +234,7 @@ class TestSolar(unittest.TestCase):
     def test_get_tlha(self):
         """ 11.10629 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(11.10629, self.topocentric_local_hour_angle, 4)
+        self.assertAlmostEqual(11.10629, self.tlha, 4)
 
     def test_get_ts(self):
         """ you could put what to expect in here """
@@ -238,7 +247,7 @@ class TestSolar(unittest.TestCase):
     def test_get_tsd(self):
         """ -9.316179 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3)
+        self.assertAlmostEqual(-9.316179, self.tsd, 3)
 
     def test_get_tsra(self):
         """ 202.22741 """
