@@ -81,7 +81,7 @@ class TestSolar(unittest.TestCase):
         self.projected_axial_distance = solar.get_projected_axial_distance(
             self.elevation, self.latitude)
         self.pwe = elevation.get_pressure_with_elevation(1567.7)
-        self.topocentric_sun_right_ascension = solar.get_topocentric_sun_right_ascension(
+        self.tsra = solar.get_topocentric_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.asl,
             self.true_ecliptic_obliquity, self.geo_lat)
@@ -100,6 +100,7 @@ class TestSolar(unittest.TestCase):
 
 
         self.twe = elevation.get_temperature_with_elevation(1567.7)
+
         self.tza = solar.get_topocentric_zenith_angle(
             self.latitude, self.topocentric_sun_declination, self.topocentric_local_hour_angle,
             self.pressure, self.temperature)
@@ -242,7 +243,7 @@ class TestSolar(unittest.TestCase):
     def test_get_tsra(self):
         """ 202.22741 """
          # value from Reda and Andreas (2005)
-        self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3)
+        self.assertAlmostEqual(202.22741, self.tsra, 3)
 
     def test_get_twe(self):
         """ 277.9600 """
