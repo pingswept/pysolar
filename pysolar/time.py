@@ -25,7 +25,44 @@ from .constants import \
     seconds_per_day
 
 # datetime.datetime(2000, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
+ITALY = 2299161 # /* 1582-10-15 */
 DJ00 = 2451545.0
+DJC = 36525.0
+DJM = 365250.0
+
+def jdn(dto):
+    """
+    Given datetime object returns Julian Day Number
+    """
+    year = dto.year
+    month = dto.month
+    day = dto.day
+
+    not_march = month < 3
+    if not_march:
+        year -= 1
+        month += 12
+
+    fr_y = math.floor(year / 100)
+    reform = 2 - fr_y + math.floor(fr_y / 4)
+    jjs = day + (
+        math.floor(365.25 * (year + 4716)) + math.floor(30.6001 * (month + 1)) + reform - 1524)
+    if jjs < ITALY:
+        jjs -= reform
+
+    return jjs
+# end jdn
+
+def ajd(dto):
+    """
+    Given datetime object returns Astronomical Julian Day.
+    Day is from midnight 00:00:00+00:00 with day fractional
+    value added.
+    """
+    jdd = jdn(dto)
+    day_fraction = dto.hour / 24.0 + dto.minute / 1440.0 + dto.second / 86400.0
+    return jdd + day_fraction - 0.5
+# end ajd
 
 # add to datetime.datetime.toordinal() to get Julian day number
 # math.floor(JD − 1721424.5)
@@ -842,45 +879,3 @@ def get_julian_ephemeris_century(julian_ephemeris_day):
 def get_julian_ephemeris_millennium(julian_ephemeris_century):
     """ Convert JDN to fractional millennium """
     return julian_ephemeris_century / 10.0
-
-# funny that this seemed so simple
-def julian_day(now):
-    """
-    1. Get current values for year, month, and day
-    2. Same for time and make it a day fraction
-    3. Calculate the julian day number via https://en.wikipedia.org/wiki/Julian_day
-    4. Add the day fraction to the julian day number
-
-    """
-    year = now.year
-    month = now.month
-    day = now.day
-    day_fraction = now.hour + now.minute / 60.0 + now.second / 3600.0 / 24.0
-
-    # The value 'march_on' will be 1 for January and February, and 0 for other months.
-    march_on = math.floor((14 - month) / 12)
-    year = year + 4800 - march_on
-    # And 'month' will be 0 for March and 11 for February. 0 - 11 months
-    month = month + 12 * march_on - 3
-
-    y_quarter = math.floor(year / 4)
-    jdn = day + math.floor((month * 153 + 2) / 5) + 365 * year + y_quarter
-
-    julian = year < 1582 or year == (1582 and month < 10) or (month == 10 and day < 15)
-    if julian:
-        reform = 32083 # might need adjusting so needs a test
-    else:
-        reform = math.floor(year / 100) + math.floor(year / 400) + 32030.1875 # fudged this
-
-    return jdn - reform + day_fraction
-    """
-    something to be considered as implementation
-    from C source code
-    /* midnight 1.1.1970 = JD 2440587.5 */
-    #define EJD (double) 2440588.0
-
-    int epoc_days = (int) time(0) / 86400.0;
-    double jd_today = epoc_days + EJD;
-    double jd_days = epoc_days + EJD - J2000;
-    double jd = epoc_days + EJD - J2000 - lon / 360.0;
-    """

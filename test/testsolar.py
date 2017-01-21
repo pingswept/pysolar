@@ -48,7 +48,8 @@ class TestSolar(unittest.TestCase):
         self.temperature = 11.0 + constants.celsius_offset # kelvin
         self.slope = 30.0 # degrees
         self.slope_orientation = -10.0 # degrees east from south
-        self.jdn = time.julian_day(self.now)
+        self.jdn = time.jdn(self.now)
+        self.ajd = time.ajd(self.now)
         self.jsd = time.get_julian_solar_day(self.now)
         self.jct = time.get_julian_century(self.jsd)
         self.jde = time.get_julian_ephemeris_day(self.now)
@@ -113,10 +114,13 @@ class TestSolar(unittest.TestCase):
         print('d =', time.timestamp(self.now), 'seconds')
         print('no tzinfo', time.timestamp(no_tzinfo))
 
-    def testjulianday(self):# this isn't style but linter doesn't care.
-        """ off by 14 days 19.5 hours or 14.8125 days"""
-        #
-        self.assertAlmostEqual(2452930.312847222, self.jdn, 12)
+    def test_julian_day_number(self):
+        """ 2452930.0 """
+        self.assertAlmostEqual(2452930.0, self.jdn, 12)
+
+    def test_astronomical_julian_day(self):
+        """ 2452930.312847222 """
+        self.assertAlmostEqual(2452930.312847222, self.ajd, 12)
 
     def testget_julian_solar_day(self):
         """ 2452930.312847 """
