@@ -70,10 +70,10 @@ class TestSolar(unittest.TestCase):
         self.gsd = solar.get_geocentric_sun_declination(self.asl, self.teo, self.geo_lat)
         self.lha = solar.get_local_hour_angle(318.5119, self.longitude, self.gsra)
             #self.apparent_sidereal_time only correct to 5 sig figs, so override
-        self.equatorial_horizontal_parallax = solar.get_equatorial_horizontal_parallax(
-            self.sed)
-
+        self.ehp = solar.get_equatorial_horizontal_parallax(self.sed)
         self.prd = solar.get_projected_radial_distance(self.elevation, self.latitude)
+        self.psra = solar.get_parallax_sun_right_ascension(self.prd, self.ehp, self.lha, self.gsd)
+
 
         self.projected_axial_distance = solar.get_projected_axial_distance(
             self.elevation, self.latitude)
@@ -81,13 +81,11 @@ class TestSolar(unittest.TestCase):
         self.pwe = elevation.get_pressure_with_elevation(1567.7)
 
         self.tsra = solar.get_topocentric_sun_right_ascension(
-            self.prd, self.equatorial_horizontal_parallax,
+            self.prd, self.ehp,
             self.lha, self.asl,
             self.teo, self.geo_lat)
 
-        self.psra = solar.get_parallax_sun_right_ascension(
-            self.prd, self.equatorial_horizontal_parallax,
-            self.lha, self.gsd)
+
 
         self.tsd = solar.get_topocentric_sun_declination(
             self.gsd, self.projected_axial_distance,
