@@ -59,7 +59,7 @@ class TestSolar(unittest.TestCase):
         self.jce = time.get_julian_ephemeris_century(self.jde)
         self.jme = time.get_julian_ephemeris_millennium(self.jce)
         self.geo_lon = solar.get_geocentric_longitude(self.jme)
-        self.geocentric_latitude = solar.get_geocentric_latitude(self.jme)
+        self.geo_lat = solar.get_geocentric_latitude(self.jme)
         self.nutation = solar.get_nutation(self.jce)
         self.sun_earth_distance = solar.get_sun_earth_distance(self.jme)
         self.true_ecliptic_obliquity = solar.get_true_ecliptic_obliquity(self.jme, self.nutation)
@@ -69,9 +69,9 @@ class TestSolar(unittest.TestCase):
         self.apparent_sidereal_time = solar.get_apparent_sidereal_time(
             self.jsd, self.jme, self.nutation)
         self.geocentric_sun_right_ascension = solar.get_geocentric_sun_right_ascension(
-            self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
+            self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geo_lat)
         self.geocentric_sun_declination = solar.get_geocentric_sun_declination(
-            self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geocentric_latitude)
+            self.apparent_sun_longitude, self.true_ecliptic_obliquity, self.geo_lat)
         self.local_hour_angle = solar.get_local_hour_angle(
             318.5119, self.longitude, self.geocentric_sun_right_ascension)
             #self.apparent_sidereal_time only correct to 5 sig figs, so override
@@ -84,7 +84,7 @@ class TestSolar(unittest.TestCase):
         self.topocentric_sun_right_ascension = solar.get_topocentric_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.apparent_sun_longitude,
-            self.true_ecliptic_obliquity, self.geocentric_latitude)
+            self.true_ecliptic_obliquity, self.geo_lat)
         self.parallax_sun_right_ascension = solar.get_parallax_sun_right_ascension(
             self.projected_radial_distance, self.equatorial_horizontal_parallax,
             self.local_hour_angle, self.geocentric_sun_declination)
