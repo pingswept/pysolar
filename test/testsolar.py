@@ -26,8 +26,8 @@ from pysolar import \
     constants, \
     time, \
     elevation
- # R0902: Too many instance attributes
- # R0904: Too many public methods
+ # R0902: Too many instance attributes 7 is recommended
+ # R0904: Too many public methods 20 is recommended
 class TestSolar(unittest.TestCase):
     """ Test solar and time methods """
     def setUp(self):
@@ -35,10 +35,10 @@ class TestSolar(unittest.TestCase):
         # the doc says use 67 sec delta t
         # self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
-        self.dut1 = datetime.timedelta(seconds=time.get_delta_t(self.dio) - time.tt_offset
-                                       - time.get_leap_seconds(self.dio))
-        self.dio += datetime.timedelta(seconds=time.get_delta_t(self.dio) - time.tt_offset
-                                       - time.get_leap_seconds(self.dio))
+        self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
+            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+        self.dio += datetime.timedelta(seconds=time.get_delta_t(
+            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
           # Reda & Andreas say that this time is in "Local Standard Time", which they
           # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
           # to UTC.
@@ -74,35 +74,23 @@ class TestSolar(unittest.TestCase):
         self.prd = solar.get_projected_radial_distance(self.elevation, self.latitude)
         self.psra = solar.get_parallax_sun_right_ascension(self.prd, self.ehp, self.lha, self.gsd)
         self.tlha = solar.get_topocentric_local_hour_angle(self.lha, self.psra)
-
-        self.projected_axial_distance = solar.get_projected_axial_distance(
-            self.elevation, self.latitude)
-
-        self.pwe = elevation.get_pressure_with_elevation(1567.7)
+        self.pad = solar.get_projected_axial_distance(self.elevation, self.latitude)
+        self.tsd = solar.get_topocentric_sun_declination(
+            self.gsd, self.pad, self.ehp, self.psra, self.lha)
 
         self.tsra = solar.get_topocentric_sun_right_ascension(
-            self.prd, self.ehp,
-            self.lha, self.asl,
-            self.teo, self.geo_lat)
-
-
-
-        self.tsd = solar.get_topocentric_sun_declination(
-            self.gsd, self.projected_axial_distance,
-            self.ehp, self.psra,
-            self.lha)
+            self.prd, self.ehp, self.lha, self.asl, self.teo, self.geo_lat)
 
         self.tlha = solar.get_topocentric_local_hour_angle(self.lha, self.psra)
         self.taa = solar.get_topocentric_azimuth_angle(self.tlha, self.latitude, self.tsd)
+        self.pwe = elevation.get_pressure_with_elevation(1567.7)
         self.twe = elevation.get_temperature_with_elevation(1567.7)
 
         self.tza = solar.get_topocentric_zenith_angle(
-            self.latitude, self.tsd, self.tlha,
-            self.pressure, self.temperature)
+            self.latitude, self.tsd, self.tlha, self.pressure, self.temperature)
 
         self.aoi = solar.get_incidence_angle(
-            self.tza, self.slope, self.slope_orientation,
-            self.taa)
+            self.tza, self.slope, self.slope_orientation, self.taa)
 
     def test_get_ac(self):
         """ -0.0057113603 """
