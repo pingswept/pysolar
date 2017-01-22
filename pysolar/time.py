@@ -50,7 +50,7 @@ def jdn(dto):
     if jjs < ITALY:
         jjs -= reform
 
-    return jjs
+    return math.floor(jjs)
 # end jdn
 
 def ajd(dto):
@@ -834,14 +834,17 @@ def timestamp(now):
     else:
         return (now - _EPOCH).total_seconds()
 
-def get_julian_solar_day(now):
-    "returns the UT Julian day number (including fraction of a day) corresponding to" \
-    " the specified date/time. This version assumes the proleptic Gregorian calender;" \
-    " trying to adjust for pre-Gregorian dates/times seems pointless now the changeover" \
-    " happened over such wildly varying times in different regions."
+def get_julian_solar_day(dtio):
+    """
+    Given a date/time input object returns the UT Julian day number
+    (including fraction of a day) corresponding to
+    the specified date/time. This version assumes the proleptic Gregorian calender;
+    trying to adjust for pre-Gregorian dates/times seems pointless now the changeover
+    happened over such wildly varying times in different regions.
+    """
     return \
         (
-            (timestamp(now) + get_leap_seconds(now) + tt_offset - get_delta_t(now))
+            (timestamp(dtio) + get_leap_seconds(dtio) + tt_offset - get_delta_t(dtio))
             /
             seconds_per_day
             +

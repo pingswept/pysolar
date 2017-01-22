@@ -33,6 +33,7 @@ class TestSolar(unittest.TestCase):
     def setUp(self):
         # time at MIDC SPA has no seconds setting so let's consider new test data.
         # the doc says use 67 sec delta t
+        # changing the docstring to values found in MIDC SPA for expectation tests.
         # self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
@@ -51,8 +52,8 @@ class TestSolar(unittest.TestCase):
         self.temperature = 11.0 + constants.celsius_offset # kelvin
         self.slope = 30.0 # degrees
         self.slope_orientation = -10.0 # degrees east from south
-        self.jdn = time.jdn(self.dio)
-        self.ajd = time.ajd(self.dio)
+        self.jdn = time.jdn(self.dio) - self.lon_offset
+        self.ajd = time.ajd(self.dio) - self.lon_offset
         self.jsd = time.get_julian_solar_day(self.dio)
         self.jct = time.get_julian_century(self.jsd)
         self.jde = time.get_julian_ephemeris_day(self.dio)
@@ -93,11 +94,11 @@ class TestSolar(unittest.TestCase):
             self.tza, self.slope, self.slope_orientation, self.taa)
 
     def test_get_ac(self):
-        """ -0.0057113603 """
+        """ MIDC SPA -0.005712 """
         self.assertAlmostEqual(-0.0057113603, self.gac, 9) # value not validated
 
     def test_get_ast(self):
-        """ 318.5119 """
+        """ MIDC SPA is 63.675546 at 19:30 and 318.388061 at 12:30 """
         # value derived from Reda and Andreas (2005)
         self.assertAlmostEqual(318.5119, self.ast, 2)
 
@@ -108,8 +109,8 @@ class TestSolar(unittest.TestCase):
         self.assertAlmostEqual(204.0085537528, self.asl, 4)
 
     def test_get_ajd(self):
-        """ 2452930.312847222 """
-        self.assertAlmostEqual(2452930.312847222, self.ajd, 12)
+        """ 2452930.60501 has longitude added """
+        self.assertAlmostEqual(2452930.60501, self.ajd, 12)
 
     def test_get_dut1(self):
         """ see DUT1 http://asa.usno.navy.mil/SecM/Glossary.html#ut1
@@ -150,8 +151,8 @@ class TestSolar(unittest.TestCase):
         self.assertAlmostEqual(0.03792779869191517, self.jct, 12) # value not validated
 
     def test_get_jdn(self):
-        """ 2452930.0 """
-        self.assertAlmostEqual(2452930.0, self.jdn, 12)
+        """ 2452930.292162778 has longitude added """
+        self.assertAlmostEqual(2452930.292162778, self.jdn, 12)
 
     def test_get_jed(self):
         """ 2452930.3136 """
