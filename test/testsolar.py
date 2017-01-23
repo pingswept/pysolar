@@ -47,9 +47,9 @@ class TestSolar(unittest.TestCase):
         # changing the docstring to values found in MIDC SPA for expectation tests.
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         self.dio += datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         # Reda & Andreas say that this time is in "Local Standard Time", which they
         # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
         # to UTC.
@@ -168,10 +168,10 @@ class TestTime(unittest.TestCase):
             2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(
             seconds=time.get_delta_t(
-                self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+                self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         self.dio += datetime.timedelta(
             seconds=time.get_delta_t(
-                self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+                self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         self.jed = time.get_julian_ephemeris_day(self.dio)
         self.jec = time.get_julian_ephemeris_century(self.jed)
         self.jem = time.get_julian_ephemeris_millennium(self.jec)
@@ -278,9 +278,9 @@ class TestGeocentricSolar(unittest.TestCase):
         # changing the docstring to values found in MIDC SPA for expectation tests.
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         self.dio += datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         # Reda & Andreas say that this time is in "Local Standard Time", which they
         # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
         # to UTC.
@@ -354,9 +354,9 @@ class TestTopocentricSolar(unittest.TestCase):
         # changing the docstring to values found in MIDC SPA for expectation tests.
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         self.dio += datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.tt_offset - time.get_leap_seconds(self.dio))
+            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
         # Reda & Andreas say that this time is in "Local Standard Time", which they
         # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
         # to UTC.
