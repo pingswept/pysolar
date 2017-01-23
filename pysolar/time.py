@@ -32,7 +32,8 @@ DJM = 365250.0
 
 def jdn(dto):
     """
-    Given datetime object returns Julian Day Number
+    Given datetime object returns Julian Day Number as an integer.
+    jjs named after Joseph Justice Scalager.
     """
     year = dto.year
     month = dto.month
@@ -45,8 +46,8 @@ def jdn(dto):
 
     fr_y = math.floor(year / 100)
     reform = 2 - fr_y + math.floor(fr_y / 4)
-    jjs = day + (
-        math.floor(365.25 * (year + 4716)) + math.floor(30.6001 * (month + 1)) + reform - 1524)
+    jjs = day + math.floor(30.6001 * (month + 1)) + reform + (
+        math.floor(365.25 * (year + 4716)) - 1524)
     if jjs < ITALY:
         jjs -= reform
 
