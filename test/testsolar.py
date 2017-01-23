@@ -53,8 +53,7 @@ class TestSolar(unittest.TestCase):
         # to UTC.
 
         self.jsd = time.get_julian_solar_day(self.dio) - self.lon_offset
-
-        self.nut = solar.get_nutation(self.jsd)
+        self.nut = solar.get_nutation(time.get_julian_century(self.jsd))
 
         self.jed = time.get_julian_ephemeris_day(self.dio)
         self.jec = time.get_julian_ephemeris_century(self.jed)
@@ -116,7 +115,7 @@ class TestSolar(unittest.TestCase):
         MIDC SPA is 204.008183 at 12:30
         """
         # 204.00818592528472 below
-        self.assertAlmostEqual(204.0085537528, self.asl, 10)
+        self.assertAlmostEqual(204.00818592528472, self.asl, 13)
         self.assertAlmostEqual(204.008183, self.asl, 4)
 
     def test_get_dut1(self):
