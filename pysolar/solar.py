@@ -261,8 +261,11 @@ def get_incidence_angle(
                     slope_rad) + math.sin(
                         slope_rad) * math.sin(tza_rad) * math.cos(taa_rad - math.pi - so_rad)))
 
-def get_local_hour_angle(apparent_sidereal_time, longitude, geocentric_sun_right_ascension):# docstring
-    return (apparent_sidereal_time + longitude - geocentric_sun_right_ascension) % 360
+def get_local_hour_angle(gast, local_longitude, geo_right_ascension):
+    """
+    Local Apparent Sidereal Time
+    """
+    return (gast + local_longitude - geo_right_ascension) % 360
 
 def get_mean_sidereal_time(jd):# docstring
     # This function doesn't agree with Andreas and Reda as well as it should.
