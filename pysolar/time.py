@@ -22,7 +22,7 @@ import math
 import datetime
 import time
 from .constants import \
-    seconds_per_day
+    SECONDS_PER_DAY
 
 # datetime.datetime(2000, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
 ITALY = 2299161 # /* 1582-10-15 */
@@ -846,7 +846,7 @@ def get_julian_solar_day(dtio):
         (
             (timestamp(dtio) + get_leap_seconds(dtio) + TT_OFFSET - get_delta_t(dtio))
             /
-            seconds_per_day
+            SECONDS_PER_DAY
             +
             GREGORIAN_DAY_OFFSET
             +
@@ -863,7 +863,7 @@ def get_julian_ephemeris_day(now):
         (
             (timestamp(now) + get_leap_seconds(now) + TT_OFFSET)
             /
-            seconds_per_day
+            SECONDS_PER_DAY
             +
             GREGORIAN_DAY_OFFSET
             +

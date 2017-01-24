@@ -236,8 +236,8 @@ def declination_degree(when, TY = TY_default ):
     return constants.earth_axis_inclination * math.sin((2 * math.pi / (TY)) * ((when.utctimetuple().tm_yday) - 81))
 
 
-def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature = constants.standard_temperature,
-                                  pressure = constants.standard_pressure,  elevation = elevation_default):
+def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature = constants.STANDARD_TEMPERATURE,
+                                  pressure = constants.STANDARD_PRESSURE,  elevation = elevation_default):
     """Equation calculates Solar elevation function for clear sky type.
 
     Parameters
@@ -273,8 +273,8 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature 
     return (0.038175 + (1.5458 * (math.sin(altitude))) + ((-0.59980) * (0.5 * (1 - math.cos(2 * (altitude))))))
 
 def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
-                                     elevation = elevation_default, temperature = constants.standard_temperature,
-                                     pressure = constants.standard_pressure):
+                                     elevation = elevation_default, temperature = constants.STANDARD_TEMPERATURE,
+                                     pressure = constants.STANDARD_PRESSURE):
     """ The function calculates solar elevation function for overcast sky type.
     This associated hourly overcast radiation model is based on the estimation of the
     overcast sky transmittance with the sun directly overhead combined with the application
@@ -340,7 +340,7 @@ def diffuse_transmittance(TL = TL_default):
 
 
 def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_default,
-                       temperature = constants.standard_temperature, pressure = constants.standard_pressure, TL=TL_default):
+                       temperature = constants.STANDARD_TEMPERATURE, pressure = constants.STANDARD_PRESSURE, TL=TL_default):
     """Equation calculates diffuse radiation under clear sky conditions.
 
     Parameters
@@ -379,7 +379,7 @@ def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_
     return mean_earth_sun_distance(when) * DT * altitude
 
 def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevation_default,
-                          temperature = constants.standard_temperature, pressure = constants.standard_pressure,TL=TL_default):
+                          temperature = constants.STANDARD_TEMPERATURE, pressure = constants.STANDARD_PRESSURE,TL=TL_default):
     """Function calculates the diffuse radiation under overcast conditions.
 
     Parameters
@@ -420,7 +420,7 @@ def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevati
     return DIFOC
 
 def direct_underclear(latitude_deg, longitude_deg, when,
-                      temperature = constants.standard_temperature, pressure = constants.standard_pressure, TY = TY_default,
+                      temperature = constants.STANDARD_TEMPERATURE, pressure = constants.STANDARD_PRESSURE, TY = TY_default,
                       AM = AM_default, TL = TL_default,elevation = elevation_default):
     """Equation calculates direct radiation under clear sky conditions.
 
@@ -473,7 +473,7 @@ def direct_underclear(latitude_deg, longitude_deg, when,
     return DIRC
 
 def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
-                            temperature = constants.standard_temperature, pressure = constants.standard_pressure, TY = TY_default,
+                            temperature = constants.STANDARD_TEMPERATURE, pressure = constants.STANDARD_PRESSURE, TY = TY_default,
                             AM = AM_default, TL = TL_default, elevation = elevation_default):
 
     """Equation calculates global irradiance under clear sky conditions.
@@ -525,11 +525,11 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
 
     """
     DIRC =  direct_underclear(latitude_deg, longitude_deg, when,
-                              TY, AM, TL, elevation, temperature = constants.standard_temperature,
-                              pressure = constants.standard_pressure)
+                              TY, AM, TL, elevation, temperature = constants.STANDARD_TEMPERATURE,
+                              pressure = constants.STANDARD_PRESSURE)
 
     DIFFC = diffuse_underclear(latitude_deg, longitude_deg, when,
-                               elevation, temperature = constants.standard_temperature, pressure= constants.standard_pressure)
+                               elevation, temperature = constants.STANDARD_TEMPERATURE, pressure= constants.STANDARD_PRESSURE)
 
     ghic = (DIRC + DIFFC)
 
@@ -537,8 +537,8 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
 
 
 def global_irradiance_overcast(latitude_deg, longitude_deg, when,
-                               elevation = elevation_default, temperature = constants.standard_temperature,
-                               pressure = constants.standard_pressure):
+                               elevation = elevation_default, temperature = constants.STANDARD_TEMPERATURE,
+                               pressure = constants.STANDARD_PRESSURE):
     """Calculated Global is used to compare to the Diffuse under overcast conditions.
     Under overcast skies, global and diffuse are expected to be equal due to the absence of the beam
     component.

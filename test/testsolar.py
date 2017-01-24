@@ -37,7 +37,7 @@ class TestSolar(unittest.TestCase):
     latitude = 39.742476
     pressure = 82000.0 # pascals
     elevation = 1830.14 # meters
-    temperature = 11.0 + constants.celsius_offset # kelvin
+    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
     slope = 30.0 # degrees
     slope_orientation = -10.0 # degrees east from south
 
@@ -144,7 +144,7 @@ class TestSolar(unittest.TestCase):
         MIDC SPA is 0.996542 at 12:30
         """
         sed = solar.get_sun_earth_distance(self.jem)
-        self.assertAlmostEqual(0.996542, sed, 6)
+        # self.assertAlmostEqual(0.996542, sed, 6)
         self.assertAlmostEqual(0.9965421031, sed, 6)
 
     def test_get_twe(self):
@@ -268,7 +268,7 @@ class TestGeocentricSolar(unittest.TestCase):
     latitude = 39.742476
     pressure = 82000.0 # pascals
     elevation = 1830.14 # meters
-    temperature = 11.0 + constants.celsius_offset # kelvin
+    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
     slope = 30.0 # degrees
     slope_orientation = -10.0 # degrees east from south
 
@@ -344,7 +344,7 @@ class TestTopocentricSolar(unittest.TestCase):
     latitude = 39.742476
     pressure = 82000.0 # pascals
     elevation = 1830.14 # meters
-    temperature = 11.0 + constants.celsius_offset # kelvin
+    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
     slope = 30.0 # degrees
     slope_orientation = -10.0 # degrees east from south
 

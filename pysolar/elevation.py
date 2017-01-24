@@ -21,14 +21,14 @@
 import warnings
 import math
 from .constants import \
-    standard_pressure, \
-    standard_temperature, \
-    earth_temperature_lapse_rate, \
-    air_gas_constant, \
-    earth_gravity, \
-    earth_atmosphere_molar_mass
+    STANDARD_PRESSURE, \
+    STANDARD_TEMPERATURE, \
+    EARTH_TEMPERATURE_LAPSE_RATE, \
+    AIR_GAS_CONSTANT, \
+    EARTH_GRAVITY, \
+    EARTH_ATMOSPHERE_MOLAR_MASS
 
-def get_pressure_with_elevation(h, Ps=standard_pressure, Ts=standard_temperature, Tl=earth_temperature_lapse_rate, Hb=0.0, R=air_gas_constant, g=earth_gravity, M=earth_atmosphere_molar_mass):
+def get_pressure_with_elevation(h, Ps=STANDARD_PRESSURE, Ts=STANDARD_TEMPERATURE, Tl=EARTH_TEMPERATURE_LAPSE_RATE, Hb=0.0, R=AIR_GAS_CONSTANT, g=EARTH_GRAVITY, M=EARTH_ATMOSPHERE_MOLAR_MASS):
     "This function returns an estimate of the pressure in pascals as a function of\n" \
     " elevation above sea level.\n" \
     "NOTES:\n" \
@@ -54,7 +54,7 @@ def get_pressure_with_elevation(h, Ps=standard_pressure, Ts=standard_temperature
         Ps * (Ts / (Ts + Tl * (h - Hb))) ** ((g * M) / (R * Tl))
 #end get_pressure_with_elevation
 
-def get_temperature_with_elevation(h, Ts=standard_temperature, Tl=earth_temperature_lapse_rate):
+def get_temperature_with_elevation(h, Ts=STANDARD_TEMPERATURE, Tl=EARTH_TEMPERATURE_LAPSE_RATE):
     "This function returns an estimate of temperature as a function above sea level.\n" \
     "NOTES:\n" \
     "  * This equation is only accurate up to 11,000 meters\n" \

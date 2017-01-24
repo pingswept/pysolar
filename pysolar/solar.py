@@ -50,8 +50,8 @@ def get_aberration_correction(sun_earth_distance):# Missing function dcostring
     return -20.4898/(3600.0 * sun_earth_distance)
 
 def get_altitude(latitude_deg, longitude_deg, when,
-                 elevation = 0, temperature = constants.standard_temperature,
-                 pressure = constants.standard_pressure):# no spaces for param assignment, line too long, too many args and vars
+                 elevation = 0, temperature = constants.STANDARD_TEMPERATURE,
+                 pressure = constants.STANDARD_PRESSURE):# no spaces for param assignment, line too long, too many args and vars
     '''See also the faster, but less accurate, get_altitude_fast()'''
     # location-dependent calculations
     projected_radial_distance = get_projected_radial_distance(elevation, latitude_deg)
@@ -194,7 +194,7 @@ def get_declination(day):
     The declination of the sun varies between 23.45 degrees and -23.45 degrees,
     hitting zero on the equinoxes and peaking on the solstices.
     '''
-    return constants.earth_axis_inclination * math.sin((2 * math.pi / 365.0) * (day - 81))
+    return constants.EARTH_AXIS_INCLINATION * math.sin((2 * math.pi / 365.0) * (day - 81))
 
 def get_equatorial_horizontal_parallax(sun_earth_distance):# docstring
     return 8.794 / (3600 / sun_earth_distance)
@@ -239,10 +239,10 @@ def get_geocentric_sun_right_ascension(
 # Heliocentric functions calculate angles relative to the center of the sun.
 
 def get_heliocentric_latitude(jme):# docstring
-    return math.degrees(get_coeff(jme, constants.heliocentric_latitude_coeffs) / 1e8)
+    return math.degrees(get_coeff(jme, constants.HELIOCENTRIC_LATITUDE_COEFFS) / 1e8)
 
 def get_heliocentric_longitude(jme):# docstring
-    return math.degrees(get_coeff(jme, constants.heliocentric_longitude_coeffs) / 1e8) % 360
+    return math.degrees(get_coeff(jme, constants.HELIOCENTRIC_LONGITUDE_COEFFS) / 1e8) % 360
 
 def get_hour_angle(when, longitude_deg):# docstring
     solar_time = get_solar_time(longitude_deg, when)
@@ -276,7 +276,7 @@ def get_mean_sidereal_time(jd):# docstring
     return sidereal_time % 360
 
 def get_nutation(jce):# docstring
-    abcd = constants.nutation_coefficients
+    abcd = constants.NUTATION_COEFFICIENTS
     nutation_long = []
     nutation_oblique = []
     p = constants.get_aberration_coeffs()
@@ -292,7 +292,7 @@ def get_nutation(jce):# docstring
                 'LongitudeOfAscendingNode',
             )
       )
-    y = constants.aberration_sin_terms
+    y = constants.ABERRATION_SIN_TERMS
     for i in range(len(abcd)):
         sigmaxy = 0.0
         for j in range(len(x)):
@@ -322,16 +322,16 @@ def get_projected_radial_distance(elevation, latitude):# docstring
     flattened_latitude_rad = math.radians(get_flattened_latitude(latitude))
     latitude_rad = math.radians(latitude)
     return math.cos(
-        flattened_latitude_rad) + (elevation * math.cos(latitude_rad) / constants.earth_radius)
+        flattened_latitude_rad) + (elevation * math.cos(latitude_rad) / constants.EARTH_RADIUS)
 
 def get_projected_axial_distance(elevation, latitude):# docstring
     flattened_latitude_rad = math.radians(get_flattened_latitude(latitude))
     latitude_rad = math.radians(latitude)
     return 0.99664719 * math.sin(
-        flattened_latitude_rad) + (elevation * math.sin(latitude_rad) / constants.earth_radius)
+        flattened_latitude_rad) + (elevation * math.sin(latitude_rad) / constants.EARTH_RADIUS)
 
 def get_sun_earth_distance(jme):# docstring
-    return get_coeff(jme, constants.sun_earth_distance_coeffs) / 1e8
+    return get_coeff(jme, constants.AU_DISTANCE_COEFFS) / 1e8
 
 def get_refraction_correction(pressure, temperature, topocentric_elevation_angle):# docstring
     #function and default values according to original NREL SPA C code
