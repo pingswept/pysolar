@@ -79,6 +79,22 @@ class TestSolar(unittest.TestCase):
         # self.assertAlmostEqual(204.008183, asl, 6)
         self.assertAlmostEqual(204.00818094267757, asl, 6)
 
+    def test_get_azimuth(self):
+        """
+        negative doesn't seem right
+        """
+        azm = solar.get_azimuth(self.latitude, self.longitude, self.dio, self.elevation)
+        self.assertAlmostEqual(-14.18777359984523, azm, 6)
+
+    def test_get_altitude(self):
+        """
+        negative doesn't seem right
+        """
+        lat_lon_list = solar.input_location(self.latitude, self.longitude)
+        alt = solar.get_altitude(
+            lat_lon_list, self.dio, self.elevation, self.temperature, self.pressure)
+        self.assertAlmostEqual(-5.58999191007979, alt, 6)
+
     def test_get_ehp(self):
         """
         MIDC SPA is 0.002451 at 12:30
