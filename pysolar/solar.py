@@ -15,7 +15,8 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-"""Solar geometry functions
+"""
+Solar geometry functions
 
 This module contains the most important functions for calculation of the position of the sun.
 
@@ -26,39 +27,49 @@ from . import constants
 from . import time
 from . import radiation
 
-def solar_test():# Missing function docstring
+def solar_test():
+    """
+    docstring goes here
+    """
     latitude_deg = 42.364908
     longitude_deg = -71.112828
-    d = datetime.datetime.utcnow()# Invalid variable name d
-    thirty_minutes = datetime.timedelta(hours = 0.5)# No space allowed around keyword assinments
-    for i in range(48):# Unused variable i
-        timestamp = d.ctime()
-        altitude_deg = get_altitude(latitude_deg, longitude_deg, d)
-        azimuth_deg = get_azimuth(latitude_deg, longitude_deg, d)
-        power = radiation.get_radiation_direct(d, altitude_deg)
-        if (altitude_deg > 0):# Unnecessary parens after if keyword
+    dio = datetime.datetime.utcnow()
+    thirty_minutes = datetime.timedelta(hours=0.5)
+    for _idx in range(48):
+        timestamp = dio.ctime()
+        altitude_deg = get_altitude(latitude_deg, longitude_deg, dio)
+        azimuth_deg = get_azimuth(latitude_deg, longitude_deg, dio)
+        power = radiation.get_radiation_direct(dio, altitude_deg)
+        if altitude_deg > 0:
             print(timestamp, "UTC", altitude_deg, azimuth_deg, power)
-        d = d + thirty_minutes# Invalid variable name d
+        dio = dio + thirty_minutes
 
 def equation_of_time(day):
-    "returns the number of minutes to add to mean solar time to get actual solar time."
-    b = 2 * math.pi / 364.0 * (day - 81)# Invalid variable name
-    return 9.87 * math.sin(2 * b) - 7.53 * math.cos(b) - 1.5 * math.sin(b)
+    """
+    returns the number of minutes to add to mean solar time to get actual solar time.
+    """
+    bias = 2 * math.pi / 364.0 * (day - 81)
+    return 9.87 * math.sin(2 * bias) - 7.53 * math.cos(bias) - 1.5 * math.sin(bias)
 
-def get_aberration_correction(sun_earth_distance):# Missing function dcostring
+def get_aberration_correction(sun_earth_distance):
+    """
+    docstring goes here
+    """
     # param is sun-earth distance is in astronomical units
     return -20.4898/(3600.0 * sun_earth_distance)
 
-def get_altitude(latitude_deg, longitude_deg, when,
-                 elevation = 0, temperature = constants.STANDARD_TEMPERATURE,
-                 pressure = constants.STANDARD_PRESSURE):# no spaces for param assignment, line too long, too many args and vars
-    '''See also the faster, but less accurate, get_altitude_fast()'''
+def get_altitude(
+        latitude_deg, longitude_deg, when, elevation=0, temperature=constants.STANDARD_TEMPERATURE,
+        pressure=constants.STANDARD_PRESSURE):# too many args and vars
+    """
+    See also the faster, but less accurate, get_altitude_fast()
+    """
     # location-dependent calculations
     projected_radial_distance = get_projected_radial_distance(elevation, latitude_deg)
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = time.get_julian_solar_day(when)# Invalid name jd
+    jdn = time.get_julian_solar_day(when)
     jde = time.get_julian_ephemeris_day(when)
     jce = time.get_julian_ephemeris_century(jde)
     jme = time.get_julian_ephemeris_millennium(jce)
@@ -66,24 +77,24 @@ def get_altitude(latitude_deg, longitude_deg, when,
     geocentric_longitude = get_geocentric_longitude(jme)
     sun_earth_distance = get_sun_earth_distance(jme)
     aberration_correction = get_aberration_correction(sun_earth_distance)
-    equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(sun_earth_distance)
+    equatorial_horizontal_parallax = get_max_horizontal_parallax(sun_earth_distance)
     nutation = get_nutation(jce)
-    apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
+    apparent_sidereal_time = get_apparent_sidereal_time(jdn, jme, nutation)
     true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
 
     # calculations dependent on location and time
     apparent_sun_longitude = get_apparent_sun_longitude(
-        geocentric_longitude, nutation, aberration_correction) # all lines too long are now wrapped
-    geocentric_sun_right_ascension = get_geocentric_sun_right_ascension(
+        geocentric_longitude, nutation, aberration_correction)
+    geocentric_sun_right_ascension = get_geocentric_right_ascension(
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
     geocentric_sun_declination = get_geocentric_sun_declination(
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
     local_hour_angle = get_local_hour_angle(
         apparent_sidereal_time, longitude_deg, geocentric_sun_right_ascension)
-    parallax_sun_right_ascension = get_parallax_sun_right_ascension(
+    parallax_sun_right_ascension = get_parallax_right_ascension(
         projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle,
         geocentric_sun_declination)
-    topocentric_local_hour_angle = get_topocentric_local_hour_angle(
+    topocentric_local_hour_angle = get_topocentric_lha(
         local_hour_angle, parallax_sun_right_ascension)
     topocentric_sun_declination = get_topocentric_sun_declination(
         geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax,
@@ -94,7 +105,10 @@ def get_altitude(latitude_deg, longitude_deg, when,
         pressure, temperature, topocentric_elevation_angle)
     return topocentric_elevation_angle + refraction_correction
 
-def get_altitude_fast(latitude, longitude, when):# Docstring
+def get_altitude_fast(latitude, longitude, when):
+    """
+    docstring goes here
+    """
 # expect 19 degrees for solar.get_altitude(
 #     42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
     day = when.utctimetuple().tm_yday
@@ -107,21 +121,29 @@ def get_altitude_fast(latitude, longitude, when):# Docstring
     second_term = sin_lat * sin_dec
     return math.degrees(math.asin(first_term + second_term))
 
-def get_apparent_sidereal_time(jd, jme, nutation):# docstring, argument jd to short
+def get_apparent_sidereal_time(jdn, jme, nutation):
+    """
+    docstring goes here
+    """
     return get_mean_sidereal_time(
-        jd) + nutation['longitude'] * math.cos(get_true_ecliptic_obliquity(jme, nutation))
+        jdn) + nutation['longitude'] * math.cos(get_true_ecliptic_obliquity(jme, nutation))
 
-def get_apparent_sun_longitude(geocentric_longitude, nutation, ab_correction):# docstring
+def get_apparent_sun_longitude(geocentric_longitude, nutation, ab_correction):
+    """
+    docstring goes here
+    """
     return geocentric_longitude + nutation['longitude'] + ab_correction
 
-def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):# space at =, docstring, too many vars
-
+def get_azimuth(latitude_deg, longitude_deg, when, elevation=0):# too many vars
+    """
+    docstring goes here
+    """
     # location-dependent calculations
     projected_radial_distance = get_projected_radial_distance(elevation, latitude_deg)
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = time.get_julian_solar_day(when)# jd to short
+    jdn = time.get_julian_solar_day(when)# jd to short
     jde = time.get_julian_ephemeris_day(when)
     jce = time.get_julian_ephemeris_century(jde)
     jme = time.get_julian_ephemeris_millennium(jce)
@@ -129,24 +151,24 @@ def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):# space at =, 
     geocentric_longitude = get_geocentric_longitude(jme)
     sun_earth_distance = get_sun_earth_distance(jme)
     aberration_correction = get_aberration_correction(sun_earth_distance)
-    equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(sun_earth_distance)
+    equatorial_horizontal_parallax = get_max_horizontal_parallax(sun_earth_distance)
     nutation = get_nutation(jce)
-    apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
+    apparent_sidereal_time = get_apparent_sidereal_time(jdn, jme, nutation)
     true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
 
     # calculations dependent on location and time
     apparent_sun_longitude = get_apparent_sun_longitude(
         geocentric_longitude, nutation, aberration_correction)# all lines too long now wrapped
-    geocentric_sun_right_ascension = get_geocentric_sun_right_ascension(
+    geocentric_sun_right_ascension = get_geocentric_right_ascension(
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
     geocentric_sun_declination = get_geocentric_sun_declination(
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
     local_hour_angle = get_local_hour_angle(
         apparent_sidereal_time, longitude_deg, geocentric_sun_right_ascension)
-    parallax_sun_right_ascension = get_parallax_sun_right_ascension(
+    parallax_sun_right_ascension = get_parallax_right_ascension(
         projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle,
         geocentric_sun_declination)
-    topocentric_local_hour_angle = get_topocentric_local_hour_angle(
+    topocentric_local_hour_angle = get_topocentric_lha(
         local_hour_angle, parallax_sun_right_ascension)
     topocentric_sun_declination = get_topocentric_sun_declination(
         geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax,
@@ -154,7 +176,10 @@ def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):# space at =, 
     return 180 - get_topocentric_azimuth_angle(
         topocentric_local_hour_angle, latitude_deg, topocentric_sun_declination)
 
-def get_azimuth_fast(latitude_deg, longitude_deg, when):# docstring
+def get_azimuth_fast(latitude_deg, longitude_deg, when):
+    """
+    docstring goes here
+    """
 # expect -50 degrees for solar.get_azimuth(
 #     42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
     day = when.utctimetuple().tm_yday
@@ -166,90 +191,125 @@ def get_azimuth_fast(latitude_deg, longitude_deg, when):# docstring
     azimuth_rad = math.asin(
         math.cos(declination_rad) * math.sin(hour_angle_rad) / math.cos(altitude_rad))
 
-    if(math.cos(hour_angle_rad) >= (math.tan(declination_rad) / math.tan(latitude_rad))):# parens not needed for if
+    if (
+            math.cos(
+                hour_angle_rad) >= (
+                    math.tan(declination_rad) / math.tan(latitude_rad))):
         return math.degrees(azimuth_rad)
     else:
-        return (180 - math.degrees(azimuth_rad))# parens not needed
+        return 180 - math.degrees(azimuth_rad)
 
 def get_coeff(jme, coeffs):
-    "computes a polynomial with time-varying coefficients from the given constant" \
-    " coefficients array and the current Julian millennium."
+    """
+    computes a polynomial with time-varying coefficients from the given constant
+    coefficients array and the current Julian millennium.
+    """
     result = 0.0
-    x = 1.0# x too short
-    for line in coeffs :# no space allowed
-        c = 0.0# c too short
-        for l in line :# no space allowed, var l invalid too short
-            c += l[0] * math.cos(l[1] + l[2] * jme)# c too short
+    xdx = 1.0
+    for line in coeffs:
+        cdx = 0.0
+        for ldx in line: # var l invalid too short
+            cdx += ldx[0] * math.cos(ldx[1] + ldx[2] * jme)
         #end for
-        result += c * x
-        x *= jme# x too short
+        result += cdx * xdx
+        xdx *= jme
     #end for
-    return \
-        result
+    return result
 #end get_coeff
 
 def get_declination(day):
-    '''The declination of the sun is the angle between
+    """
+    The declination of the sun is the angle between
     Earth's equatorial plane and a line between the Earth and the sun.
     The declination of the sun varies between 23.45 degrees and -23.45 degrees,
     hitting zero on the equinoxes and peaking on the solstices.
-    '''
+    """
     return constants.EARTH_AXIS_INCLINATION * math.sin((2 * math.pi / 365.0) * (day - 81))
 
-def get_equatorial_horizontal_parallax(sun_earth_distance):# docstring
+def get_max_horizontal_parallax(sun_earth_distance):
+    """
+    docstring goes here
+    """
     return 8.794 / (3600 / sun_earth_distance)
 
-def get_flattened_latitude(latitude):# docstring
+def get_flattened_latitude(latitude):
+    """
+    docstring goes here
+    """
     latitude_rad = math.radians(latitude)
     return math.degrees(math.atan(0.99664719 * math.tan(latitude_rad)))
 
 # Geocentric functions calculate angles relative to the center of the earth.
 
-def get_geocentric_latitude(jme):# docstring
+def get_geocentric_latitude(jme):
+    """
+    docstring goes here
+    """
     return -1 * get_heliocentric_latitude(jme)
 
-def get_geocentric_longitude(jme):# docstring
+def get_geocentric_longitude(jme):
+    """
+    docstring goes here
+    """
     return (get_heliocentric_longitude(jme) + 180) % 360
 
 def get_geocentric_sun_declination(
-        apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude):# docstring
+        apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude):
+    """
+    docstring goes here
+    """
     apparent_sun_longitude_rad = math.radians(apparent_sun_longitude)
     true_ecliptic_obliquity_rad = math.radians(true_ecliptic_obliquity)
     geocentric_latitude_rad = math.radians(geocentric_latitude)
 
-    a = math.sin(geocentric_latitude_rad) * math.cos(true_ecliptic_obliquity_rad)# a too short
-    b = math.cos(
+    adec = math.sin(geocentric_latitude_rad) * math.cos(true_ecliptic_obliquity_rad)
+    bdec = math.cos(
         geocentric_latitude_rad) * math.sin(
             true_ecliptic_obliquity_rad) * math.sin(apparent_sun_longitude_rad)
-    delta = math.asin(a + b)
+    delta = math.asin(adec + bdec)
     return math.degrees(delta)
 
-def get_geocentric_sun_right_ascension(
+def get_geocentric_right_ascension(
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude):
+    """
+    docstring goes here
+    """
     apparent_sun_longitude_rad = math.radians(apparent_sun_longitude)
     true_ecliptic_obliquity_rad = math.radians(true_ecliptic_obliquity)
     geocentric_latitude_rad = math.radians(geocentric_latitude)
 
-    a = math.sin(apparent_sun_longitude_rad) * math.cos(true_ecliptic_obliquity_rad)
-    b = math.tan(geocentric_latitude_rad) * math.sin(true_ecliptic_obliquity_rad)
-    c = math.cos(apparent_sun_longitude_rad)
-    alpha = math.atan2((a - b),  c)# extra space after comma
+    ara = math.sin(apparent_sun_longitude_rad) * math.cos(true_ecliptic_obliquity_rad)
+    bra = math.tan(geocentric_latitude_rad) * math.sin(true_ecliptic_obliquity_rad)
+    cra = math.cos(apparent_sun_longitude_rad)
+    alpha = math.atan2((ara - bra), cra)
     return math.degrees(alpha) % 360
 
 # Heliocentric functions calculate angles relative to the center of the sun.
 
-def get_heliocentric_latitude(jme):# docstring
+def get_heliocentric_latitude(jme):
+    """
+    docstring goes here
+    """
     return math.degrees(get_coeff(jme, constants.HELIOCENTRIC_LATITUDE_COEFFS) / 1e8)
 
-def get_heliocentric_longitude(jme):# docstring
+def get_heliocentric_longitude(jme):
+    """
+    docstring goes here
+    """
     return math.degrees(get_coeff(jme, constants.HELIOCENTRIC_LONGITUDE_COEFFS) / 1e8) % 360
 
-def get_hour_angle(when, longitude_deg):# docstring
+def get_hour_angle(when, longitude_deg):
+    """
+    docstring goes here
+    """
     solar_time = get_solar_time(longitude_deg, when)
     return 15 * (12 - solar_time)
 
 def get_incidence_angle(
         topocentric_zenith_angle, slope, slope_orientation, topocentric_azimuth_angle):
+    """
+    docstring goes here
+    """
     tza_rad = math.radians(topocentric_zenith_angle)
     slope_rad = math.radians(slope)
     so_rad = math.radians(slope_orientation)
@@ -267,73 +327,99 @@ def get_local_hour_angle(gast, local_longitude, geo_right_ascension):
     """
     return (gast + local_longitude - geo_right_ascension) % 360
 
-def get_mean_sidereal_time(jd):# docstring
+def get_mean_sidereal_time(jdn):
+    """
+    docstring goes here
+    """
     # This function doesn't agree with Andreas and Reda as well as it should.
     # Works to ~5 sig figs in current unit test
-    jc = time.get_julian_century(jd)
-    sidereal_time =  280.46061837 + (
-        360.98564736629 * (jd - 2451545.0)) + 0.000387933 * jc * jc * (1 - jc / 38710000)# one space each side of =
+    jct = time.get_julian_century(jdn)
+    sidereal_time = 280.46061837 + (
+        360.98564736629 * (
+            jdn - 2451545.0)) + 0.000387933 * jct * jct * (1 - jct / 38710000)
     return sidereal_time % 360
 
-def get_nutation(jce):# docstring
+def get_nutation(jce):
+    """
+    docstring goes here
+    """
     abcd = constants.NUTATION_COEFFICIENTS
     nutation_long = []
     nutation_oblique = []
-    p = constants.get_aberration_coeffs()
-    x = list \
+    coef = constants.get_aberration_coeffs()
+    xdx = list \
       (
-        p[k](jce)# hanging indent add 2 spaces
-        for k in# hanging indent add 2 spaces
-            ( # order is important # wrong hanging indent remove 2 spaces
-                'MeanElongationOfMoon',
-                'MeanAnomalyOfSun',
-                'MeanAnomalyOfMoon',
-                'ArgumentOfLatitudeOfMoon',
-                'LongitudeOfAscendingNode',
-            )
+          coef[k](jce)
+          for k in# hanging indent add 2 spaces
+          ( # order is important # wrong hanging indent remove 2 spaces
+              'MeanElongationOfMoon',
+              'MeanAnomalyOfSun',
+              'MeanAnomalyOfMoon',
+              'ArgumentOfLatitudeOfMoon',
+              'LongitudeOfAscendingNode',
+          )
       )
-    y = constants.ABERRATION_SIN_TERMS
-    for i in range(len(abcd)):
+    sin_terms = constants.ABERRATION_SIN_TERMS
+    for idx, _idx in enumerate(abcd):
         sigmaxy = 0.0
-        for j in range(len(x)):
-            sigmaxy += x[j] * y[i][j]
+        for jdx, _jdx in enumerate(xdx):
+            sigmaxy += xdx[jdx] * sin_terms[idx][jdx]
         #end for
-        nutation_long.append((abcd[i][0] + (abcd[i][1] * jce)) * math.sin(math.radians(sigmaxy)))
-        nutation_oblique.append((abcd[i][2] + (abcd[i][3] * jce)) * math.cos(math.radians(sigmaxy)))
+        nutation_long.append(
+            (abcd[idx][0] + (abcd[idx][1] * jce)) * math.sin(math.radians(sigmaxy)))
+        nutation_oblique.append(
+            (abcd[idx][2] + (abcd[idx][3] * jce)) * math.cos(math.radians(sigmaxy)))
 
     # 36000000 scales from 0.0001 arcseconds to degrees
-    nutation = {'longitude' : sum(nutation_long)/36000000.0, 'obliquity' : sum(nutation_oblique)/36000000.0}# too long
+    nutation = {'longitude' : sum(
+        nutation_long)/36000000.0, 'obliquity' : sum(nutation_oblique)/36000000.0}# too long
 
     return nutation
 #end get_nutation
 
-def get_parallax_sun_right_ascension(
-        projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination):# too long, docstring
+def get_parallax_right_ascension(
+        projected_radial_distance, equatorial_horizontal_parallax,
+        local_hour_angle, geocentric_sun_declination):
+    """
+    docstring goes here
+    """
     prd = projected_radial_distance
     ehp_rad = math.radians(equatorial_horizontal_parallax)
     lha_rad = math.radians(local_hour_angle)
     gsd_rad = math.radians(geocentric_sun_declination)
-    a = -1 * prd * math.sin(ehp_rad) * math.sin(lha_rad)
-    b =  math.cos(gsd_rad) - prd * math.sin(ehp_rad) * math.cos(lha_rad)# extra space
-    parallax = math.atan2(a, b)
+    ara = -1 * prd * math.sin(ehp_rad) * math.sin(lha_rad)
+    bra = math.cos(gsd_rad) - prd * math.sin(ehp_rad) * math.cos(lha_rad)
+    parallax = math.atan2(ara, bra)
     return math.degrees(parallax)
 
-def get_projected_radial_distance(elevation, latitude):# docstring
+def get_projected_radial_distance(elevation, latitude):
+    """
+    docstring goes here
+    """
     flattened_latitude_rad = math.radians(get_flattened_latitude(latitude))
     latitude_rad = math.radians(latitude)
     return math.cos(
         flattened_latitude_rad) + (elevation * math.cos(latitude_rad) / constants.EARTH_RADIUS)
 
-def get_projected_axial_distance(elevation, latitude):# docstring
+def get_projected_axial_distance(elevation, latitude):
+    """
+    docstring goes here
+    """
     flattened_latitude_rad = math.radians(get_flattened_latitude(latitude))
     latitude_rad = math.radians(latitude)
     return 0.99664719 * math.sin(
         flattened_latitude_rad) + (elevation * math.sin(latitude_rad) / constants.EARTH_RADIUS)
 
-def get_sun_earth_distance(jme):# docstring
+def get_sun_earth_distance(jme):
+    """
+    docstring goes here
+    """
     return get_coeff(jme, constants.AU_DISTANCE_COEFFS) / 1e8
 
-def get_refraction_correction(pressure, temperature, topocentric_elevation_angle):# docstring
+def get_refraction_correction(pressure, temperature, topocentric_elevation_angle):
+    """
+    docstring goes here
+    """
     #function and default values according to original NREL SPA C code
     #http://www.nrel.gov/midc/spa/
 
@@ -348,21 +434,23 @@ def get_refraction_correction(pressure, temperature, topocentric_elevation_angle
     # Better method could come from Auer and Standish [2000]:
     # http://iopscience.iop.org/1538-3881/119/5/2472/pdf/1538-3881_119_5_2472.pdf
 
-    if (tea >= -1.0*(sun_radius + atmos_refract)):# parens
-        a = pressure * 2.830 * 1.02
-        b = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
-        del_e = a / b
+    if tea >= -1.0*(sun_radius + atmos_refract):
+        arc = pressure * 2.830 * 1.02
+        brc = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
+        del_e = arc / brc
 
     return del_e
 
-def get_solar_time(longitude_deg, when):# docstring
-    "returns solar time in hours for the specified longitude and time," \
-    " accurate only to the nearest minute."
+def get_solar_time(longitude_deg, when):
+    """
+    returns solar time in hours for the specified longitude and time,
+    accurate only to the nearest minute.
+    """
     when = when.utctimetuple()
     return \
         (
             (when.tm_hour * 60 + when.tm_min + 4 * longitude_deg + equation_of_time(when.tm_yday))
-        / # hanging indent add 4 spaces
+            /
             60
         )
 
@@ -374,12 +462,15 @@ def get_topocentric_azimuth_angle(
     tlha_rad = math.radians(topocentric_local_hour_angle)
     latitude_rad = math.radians(latitude)
     tsd_rad = math.radians(topocentric_sun_declination)
-    a = math.sin(tlha_rad)
-    b = math.cos(tlha_rad) * math.sin(latitude_rad) - math.tan(tsd_rad) * math.cos(latitude_rad)
-    return 180.0 + math.degrees(math.atan2(a, b)) % 360
+    ayt = math.sin(tlha_rad)
+    bxt = math.cos(tlha_rad) * math.sin(latitude_rad) - math.tan(tsd_rad) * math.cos(latitude_rad)
+    return 180.0 + math.degrees(math.atan2(ayt, bxt)) % 360
 
 def get_topocentric_elevation_angle(
-        latitude, topocentric_sun_declination, topocentric_local_hour_angle):# too long, docstring
+        latitude, topocentric_sun_declination, topocentric_local_hour_angle):
+    """
+    docstring goes here
+    """
     latitude_rad = math.radians(latitude)
     tsd_rad = math.radians(topocentric_sun_declination)
     tlha_rad = math.radians(topocentric_local_hour_angle)
@@ -390,47 +481,56 @@ def get_topocentric_elevation_angle(
                     tsd_rad)) + math.cos(
                         latitude_rad) * math.cos(tsd_rad) * math.cos(tlha_rad)))# too long
 
-def get_topocentric_local_hour_angle(local_hour_angle, parallax_sun_right_ascension):# docstring
+def get_topocentric_lha(local_hour_angle, parallax_sun_right_ascension):
+    """
+    docstring goes here
+    """
     return local_hour_angle - parallax_sun_right_ascension
 
 def get_topocentric_sun_declination(
         geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax,
-        parallax_sun_right_ascension, local_hour_angle):# too long, docstring
+        parallax_sun_right_ascension, local_hour_angle):
+    """
+    docstring goes here
+    """
     gsd_rad = math.radians(geocentric_sun_declination)
     pad = projected_axial_distance
     ehp_rad = math.radians(equatorial_horizontal_parallax)
     psra_rad = math.radians(parallax_sun_right_ascension)
     lha_rad = math.radians(local_hour_angle)
-    a = (math.sin(gsd_rad) - pad * math.sin(ehp_rad)) * math.cos(psra_rad)
-    b = math.cos(gsd_rad) - (pad * math.sin(ehp_rad) * math.cos(lha_rad))
-    return math.degrees(math.atan2(a, b))
+    ayt = (math.sin(gsd_rad) - pad * math.sin(ehp_rad)) * math.cos(psra_rad)
+    bxt = math.cos(gsd_rad) - (pad * math.sin(ehp_rad) * math.cos(lha_rad))
+    return math.degrees(math.atan2(ayt, bxt))
 
-def get_topocentric_sun_right_ascension(
+def get_topocentric_right_ascension(
         projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle,
-        apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude):# too long, docstring
+        apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude):
+    """
+    docstring goes here
+    """
     gsd = get_geocentric_sun_declination(
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
-    psra = get_parallax_sun_right_ascension(
+    psra = get_parallax_right_ascension(
         projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, gsd)
-    gsra = get_geocentric_sun_right_ascension(
+    gsra = get_geocentric_right_ascension(
         apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
     return psra + gsra
 
 def get_topocentric_zenith_angle(
-        latitude, topocentric_sun_declination, topocentric_local_hour_angle, pressure, temperature):# too long, docstring
+        latitude, topocentric_sun_declination, topocentric_local_hour_angle, pressure, temperature):
+    """
+    docstring goes here
+    """
     tea = get_topocentric_elevation_angle(
         latitude, topocentric_sun_declination, topocentric_local_hour_angle)
     return 90 - tea - get_refraction_correction(pressure, temperature, tea)
 
-def get_true_ecliptic_obliquity(jme, nutation):# docstring
-    u = jme/10.0
-    mean_obliquity = 84381.448 - (4680.93 * u) - (1.55 * u ** 2) + (1999.25 * u ** 3) \
-    - (51.38 * u ** 4) -(249.67 * u ** 5) - (39.05 * u ** 6) + (7.12 * u ** 7) \
-    + (27.87 * u ** 8) + (5.79 * u ** 9) + (2.45 * u ** 10)
+def get_true_ecliptic_obliquity(jme, nutation):
+    """
+    docstring goes here
+    """
+    tmu = jme/10.0
+    mean_obliquity = 84381.448 - (4680.93 * tmu) - (1.55 * tmu ** 2) + (1999.25 * tmu ** 3) \
+    - (51.38 * tmu ** 4) -(249.67 * tmu ** 5) - (39.05 * tmu ** 6) + (7.12 * tmu ** 7) \
+    + (27.87 * tmu ** 8) + (5.79 * tmu ** 9) + (2.45 * tmu ** 10)
     return (mean_obliquity / 3600.0) + nutation['obliquity']
-
-# after all the indentation to fix the problems it is suggested that param inputs be shorted to at least three symbols.
-# Too many symbols are too short and obscure meaning.
-# Method names are too long too for tests so consider new names. Use the astro glossaries.
-# if it's true do we to prefix it? a or t would probably do.
-# mean has not even been issued. m would do like mm or m_m mean mass mean magnitude.

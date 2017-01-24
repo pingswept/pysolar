@@ -84,7 +84,7 @@ class TestSolar(unittest.TestCase):
         MIDC SPA is 0.002451 at 12:30
         """
         sed = solar.get_sun_earth_distance(self.jem)
-        ehp = solar.get_equatorial_horizontal_parallax(sed)
+        ehp = solar.get_max_horizontal_parallax(sed)
         # self.assertAlmostEqual(0.002451, ehp, 6)
         self.assertAlmostEqual(0.002434331157052594, ehp, 6)
 
@@ -102,7 +102,7 @@ class TestSolar(unittest.TestCase):
         glon = solar.get_geocentric_longitude(self.jem)
         asl = solar.get_apparent_sun_longitude(glon, nut, gac)
         teo = solar.get_true_ecliptic_obliquity(self.jem, nut)
-        gsra = solar.get_geocentric_sun_right_ascension(asl, teo, glat)
+        gsra = solar.get_geocentric_right_ascension(asl, teo, glat)
         lha = solar.get_local_hour_angle(ast, self.longitude, gsra)
         # self.assertAlmostEqual(10.982401, lha, 6)
         self.assertAlmostEqual(10.98506227674136, lha, 6)
@@ -331,7 +331,7 @@ class TestGeocentricSolar(unittest.TestCase):
         asl = solar.get_apparent_sun_longitude(glon, nut, gac)
         teo = solar.get_true_ecliptic_obliquity(self.jem, nut)
         glat = solar.get_geocentric_latitude(self.jem)
-        gsra = solar.get_geocentric_sun_right_ascension(asl, teo, glat)
+        gsra = solar.get_geocentric_right_ascension(asl, teo, glat)
         self.assertAlmostEqual(202.227060, gsra, 5)
         self.assertAlmostEqual(202.22705829956698, gsra, 6)
 
@@ -380,7 +380,7 @@ class TestTopocentricSolar(unittest.TestCase):
         used for tests
         """
         sed = solar.get_sun_earth_distance(self.jem)
-        return solar.get_equatorial_horizontal_parallax(sed)
+        return solar.get_max_horizontal_parallax(sed)
 
     def t_teo(self):
         """
@@ -401,7 +401,7 @@ class TestTopocentricSolar(unittest.TestCase):
         used for tests
         """
         glat = solar.get_geocentric_latitude(self.jem)
-        return solar.get_geocentric_sun_right_ascension(
+        return solar.get_geocentric_right_ascension(
             self.t_asl(), self.t_teo(), glat)
 
     def t_lha(self):
@@ -412,7 +412,7 @@ class TestTopocentricSolar(unittest.TestCase):
         nut = solar.get_nutation(time.get_julian_century(self.jsd))
         gast = solar.get_apparent_sidereal_time(self.jsd, self.jem, nut)
         glat = solar.get_geocentric_latitude(self.jem)
-        gsra = solar.get_geocentric_sun_right_ascension(self.t_asl(), self.t_teo(), glat)
+        gsra = solar.get_geocentric_right_ascension(self.t_asl(), self.t_teo(), glat)
         lha = solar.get_local_hour_angle(gast, self.longitude, gsra)
         return lha
 
@@ -421,7 +421,7 @@ class TestTopocentricSolar(unittest.TestCase):
         used for tests
         """
         prd = solar.get_projected_radial_distance(self.elevation, self.latitude)
-        return solar.get_parallax_sun_right_ascension(
+        return solar.get_parallax_right_ascension(
             prd, self.t_ehp(), self.t_lha(), self.t_gsd())
 
     def test_get_srap(self):
@@ -472,7 +472,7 @@ class TestTopocentricSolar(unittest.TestCase):
         """
         used for tests
         """
-        return solar.get_topocentric_local_hour_angle(
+        return solar.get_topocentric_lha(
             self.t_lha(), self.t_srap())
 
     def test_get_tlha(self):
@@ -495,7 +495,7 @@ class TestTopocentricSolar(unittest.TestCase):
         """
         prd = solar.get_projected_radial_distance(self.elevation, self.latitude)
         glat = solar.get_geocentric_latitude(self.jem)
-        tsra = solar.get_topocentric_sun_right_ascension(
+        tsra = solar.get_topocentric_right_ascension(
             prd, self.t_ehp(), self.t_lha(), self.t_asl(), self.t_teo(), glat)
         self.assertAlmostEqual(202.226696, tsra, 6)
         self.assertAlmostEqual(202.22669624203763, tsra, 6)
