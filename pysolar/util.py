@@ -37,7 +37,8 @@ from . import solar, constants
 
 AM_default = 2.0             # Default air mass is 2.0
 TL_default = 1.0             # Default Linke turbidity factor is 1.0
-SC_default = 1367.0          # Solar constant in W/m^2 is 1367.0. Note that this value could vary by +/-4 W/m^2
+SC_default = 1367.0          # Solar constant in W/m^2 is 1367.0.
+                             # Note that this value could vary by +/-4 W/m^2
 TY_default = 365             # Total year number from 1 to 365 days
 elevation_default = 0.0      # Default elevation is 0.0
 
@@ -66,7 +67,8 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
 
     References
     ----------
-    .. [1] http://www.skypowerinternational.com/pdf/Radiation/7.1415.01.121_cm121_bed-anleitung_engl.pdf
+    .. [1]
+    http://www.skypowerinternational.com/pdf/Radiation/7.1415.01.121_cm121_bed-anleitung_engl.pdf
     .. [2] http://pysolar.org/
 
     Examples
@@ -82,54 +84,54 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
     """
 
     utc_offset = when.utcoffset()
-    if utc_offset != None :
+    if utc_offset != None:
         utc_offset = utc_offset.total_seconds()
-    else :
+    else:
         utc_offset = 0
     #end if
     day = when.utctimetuple().tm_yday # Day of the year
-    SHA = utc_offset / 3600 * 15.0 - longitude_deg # Solar hour angle
-    TT = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
+    sha = utc_offset / 3600 * 15.0 - longitude_deg # Solar hour angle
+    tta = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
     time_adst = \
         (
-                (
-                    5.0323
+            (
+                5.0323
                 -
-                    100.976 * math.sin(TT)
+                100.976 * math.sin(tta)
                 +
-                    595.275 * math.sin(2 * TT)
+                595.275 * math.sin(2 * tta)
                 +
-                    3.6858 * math.sin(3 * TT)
+                3.6858 * math.sin(3 * tta)
                 -
-                    12.47 * math.sin(4 * TT)
+                12.47 * math.sin(4 * tta)
                 -
-                    430.847 * math.cos(TT)
+                430.847 * math.cos(TT)
                 +
-                    12.5024 * math.cos(2 * TT)
+                12.5024 * math.cos(2 * TT)
                 +
-                    18.25 * math.cos(3 * TT)
-                )
+                18.25 * math.cos(3 * TT)
+            )
             /
-                3600
+            3600
         ) # Time adjustment in hours
     TON = 12 + SHA / 15.0 - time_adst # Time of noon
     sunn = \
         (
             (
                 math.pi / 2
-            -
-                    math.radians(constants.earth_axis_inclination)
+                -
+                math.radians(constants.earth_axis_inclination)
                 *
-                    math.tan(math.radians(latitude_deg))
+                math.tan(math.radians(latitude_deg))
                 *
-                    math.cos(2 * math.pi * day / 365.25)
+                math.cos(2 * math.pi * day / 365.25)
             )
-        *
+            *
             (12 / math.pi)
         )
-    same_day = datetime(year = when.year, month = when.month, day = when.day, tzinfo = when.tzinfo)
-    sunrise_time = same_day + timedelta(hours = TON - sunn + time_adst)
-    sunset_time = same_day + timedelta(hours = TON + sunn - time_adst)
+    same_day = datetime(year=when.year, month=when.month, day=when.day, tzinfo=when.tzinfo)
+    sunrise_time = same_day + timedelta(hours=TON - sunn + time_adst)
+    sunset_time = same_day + timedelta(hours=TON + sunn - time_adst)
     return sunrise_time, sunset_time
 
 def get_sunrise_time(latitude_deg, longitude_deg, when):
@@ -160,13 +162,13 @@ def mean_earth_sun_distance(when):
     References
     ----------
     .. [1] http://sunbird.jrc.it/pvgis/solres/solmod3.htm#clear-sky%20radiation
-    .. [2] R. aguiar and et al, "The ESRA user guidebook, vol. 2. database", models and exploitation software-Solar
-            radiation models, p.113
+    .. [2] R. aguiar and et al, "The ESRA user guidebook, vol. 2. database",
+           models and exploitation software-Solar radiation models, p.113
     """
 
     return 1 - 0.0335 * math.sin(2 * math.pi * (when.utctimetuple().tm_yday - 94)) / 365
 
-def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
+def extraterrestrial_irrad(when, latitude_deg, longitude_deg, SC=SC_default):
     """Equation calculates Extratrestrial radiation. Solar radiation incident outside the earth's
     atmosphere is called extraterrestrial radiation. On average the extraterrestrial irradiance
     is 1367 Watts/meter2 (W/m2). This value varies by + or - 3 percent as the earth orbits the sun.
@@ -181,12 +183,13 @@ def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
         latitude in decimal degree. A geographical term denoting the north/south angular location
         of a place on a sphere.
     longitude_deg : float
-        longitude in decimal degree. Longitude shows your location in an east-west direction,relative
-        to the Greenwich meridian.
+        longitude in decimal degree.
+        Longitude shows your location in an east-west direction,
+        relative to the Greenwich meridian.
     SC : float
-        The solar constant is the amount of incoming solar electromagnetic radiation per unit area, measured
-        on the outer surface of Earth's atmosphere in a plane perpendicular to the rays.It is measured by
-        satellite to be roughly 1366 watts per square meter (W/m^2)
+        The solar constant is the amount of incoming solar electromagnetic radiation per unit area,
+        measured on the outer surface of Earth's atmosphere in a plane perpendicular to the rays.
+        It is measured by satellite to be roughly 1366 watts per square meter (W/m^2)
 
     Returns
     -------
@@ -196,7 +199,8 @@ def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
     References
     ----------
     .. [1] http://solardat.uoregon.edu/SolarRadiationBasics.html
-    .. [2] Dr. J. Schumacher and et al,"INSEL LE(Integrated Simulation Environment Language)Block reference",p.68
+    .. [2] Dr. J. Schumacher and et al,"INSEL LE(Integrated Simulation Environment Language)
+           Block reference",p.68
 
     """
     day = when.utctimetuple().tm_yday
@@ -206,13 +210,15 @@ def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
     df = math.sin(2 * (2 * math.pi * (day - 1.0)/(365.0)))
     decl = solar.get_declination(day)
     ha = solar.get_hour_angle(when, longitude_deg)
-    ZA = math.sin(latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(ha)
+    zap = math.sin(
+        latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(ha)
 
-    return SC * ZA * (1.00010 + 0.034221 * ab + 0.001280 * bc + 0.000719 * cd + 0.000077 * df)
+    return SC * zap * (1.00010 + 0.034221 * ab + 0.001280 * bc + 0.000719 * cd + 0.000077 * df)
 
 
-def declination_degree(when, TY = TY_default ):
-    """The declination of the sun is the angle between Earth's equatorial plane and a line
+def declination_degree(when, tyr=TY_default):
+    """
+    The declination of the sun is the angle between Earth's equatorial plane and a line
     between the Earth and the sun. It varies between 23.45 degrees and -23.45 degrees,
     hitting zero on the equinoxes and peaking on the solstices.
 
@@ -233,11 +239,14 @@ def declination_degree(when, TY = TY_default ):
     .. [1] http://pysolar.org/
 
     """
-    return constants.earth_axis_inclination * math.sin((2 * math.pi / (TY)) * ((when.utctimetuple().tm_yday) - 81))
+    return constants.earth_axis_inclination * math.sin(
+        (2 * math.pi / (tyr)) * ((when.utctimetuple().tm_yday) - 81))
 
 
-def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature = constants.STANDARD_TEMPERATURE,
-                                  pressure = constants.STANDARD_PRESSURE,  elevation = elevation_default):
+def solar_elevation_func_clear(
+    latitude_deg, longitude_deg, when,
+    temperature=constants.STANDARD_TEMPERATURE,
+    pressure=constants.STANDARD_PRESSURE,  elevation=elevation_default):
     """Equation calculates Solar elevation function for clear sky type.
 
     Parameters

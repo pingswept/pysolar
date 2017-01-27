@@ -1,0 +1,50 @@
+$(function() {
+	var isoddoreven = function(n) {
+    	var c = "";
+    	var m = n % 2;
+    	if (m == 0) {
+        	c = "even";
+    	} else {
+        	c = "odd";
+    	};
+    	return c;
+	};
+	
+	var diarySuccess = function(data, status, xhr) {
+		var table = '<table id="upcoming">';
+    	var i = 0;
+    	table += '<tr><th colspan="4">Recent and Upcoming Phenomena (UT)</th></tr>';
+    	for (i=0; i<data.length; i++) {
+        	table += '<tr class="' + isoddoreven(i) + '"><td class="diarydayofweek">' + data[i].dayofweek + '</td><td class="diarymonthandday">' + data[i].monthandday + '</td><td class="diaryhour">' + data[i].hour + '</td><td class="diaryevent">' + data[i].event + '</td></tr>';
+    	};
+    	table += '</table>';
+
+    	$('div#diary-table').html(table);
+	};
+	
+	var diaryError = function(xhr, status, error) {
+		$('div#diary').html(error);
+	};
+	
+	$.ajax({
+		url: '_diary',
+		dataType: 'json',
+		success: diarySuccess,
+		error: diaryError
+	});
+	
+	$('#ics-popup').dialog({
+		autoOpen: false,
+        width: "35em",
+        position: 'center',
+        draggable: true,
+        resizeable: true,
+		show: 'clip',
+		hide: 'clip'
+    });
+	
+	$('.ics-link').bind("click", function() {
+		$('#ics-popup').dialog('open');
+		return false;
+	});
+});

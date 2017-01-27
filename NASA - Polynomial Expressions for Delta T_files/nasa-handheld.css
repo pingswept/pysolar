@@ -1,0 +1,46 @@
+/* CSS Document - Last updated June 19, 2005 by Bryan Stephenson */
+
+/* print styles */
+
+  body          { background:white; font-size:12pt; }
+  h1, h2, h3,
+  h4, h5, h6    { page-break-after: avoid; page-break-inside: avoid; }
+  blockquote,
+  pre           { page-break-inside: avoid; }
+  ul, ol, dl    { page-break-before: avoid; }
+  dl dt { margin-left:10px; font-weight:bold;}
+  dl dd { margin-left:10px;}
+  a:link, a:visited {
+    color:black;
+    background:transparent;
+    font-weight:bold;
+    text-decoration:underline;
+    }
+  #leftnav { display:none;}
+  #nasafootplus { display:none;}
+  #nasaheadlinks { display:none;}
+  #nasahead #searchbox { display:none;}
+  
+  #menu { display:none;}
+  #menu2 { display:none;}
+  #menu3 { display:none;}
+  
+  #head { margin:10px auto;}
+  
+  table, tbody, tr, td, th { display: block;}
+  
+h1 { font-size:18px;}
+h2 { font-size:16px;}
+h3 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h4 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h5 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h6 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h7 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h8 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h9 { font-size:14px; font-weight:bold; margin-bottom:0;}
+.textonly { display:none;}
+.hide { display:none;}
+
+h2.headertype1 { border-bottom:1px solid #ccc; font-size:14px;}
+
+

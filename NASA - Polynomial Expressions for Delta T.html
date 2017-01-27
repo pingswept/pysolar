@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0056)https://eclipse.gsfc.nasa.gov/SEhelp/deltatpoly2004.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+   <title>NASA - Polynomial Expressions for Delta T </title>
+   <script language="JavaScript" type="text/javascript" src="./NASA - Polynomial Expressions for Delta T_files/header.js.download"></script><link rel="stylesheet" type="text/css" href="./NASA - Polynomial Expressions for Delta T_files/main.css"><link rel="stylesheet" type="text/css" media="screen" href="./NASA - Polynomial Expressions for Delta T_files/nasa-everyone.css"><link rel="stylesheet" type="text/css" media="screen" href="./NASA - Polynomial Expressions for Delta T_files/nasa-modified.css"><link rel="stylesheet" type="text/css" media="print" href="./NASA - Polynomial Expressions for Delta T_files/nasa-print.css"><link rel="stylesheet" type="text/css" media="handheld" href="./NASA - Polynomial Expressions for Delta T_files/nasa-handheld.css">
+   <meta name="author" content="F. Espenak">
+   <meta name="keywords" content="eclipse, lunar, moon, phases, solar, sun, total">
+   <meta name="description" content="This is NASA&#39;s official moon phases page.">
+</head>
+
+<body class="lnfiveon">
+<script language="JavaScript" type="text/javascript" src="./NASA - Polynomial Expressions for Delta T_files/highlighter.js.download"></script><div id="paper">
+
+<script language="JavaScript" type="text/javascript" src="./NASA - Polynomial Expressions for Delta T_files/navbar.js.download"></script><div id="nasahead"><a href="http://www.nasa.gov/" target="_blank"><img src="./NASA - Polynomial Expressions for Delta T_files/nasa-header-logo.gif" alt="NASA Logo, National Aeronautics and Space Administration" width="300" height="65"></a><div class="hidden"><a href="https://eclipse.gsfc.nasa.gov/SEhelp/deltatpoly2004.html#skipping" title="Skip Navigation" accesskey="2">Skip Navigation (press 2)</a></div><div id="nasaheadlinks"><ul><li><a href="http://www.nasa.gov/" target="_blank">+ NASA Portal</a></li><li><a href="http://sunearthday.nasa.gov/" target="_blank">+ Sun-Earth Day</a></li><li><a href="https://eclipse.gsfc.nasa.gov/SEpubs/bulletin.html">+ Eclipse Bulletins</a></li><li><a href="https://eclipse.gsfc.nasa.gov/OH/OH2017.html">+ Eclipses During 2017</a></li></ul></div></div><div id="menu"><ul><li class="one"><a href="https://eclipse.gsfc.nasa.gov/eclipse.html"><span>HOME</span></a></li><li class="two"><a href="https://eclipse.gsfc.nasa.gov/solar.html"><span>SOLAR ECLIPSES</span></a></li><li class="three"><a href="https://eclipse.gsfc.nasa.gov/lunar.html"><span>LUNAR ECLIPSES</span></a></li><li class="four"><a href="https://eclipse.gsfc.nasa.gov/transit/transit.html"><span>TRANSITS</span></a></li></ul></div><div id="headimage"><a href="https://eclipse.gsfc.nasa.gov/eclipse.html"><img id="eclipsebanner" src="./NASA - Polynomial Expressions for Delta T_files/bannerEclipse2008.jpg" lowres="../../../image/bannerEclipseLowRes.gif" alt="NASA Eclipse Web Site"></a></div><div class="clear"></div><div id="contentwrapper"><div id="singlecolumn">
+<noscript>
+&lt;h1&gt;&lt;a href="http://www.nasa.gov/"&gt;NASA (National Aeronautics and Space Administration)&lt;/a&gt;&lt;/h1&gt;
+&lt;ul&gt;
+   &lt;li id="one"&gt;&lt;a href="../eclipse.html"&gt;&lt;span&gt;Home&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+   &lt;li id="two"&gt;&lt;a href="../solar.html"&gt;&lt;span&gt;Solar Eclipses&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+   &lt;li id="three"&gt;&lt;a href="../lunar.html"&gt;&lt;span&gt;Lunar Eclipses&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+   &lt;li id="four"&gt;&lt;a href="../transit/transit.html"&gt;&lt;span&gt;Planetary Transits&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+   &lt;li id="five"&gt;&lt;a href="../TYPE/TYPE.html"&gt;&lt;span&gt;12-Year Ephemeris&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+   &lt;li id="six"&gt;&lt;a href="../phase/phase2001gmt.html"&gt;&lt;span&gt;Moon Phases&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;&lt;a href="../eclipse.html"&gt;Eclipse Home Page&lt;/a&gt;&lt;/h1&gt;
+&lt;h2&gt;by Fred Espenak, GSFC Planetary Systems Laboratory&lt;/h2&gt;
+</noscript>
+
+<div id="contentwrapper">
+<div id="singlecolumn">
+
+<h1 class="box">Polynomial Expressions for Delta T (&#916;T)</h1>
+
+<h2 class="box">Adapted from "Five Millennium Canon of Solar Eclipses" [Espenak and Meeus]</h2>
+
+
+<p class="quote">
+Using the &#916;T values derived from the historical record and from direct observations (see: <a href="https://eclipse.gsfc.nasa.gov/SEhelp/deltat2004.html#tab1"> Table 1 </a> and <a href="https://eclipse.gsfc.nasa.gov/SEhelp/deltat2004.html#tab2"> Table 2 </a>), a series of polynomial expressions have been created to simplify the evaluation of &#916;T for any time during the interval -1999 to +3000. </p>
+<p class="quote">
+We define the decimal year "y" as follows:</p>
+<pre>		y = year + (month - 0.5)/12
+</pre>
+<p class="quote">
+This gives "y" for the middle of the month, which is accurate enough given the precision in the known values of &#916;T. 
+The following polynomial expressions can be used calculate the value of &#916;T (in seconds) over the time period covered by of the <a href="https://eclipse.gsfc.nasa.gov/SEpubs/5MCSE.html">Five Millennium Canon of Solar Eclipses: -1999 to +3000</a>.</p>
+<p class="quote">
+Before the year -500, calculate:</p>
+<pre>		&#916;T = -20 + 32 * u^2
+		where:	u = (year-1820)/100
+</pre>
+<p class="quote">
+Between years -500 and +500, we use the data from <a href="https://eclipse.gsfc.nasa.gov/SEhelp/deltat2004.html#tab1">Table 1</a>, except that for the year -500 we changed the value 17190 to 17203.7 in order to avoid a discontinuity with the previous formula at that epoch. 
+The value for &#916;T is given by a polynomial of the 6th degree, which reproduces the values in <a href="https://eclipse.gsfc.nasa.gov/SEhelp/deltat2004.html#tab1">Table 1</a> with an error not larger than 4 seconds:</p>
+<pre>	&#916;T = 10583.6 - 1014.41 * u + 33.78311 * u^2 - 5.952053 * u^3
+		- 0.1798452 * u^4 + 0.022174192 * u^5 + 0.0090316521 * u^6 
+	where: u = y/100
+</pre>
+<p class="quote">
+Between years +500 and +1600, we again use the data from <a href="https://eclipse.gsfc.nasa.gov/SEhelp/SEhelp/deltat2004.html#tab1">Table 1</a> to derive a polynomial of the 6th degree.</p>
+<pre>	&#916;T = 1574.2 - 556.01 * u + 71.23472 * u^2 + 0.319781 * u^3
+		- 0.8503463 * u^4 - 0.005050998 * u^5 + 0.0083572073 * u^6
+	where: u = (y-1000)/100
+</pre>
+<p class="quote">
+Between years +1600 and +1700, calculate:</p>
+<pre>	&#916;T = 120 - 0.9808 * t - 0.01532 * t^2 + t^3 / 7129
+	where:  t = y - 1600
+</pre>
+<p class="quote">
+Between years +1700 and +1800, calculate:</p>
+<pre>	&#916;T = 8.83 + 0.1603 * t - 0.0059285 * t^2 + 0.00013336 * t^3 - t^4 / 1174000
+	where: t = y - 1700
+</pre>
+<p class="quote">
+Between years +1800 and +1860, calculate:</p>
+<pre>	&#916;T = 13.72 - 0.332447 * t + 0.0068612 * t^2 + 0.0041116 * t^3 - 0.00037436 * t^4 
+		+ 0.0000121272 * t^5 - 0.0000001699 * t^6 + 0.000000000875 * t^7
+	where: t = y - 1800
+</pre>
+<p class="quote">
+Between years 1860 and 1900, calculate:</p>
+<pre>	&#916;T = 7.62 + 0.5737 * t - 0.251754 * t^2 + 0.01680668 * t^3
+		-0.0004473624 * t^4 + t^5 / 233174
+	where: t = y - 1860
+</pre>
+<p class="quote">
+Between years 1900 and 1920, calculate:</p>
+<pre>	&#916;T = -2.79 + 1.494119 * t - 0.0598939 * t^2 + 0.0061966 * t^3 - 0.000197 * t^4
+	where: t = y - 1900
+</pre>
+<p class="quote">
+Between years 1920 and 1941, calculate:</p>
+<pre>	&#916;T = 21.20 + 0.84493*t - 0.076100 * t^2 + 0.0020936 * t^3
+	where: t = y - 1920
+</pre>
+<p class="quote">
+Between years 1941 and 1961, calculate:</p>
+<pre>	&#916;T = 29.07 + 0.407*t - t^2/233 + t^3 / 2547
+	where: t = y - 1950
+</pre>
+<p class="quote">
+Between years 1961 and 1986, calculate:</p>
+<pre>	&#916;T = 45.45 + 1.067*t - t^2/260 - t^3 / 718
+	where: t = y - 1975
+</pre>
+<p class="quote">
+Between years 1986 and 2005, calculate:</p>
+<pre>	&#916;T = 63.86 + 0.3345 * t - 0.060374 * t^2 + 0.0017275 * t^3 + 0.000651814 * t^4 
+		+ 0.00002373599 * t^5
+	where: t = y - 2000
+</pre>
+<p class="quote">
+Between years 2005 and 2050, calculate:</p>
+<pre>	&#916;T = 62.92 + 0.32217 * t + 0.005589 * t^2
+	where: t = y - 2000
+</pre>
+<p class="quote">
+This expression is derived from estimated values of &#916;T in the years 2010 and 2050. 
+The value for 2010 (66.9 seconds) is based on a linearly extrapolation from 2005 using 0.39 seconds/year (average from 1995 to 2005). 
+The value for 2050 (93 seconds) is linearly extrapolated from 2010 using 0.66 seconds/year (average rate from 1901 to 2000).</p>
+<p class="quote">
+Between years 2050 and 2150, calculate:</p>
+<pre>	&#916;T = -20 + 32 * ((y-1820)/100)^2 - 0.5628 * (2150 - y)
+</pre>
+<p class="quote">
+The last term is introduced to eliminate the discontinuity at 2050.</p>
+<p class="quote">
+After 2150, calculate:</p>
+<pre>	&#916;T = -20 + 32 * u^2
+	where:	u = (year-1820)/100
+</pre>
+<p class="quote">
+All values of &#916;T based on Morrison and Stephenson [2004] assume a value for the Moon's secular acceleration of -26 arcsec/cy^2. 
+However, the ELP-2000/82 lunar ephemeris employed in the <a href="https://eclipse.gsfc.nasa.gov/SEpubs/5MCSE.html">Canon</a> uses a slightly different value of -25.858 arcsec/cy^2. 
+Thus, a small correction "c" must be added to the values derived from the polynomial expressions for &#916;T before they can be used in the <a href="https://eclipse.gsfc.nasa.gov/SEpubs/5MCSE.html">Canon</a></p>
+<pre>	c = -0.000012932 * (y - 1955)^2
+</pre>
+<p class="quote">
+Since the values of &#916;T for the interval 1955 to 2005 were derived independent of any lunar ephemeris, no correction is needed for this period.</p>
+
+<p class="quote">
+The <a href="https://eclipse.gsfc.nasa.gov/SEhelp/uncertainty2004.html">uncertainty in &#916;T</a> over this period can be estimated from scatter in the measurements.
+</p>
+
+<!-- ************************************************************ -->
+<hr class="blue">
+
+<h2>References </h2>
+
+<p class="ref">Morrison, L. and Stephenson, F. R., "Historical Values of the Earth's Clock Error &#916;T and the Calculation of Eclipses", J. Hist. Astron., Vol. 35 Part 3, August 2004, No. 120, pp 327-336 (2004).</p>
+<p class="ref">Stephenson F.R and Houlden M.A., <em>Atlas of Historical Eclipse Maps</em>, Cambridge Univ.Press., Cambridge, 1986.</p>
+
+<!-- ************************************************************ -->
+<hr class="blue">
+
+
+
+<script language="JavaScript" type="text/javascript">
+   <!--
+   document.write('</div>');
+   -->
+</script></div>
+</div>
+</div>
+
+<script language="JavaScript" type="text/javascript" src="./NASA - Polynomial Expressions for Delta T_files/footer-1.js.download"></script><div id="footmenu"><ul><li class="one"><a href="https://eclipse.gsfc.nasa.gov/eclipse.html"><span>Home</span></a></li><li class="two"><a href="https://eclipse.gsfc.nasa.gov/solar.html"><span>Solar Eclipses</span></a></li><li class="three"><a href="https://eclipse.gsfc.nasa.gov/lunar.html"><span>Lunar Eclipses</span></a></li><li class="four"><a href="https://eclipse.gsfc.nasa.gov/transit/transit.html"><span>Transits</span></a></li><li class="five"><a href="https://eclipse.gsfc.nasa.gov/resource.html"><span>Resources</span></a></li></ul></div><div id="nasafoot">   <div id="nasafootplus">   <ul class="smallfoot">      <li>+ Heliophysics Science Division, Code 670<br>      NASA Goddard Space Flight Center<br>Greenbelt, MD 20771, USA</li>      <li>+ <a href="http://www.nasa.gov/about/highlights/HP_Privacy.html" target="Privacy">Privacy Policy and Important Notices</a></li>   </ul>   </div>   <a href="http://www.nasa.gov/" target="_blank"><img id="nasafootr" src="./NASA - Polynomial Expressions for Delta T_files/nasa-foot-nasa.gif" width="51" height="48" alt="NASA Logo - nasa.gov"></a>   <div id="nasafootlinks">   <ul class="smallfoot">      <li>Website Manager: <a href="mailto:Robert.M.Candey@nasa.gov">Robert.M.Candey@nasa.gov</a></li>      <li>Responsible NASA Official: <a href="mailto:c.a.young@nasa.gov">Alex Young</a></li>      <li>Last Updated: 
+2007 March 27
+
+<script language="JavaScript" type="text/javascript" src="./NASA - Polynomial Expressions for Delta T_files/footer-2.js.download"></script></li>   </ul>   </div>   </div></div><div id="pfoot"><p>Website Manager: Robert M. Candey (Robert.M.Candey@nasa.gov)<br>Responsible NASA Official: Alex Young (c.a.young@nasa.gov)<br>Heliophysics Science Division, Code 670<br>NASA Goddard Space Flight Center<br>Greenbelt, MD 20771, USA</p></div>
+<noscript>
+&lt;hr class="blue" /&gt;
+&lt;h3 align="center"&gt;Go to &lt;a href="../solar.html"&gt;NASA Solar Eclipse
+Page&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 align="center"&gt;Go to &lt;a href="../lunar.html"&gt;NASA Lunar Eclise Page&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 align="center"&gt;Go to &lt;a href="../transit/transit.html"&gt;NASA Planetary Transit Page&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 align="center"&gt;Go to &lt;a href="../resource.html"&gt;NASA Eclipse Resource Page&lt;/a&gt;&lt;/h3&gt;
+&lt;hr class="blue" /&gt;
+&lt;table border="5" cellspacing="5" align="center"&gt;
+&lt;tr&gt;
+&lt;th&gt;
+&lt;table align="center"&gt;&lt;tr&gt;&lt;td&gt;&lt;img src="../image/NASAlogo.tiny.gif" alt="NASA logo" /&gt;&lt;/td&gt;
+&lt;td&gt;&lt;p&gt;Webmaster: Fred Espenak&lt;br /&gt;
+Email: &lt;a href="mailto:espenak@gsfc.nasa.gov"&gt;espenak@gsfc.nasa.gov&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Official NASA Representative: Dr. Drake Deming&lt;br /&gt;
+Email: &lt;a
+href="mailto:ddeming@pop600.gsfc.nasa.gov"&gt;ddeming@pop600.gsfc.nasa.gov&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;p align="center"&gt;Planetary Systems Laboratory &amp;#150 Code 693.0&lt;br /&gt;
+NASA's Goddard Space Flight Center, Greenbelt, Maryland 20771, USA&lt;/p&gt;
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+</noscript>
+
+
+
+</div></body></html>

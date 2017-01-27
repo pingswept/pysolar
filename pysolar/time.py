@@ -20,24 +20,23 @@
 import warnings
 import math
 import datetime
-import time
-from .constants import \
-    SECONDS_PER_DAY
+import time as pytime
 
+SECONDS_PER_DAY = 86400
 # datetime.datetime(2000, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
 ITALY = 2299161 # /* 1582-10-15 */
 DJ00 = 2451545.0
 DJC = 36525.0
 DJM = 365250.0
 
-def jdn(dto):
+def get_jdn(dt_list):
     """
     Given datetime object returns Julian Day Number as an integer.
     jjs named after Joseph Justice Scalager.
     """
-    year = dto.year
-    month = dto.month
-    day = dto.day
+    year = dt_list[0]
+    month = dt_list[1]
+    day = dt_list[2]
 
     not_march = month < 3
     if not_march:
@@ -54,14 +53,18 @@ def jdn(dto):
     return math.floor(jjs)
 # end jdn
 
-def ajd(dto):
+def get_ajd(dt_list):
     """
     Given datetime object returns Astronomical Julian Day.
     Day is from midnight 00:00:00+00:00 with day fractional
     value added.
     """
-    jdd = jdn(dto)
-    day_fraction = dto.hour / 24.0 + dto.minute / 1440.0 + dto.second / 86400.0
+    # day_decimal = day + (hour - tz + (minute + (second + dut1)/60.0)/60.0)/24.0
+    jdd = get_jdn(dt_list)
+    day_fraction = (
+        dt_list[3] - dt_list[8] + (
+        dt_list[4]  + (
+        dt_list[5] + dt_list[6] / 1e6 + dt_list[7]) / 60.0) / 60.0) / 24.0
     return jdd + day_fraction - 0.5
 # end ajd
 
@@ -72,6 +75,99 @@ JULIAN_DAY_OFFSET = 1721425 - 0.5
 # number of days to add to datetime.datetime.timestamp() / seconds_per_day
 # to agree with datetime.datetime.toordinal()
 GREGORIAN_DAY_OFFSET = 719163
+
+# EPOCH Julian day number works out to be
+# JULIAN_DAY_OFFSET + GREGORIAN_DAY_OFFSET
+UNIX_EPOCH_IN_CJD = 2440587.5
+EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+
+def get_delta_t(dt_list):
+    """
+    Given a date/time list returns a suitable value for delta_t
+    """
+    # now = now.utctimetuple()
+    year, month = dt_list[0], dt_list[1]
+    if year < DELTA_T_BASE_YEAR:
+        year = DELTA_T_BASE_YEAR
+        month = 1
+    elif year == DELTA_T_BASE_YEAR:
+        month = max(0, month - DELTA_T_BASE_MONTH) + 1
+    elif year >= DELTA_T_BASE_YEAR + len(DELTA_T):
+        year = DELTA_T_BASE_YEAR + len(DELTA_T) - 1
+    #end if
+    if year == DELTA_T_BASE_YEAR + len(DELTA_T) - 1:
+        month = min(month, len(DELTA_T[year - DELTA_T_BASE_YEAR]))
+    #end if
+    return \
+        DELTA_T[year - DELTA_T_BASE_YEAR][month - 1]
+          # don't bother doing any fancy interpolation
+#end get_delta_t
+
+def timestamp_ymd(dt_list):
+    """
+    Given date/time list returns total seconds for year, month, and day
+    """
+    # just get seconds sum for year month and day as we don't want to
+    # complicate this by rewriting C code. Too much work.
+    return pytime.mktime((dt_list[0], dt_list[1], dt_list[2], 0, 0, 0, -1, -1, -1))
+
+def timestamp_hms(dt_list):
+    """
+    Given date/time list returns total seconds for hours, minutes, and seconds
+    """
+    return dt_list[3] * 3600 + dt_list[4] * 60 + dt_list[5] + dt_list[6] / 1e6
+
+def timestamp(dt_list):
+    """
+    Given date/time list returns POSIX timestamp as a float
+    in order to work on python 3.2
+    cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py
+    """
+    ymd_secs = timestamp_ymd(dt_list)
+    hmsms_secs = timestamp_hms(dt_list)
+
+    # Return POSIX timestamp as float
+    return ymd_secs + hmsms_secs
+
+def get_julian_day(dt_list):
+    """
+    Given a datetime list returns the UT Julian day number
+    (including fraction of a day) corresponding to
+    the specified date/time. This version assumes the proleptic Gregorian calender;
+    trying to adjust for pre-Gregorian dates/times seems pointless now the changeover
+    happened over such wildly varying times in different regions.
+    """
+
+    # return timestamp(dt_list) / 86400.0 + 2440587.5
+    return get_ajd(dt_list)
+#end get_julian_solar_day
+
+def get_julian_ephemeris_day(dt_list):
+    """
+    Given a datetime list  returns the TT Julian day number
+    (including fraction of a day) corresponding to
+    the specified date/time. This version assumes the proleptic Gregorian calender;
+    trying to adjust for pre-Gregorian dates/times seems pointless now the changeover
+    happened over such wildly varying times in different regions.
+    """
+    return get_delta_t(dt_list)  / 86400.0 + get_ajd(dt_list)
+#end get_julian_ephemeris_day
+
+def get_julian_century(dt_list):
+    """ Convert date/time list to fractional century """
+    jsd = get_julian_day(dt_list)
+    return (jsd - 2451545.0) / 36525.0
+
+def get_julian_ephemeris_century(dt_list):
+    """ Convert date/time list to fracional ephemeris century """
+    jed = get_julian_ephemeris_day(dt_list)
+    return (jed - 2451545.0) / 36525.0
+
+def get_julian_ephemeris_millennium(dt_list):
+    """ Convert date/time list to fractional millennium """
+    jed = get_julian_ephemeris_day(dt_list)
+    return (jed - 2451545.0) / 365250.0
+
 
  # seconds to add to TAI to get TT
 TT_OFFSET = 32.184
@@ -133,21 +229,24 @@ LEAP_SECONDS_ADJUSTMENTS = \
         (+1, 0), # 2016
     ]
 
-def get_leap_seconds(now):
-    "returns adjustment to be added to UTC at the specified datetime to produce TAI."
-    now = now.utctimetuple()
+def get_leap_seconds(dt_list):
+    """
+    Given datetime list returns adjustment to be added to UTC
+    at the specified datetime to produce TAI.
+    """
+    # now = now.utctimetuple()
     adj = 10 # as decreed from 1972
     year = LEAP_SECONDS_BASE_YEAR
     while True:
-        if year > now.tm_year:
+        if year > dt_list[0]:
             break
         if year - LEAP_SECONDS_BASE_YEAR >= len(LEAP_SECONDS_ADJUSTMENTS):
             if (
-                    now.tm_year - LEAP_SECONDS_BASE_YEAR > len(LEAP_SECONDS_ADJUSTMENTS)
+                    dt_list[0] - LEAP_SECONDS_BASE_YEAR > len(LEAP_SECONDS_ADJUSTMENTS)
                     or
-                    now.tm_year - LEAP_SECONDS_BASE_YEAR == len(LEAP_SECONDS_ADJUSTMENTS)
+                    dt_list[0] - LEAP_SECONDS_BASE_YEAR == len(LEAP_SECONDS_ADJUSTMENTS)
                     and
-                    now.tm_mon > 6
+                    dt_list[1] > 6
             ):
                 warnings.warn \
                   (
@@ -159,8 +258,8 @@ def get_leap_seconds(now):
             break
         #end if
         entry = LEAP_SECONDS_ADJUSTMENTS[year - LEAP_SECONDS_BASE_YEAR]
-        if year == now.tm_year:
-            if now.tm_mon > 6:
+        if year == dt_list[0]:
+            if dt_list[1] > 6:
                 adj += entry[0]
             #end if
             break
@@ -168,8 +267,7 @@ def get_leap_seconds(now):
         adj += entry[0] + entry[1]
         year += 1
     #end while
-    return \
-        adj
+    return adj
 #end get_leap_seconds
 
 # table of values to add to UT1 to get TT (to date), generated by util/get_delta_t script
@@ -798,87 +896,3 @@ DELTA_T = \
           68.5928 # 1
       ],
   ] # delta_t
-
-def get_delta_t(now):
-    "returns a suitable value for delta_t for the given datetime."
-    now = now.utctimetuple()
-    year, month = now.tm_year, now.tm_mon
-    if year < DELTA_T_BASE_YEAR:
-        year = DELTA_T_BASE_YEAR
-        month = 1
-    elif year == DELTA_T_BASE_YEAR:
-        month = max(0, month - DELTA_T_BASE_MONTH) + 1
-    elif year >= DELTA_T_BASE_YEAR + len(DELTA_T):
-        year = DELTA_T_BASE_YEAR + len(DELTA_T) - 1
-    #end if
-    if year == DELTA_T_BASE_YEAR + len(DELTA_T) - 1:
-        month = min(month, len(DELTA_T[year - DELTA_T_BASE_YEAR]))
-    #end if
-    return \
-        DELTA_T[year - DELTA_T_BASE_YEAR][month - 1]
-          # don't bother doing any fancy interpolation
-#end get_delta_t
-
-def timestamp(now):
-    """ Return POSIX timestamp as a float in order to work on python 3.2
-    cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py
-    UNIX_EPOCH_IN_CJD = 2440588
-    """
-    epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-    # print(now) ok for tests but I shut it off because it is tested
-    # Return POSIX timestamp as float
-    if now.tzinfo is None:
-        return time.mktime((now.year, now.month, now.day,
-                            now.hour, now.minute, now.second,
-                            -1, -1, -1)) + now.microsecond / 1e6
-    else:
-        return (now - epoch).total_seconds()
-
-def get_julian_solar_day(dtio):
-    """
-    Given a date/time input object returns the UT Julian day number
-    (including fraction of a day) corresponding to
-    the specified date/time. This version assumes the proleptic Gregorian calender;
-    trying to adjust for pre-Gregorian dates/times seems pointless now the changeover
-    happened over such wildly varying times in different regions.
-    """
-    return \
-        (
-            (timestamp(dtio) + get_leap_seconds(dtio) + TT_OFFSET - get_delta_t(dtio))
-            /
-            SECONDS_PER_DAY
-            +
-            GREGORIAN_DAY_OFFSET
-            +
-            JULIAN_DAY_OFFSET
-        )
-#end get_julian_solar_day
-
-def get_julian_ephemeris_day(now):
-    "returns the TT Julian day number (including fraction of a day) corresponding to" \
-    " the specified date/time. This version assumes the proleptic Gregorian calender;" \
-    " trying to adjust for pre-Gregorian dates/times seems pointless now the changeover" \
-    " happened over such wildly varying times in different regions."
-    return \
-        (
-            (timestamp(now) + get_leap_seconds(now) + TT_OFFSET)
-            /
-            SECONDS_PER_DAY
-            +
-            GREGORIAN_DAY_OFFSET
-            +
-            JULIAN_DAY_OFFSET
-        )
-#end get_julian_ephemeris_day
-
-def get_julian_century(julian_days):
-    """ Convert JDN to fractional century """
-    return (julian_days - 2451545.0) / 36525.0
-
-def get_julian_ephemeris_century(julian_ephemeris_day):
-    """ Convert JDN to fracional ephemeris century """
-    return (julian_ephemeris_day - 2451545.0) / 36525.0
-
-def get_julian_ephemeris_millennium(julian_ephemeris_century):
-    """ Convert JDN to fractional millennium """
-    return julian_ephemeris_century / 10.0

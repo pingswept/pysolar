@@ -1,0 +1,18 @@
+/* CSS Document - Last updated June 19, 2005 by Bryan Stephenson  */
+
+/* Basic styles for real old browsers */
+body { font-family: Arial, Helvetica, sans-serif; }
+/* img { border:0; display:block;}
+ * a:link, a:visited { color:#006699; text-decoration:underline;}
+ * a:hover { color:#333;}
+ * dl dt { margin-left:10px;}
+ * dl dd { margin-left:10px;}
+ */
+.hidden { height: 0; width: 0; overflow: hidden; position: absolute; } /* for the benefit of IE5 Mac */
+.textonly { display:none;}
+.imagesandtext { display:none;}
+/* h1 { font-size:120%;} */
+
+#headimage img { display:none;}
+
+#nasahead {	width:auto; height:auto;}

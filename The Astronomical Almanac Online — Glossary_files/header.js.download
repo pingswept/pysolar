@@ -1,0 +1,8 @@
+$(document).ready(function(){
+	$('#utilities-menuitem').show();
+	
+	$('li[class$="section"]').hover(
+	    function() {$(this).addClass('hovered');},
+	    function() {$(this).removeClass('hovered');}
+	);
+});

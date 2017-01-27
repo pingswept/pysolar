@@ -53,7 +53,7 @@ def get_aberration_coeffs():
           (
               (name, (
                   lambda a, b, c, d:
-                  lambda x: a + b * x + c * x ** 2 + (x ** 3) / d)(*coeffs))
+                  lambda x: ((c + 1 / d * x) * x + b) * x + a)(*coeffs))
               for name, coeffs in
               (
                   ('ArgumentOfLatitudeOfMoon', (93.27191, 483202.017538, -0.0036825, 327270.0)),

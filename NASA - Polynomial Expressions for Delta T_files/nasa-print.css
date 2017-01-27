@@ -1,0 +1,113 @@
+/* CSS Document - Last updated June 19, 2005 by Bryan Stephenson */
+
+/* print styles */
+
+  body          { background:white; font-size:12pt; }
+/*
+h1, h2, h3,
+h4, h5, h6    { page-break-after: avoid; page-break-inside: avoid; }
+blockquote,
+pre           { page-break-inside: avoid; }
+ul, ol, dl    { page-break-before: avoid; }
+dl dt { margin-left:10px; font-weight:bold;}
+dl dd { margin-left:10px;}
+*/
+
+img#eclipsebanner {
+   width: 385px;
+   height: 65px;
+   border: 0px;
+   position: absolute;
+   top: 8px;
+   left: 348px;
+}
+  a:link, a:visited {
+    color:black;
+    background:transparent;
+    font-weight:bold;
+    text-decoration:underline;
+    }
+  #leftnav { display:none;}
+  #pfoot { display: block; }
+  #nasafootplus { display:none;} /* display them (so this has to be commented) */
+  #nasaheadlinks { display:none;}
+  #nasahead #searchbox { display:none;}
+  #nasafoot { display: none; }
+  
+  #menu { display:none;}
+  #menu2 { display:none;}
+  #menu3 { display:none;}
+#head {
+   margin:10px auto;
+   display: inline;
+}
+div {
+   display: inline;
+}
+  
+/* table, tbody, tr, td, th { display: block;} */
+/* the above is superfluous */
+
+table.datataballcenter {
+   text-align: center;
+}
+
+table.datatab, table.datataballcenter {
+   border: 1px solid #666666;
+   vertical-align: top;
+}
+
+table.datatab thead tr td, table.datataballcenter thead tr td {
+   font-weight:bold;
+   padding: 3px 8px;
+   border-left: 1px solid #fff;
+   vertical-align: top;
+   text-align: center;
+}
+
+table.datatab thead tr.subhead td, table.datataballcenter thead tr.subhead td {
+   font-weight:normal;
+   padding: 3px 8px;
+   border-left: 1px solid #fff;
+   vertical-align: top;
+   text-align: center;
+}
+
+table.datatab thead tr.theading td, table.datataballcenter thead tr.theading td { 
+   font-size: 18pt;
+   text-decoration: underline;
+   padding: 3px 8px;
+   border-left: 1px solid #fff;
+   vertical-align: top;
+   text-align: center;
+}
+
+table.datatab tbody tr td, table.datataballcenter tbody tr td {
+   padding: 3px 8px;
+   border-left: 1px solid #D9D9D9;
+   border-top: 1px solid #000;
+   vertical-align: top;
+}
+
+table.datatab tbody tr.odd td, table.datataballcenter tbody tr.odd td {
+   border-top: 1px solid #000;
+   vertical-align: top;
+}
+
+/*
+h1 { font-size:18px;}
+h2 { font-size:16px;}
+h3 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h4 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h5 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h6 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h7 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h8 { font-size:14px; font-weight:bold; margin-bottom:0;}
+h9 { font-size:14px; font-weight:bold; margin-bottom:0;}
+*/
+
+.textonly { display:none;}
+.hide { display: none;}
+.hidden { display: none; }
+
+h2.headertype1 { border-bottom:1px solid #ccc; font-size:14px;}

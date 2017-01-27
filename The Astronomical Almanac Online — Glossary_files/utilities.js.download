@@ -1,0 +1,62 @@
+$(function() {
+	var handleSuccess = function(data, status, xhr) {
+		var table = '<table class="geo">';
+        table += '<tr class="odd"><td class="header">Planet</td><td class="header">Apparent<br />RA<br />(h&nbsp;m&nbsp;s)</td><td class="header">Apparent<br />Declination<br />($\\enspace\\degr\\enspace\\arcmin\\enspace\\arcsec$)</td><td class="header">True<br />Geocentric<br />Distance (au)</td></tr>';
+        table += '<tr class="even"><td class="planet">Mercury</td><td class="ra">' + data.Mercury.geo_ra + '</td><td class="dec">' + data.Mercury.geo_dec + '</td><td class="dist">' + data.Mercury.geo_dist + '</td></tr>';
+        table += '<tr class="odd"><td class="planet">Venus</td><td class="ra">' + data.Venus.geo_ra + '</td><td class="dec">' + data.Venus.geo_dec + '</td><td class="dist">' + data.Venus.geo_dist + '</td></tr>';
+        table += '<tr class="even"><td class="planet">Mars</td><td class="ra">' + data.Mars.geo_ra + '</td><td class="dec">' + data.Mars.geo_dec + '</td><td class="dist">' + data.Mars.geo_dist + '</td></tr>';
+        table += '<tr class="odd"><td class="planet">Jupiter</td><td class="ra">' + data.Jupiter.geo_ra + '</td><td class="dec">' + data.Jupiter.geo_dec + '</td><td class="dist">' + data.Jupiter.geo_dist + '</td></tr>';
+        table += '<tr class="even"><td class="planet">Saturn</td><td class="ra">' + data.Saturn.geo_ra + '</td><td class="dec">' + data.Saturn.geo_dec + '</td><td class="dist">' + data.Saturn.geo_dist + '</td></tr>';
+        table += '<tr class="odd"><td class="planet">Uranus</td><td class="ra">' + data.Uranus.geo_ra + '</td><td class="dec">' + data.Uranus.geo_dec + '</td><td class="dist">' + data.Uranus.geo_dist + '</td></tr>';
+        table += '<tr class="even"><td class="planet">Neptune</td><td class="ra">' + data.Neptune.geo_ra + '</td><td class="dec">' + data.Neptune.geo_dec + '</td><td class="dist">' + data.Neptune.geo_dist + '</td></tr>';
+        table += '</table>';
+        
+        $('#coords-table').html(table);
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'coords-table']);
+	};
+	
+    $('#datepicker').datepicker({
+		dateFormat: "DD, d M yy",
+		defaultDate: null,
+		minDate: new Date(2009, 0, 1),
+		maxDate: new Date(2017, 11, 31),
+        changeMonth: true,
+        changeYear: true,
+		onSelect: function(dateText, inst) {
+			selectedDate = $(this).datepicker('getDate');
+			sendData = {
+				year: selectedDate.getFullYear(),
+				month: selectedDate.getMonth()+1,
+				day: selectedDate.getDate()
+			}
+			$.get(
+				'_geo',
+				sendData,
+				handleSuccess,
+				'json'
+			);
+		}
+	}).datepicker('setDate', new Date());
+	
+	$.get(
+		'_geo',
+		{},
+		handleSuccess,
+		'json'
+	);
+	
+	$('#geocoords-popup').dialog({
+		autoOpen: false,
+        width: "35em",
+        position: 'center',
+        draggable: true,
+        resizeable: true,
+		show: 'clip',
+		hide: 'clip'
+    });
+	
+	$('.geocoords').bind('click', function() {
+		$('#geocoords-popup').dialog('open');
+		return false;
+	});
+});
