@@ -379,17 +379,19 @@ def get_incidence_angle(
                     slope_rad) + math.sin(
                         slope_rad) * math.sin(tza_rad) * math.cos(taa_rad - math.pi - so_rad)))
 
-def get_local_hour_angle(dt_list, local_longitude, geo_right_ascension):
+def get_local_hour_angle(dt_list, local_longitude):
     """
     Local hour angle
     """
     gast = get_gast(dt_list)
-    return (gast + local_longitude - geo_right_ascension) % 360
+    gra = get_geocentric_right_ascension(dt_list)
+    return (gast + local_longitude - gra) % 360
 
-def get_max_horizontal_parallax(sun_earth_distance):
+def get_max_horizontal_parallax(dt_list):
     """
     docstring goes here
     """
+    sun_earth_distance = get_sun_earth_distance(dt_list)
     return 8.794 / (3600 / sun_earth_distance)
 
 def get_nutation(dt_list):
