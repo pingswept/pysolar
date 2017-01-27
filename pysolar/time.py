@@ -237,16 +237,18 @@ def get_leap_seconds(dt_list):
     # now = now.utctimetuple()
     adj = 10 # as decreed from 1972
     year = LEAP_SECONDS_BASE_YEAR
+    monin = dt_list[1]
+    yin = dt_list[0]
     while True:
-        if year > dt_list[0]:
+        if year > yin:
             break
         if year - LEAP_SECONDS_BASE_YEAR >= len(LEAP_SECONDS_ADJUSTMENTS):
             if (
-                    dt_list[0] - LEAP_SECONDS_BASE_YEAR > len(LEAP_SECONDS_ADJUSTMENTS)
+                    yin - LEAP_SECONDS_BASE_YEAR > len(LEAP_SECONDS_ADJUSTMENTS)
                     or
-                    dt_list[0] - LEAP_SECONDS_BASE_YEAR == len(LEAP_SECONDS_ADJUSTMENTS)
+                    yin - LEAP_SECONDS_BASE_YEAR == len(LEAP_SECONDS_ADJUSTMENTS)
                     and
-                    dt_list[1] > 6
+                    monin > 6
             ):
                 warnings.warn \
                   (
@@ -258,8 +260,8 @@ def get_leap_seconds(dt_list):
             break
         #end if
         entry = LEAP_SECONDS_ADJUSTMENTS[year - LEAP_SECONDS_BASE_YEAR]
-        if year == dt_list[0]:
-            if dt_list[1] > 6:
+        if year == yin:
+            if monin > 6:
                 adj += entry[0]
             #end if
             break

@@ -30,20 +30,18 @@ class TestTime(unittest.TestCase):
     """
     Test time methods
     """
+    delta_t = 67
     longitude = -105.1786
     lon_offset = longitude / 360.0
+    dut1 = datetime.timedelta(seconds=0.0)
+    dt_list = [2003, 10, 17, 19, 30, 0, 0, 0, 0]
     def setUp(self):
         # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
         # has no seconds setting so let's consider new test data.
         # changing the docstring to values found in MIDC SPA for expectation tests.
-        self.dto = datetime.datetime(
-            2003, 10, 17, 19, 30, tzinfo=datetime.timezone.utc)
-        self.dt_list = [self.dto.year, self.dto.month, self.dto.day, self.dto.hour,
-                        self.dto.minute, 0, 0, 0, 0]
         # self.dt_list[5] = math.floor(time.get_delta_t(self.dt_list)) + self.dt_list[5]
         # self.dt_list[6] = round((time.get_delta_t(self.dt_list) % 1) * 1e6) + self.dt_list[6]
-        self.dut1 = datetime.timedelta(seconds=0.0)
-        self.delta_t = 67
+        return None
 
     def test_all_jdn(self):
         """
@@ -90,31 +88,44 @@ class TestTime(unittest.TestCase):
         print(jem)
         self.assertEqual(0.003792780963746062, jem, 6)
         self.assertAlmostEqual(0.003793, jem, 6)
-
-
-
+        print('testing jlon')
+        jlon = time.get_julian_day(self.dt_list) - self.lon_offset
+        print(jlon)
+        # self.assertAlmostEqual(2452930.604171, jlon, 6)
+        self.assertAlmostEqual(2452930.604662778, jlon, 6)
 
 
     def test_delta_epsilon(self):
         """
-        doc
+        Date,Time,Nutation obliquity
+        10/17/2003,12:30:00,0.001667
         """
         print('testing delta epsilon')
+        deps = solar.get_nutation(self.dt_list)['obliquity']
+        print(deps)
+        self.assertEqual(0.0016665671802928686, deps, 6)
+        self.assertAlmostEqual(0.001667, deps, 6)
 
     def test_delta_psi(self):
         """
-        doc
+        Date,Time,Nutation longitude
+        10/17/2003,12:30:00,-0.003998
         """
         print('testing delta psi')
+        dpsi = solar.get_nutation(self.dt_list)['longitude']
+        print(dpsi)
+        self.assertEqual(-0.003998410918549588, dpsi, 6)
+        self.assertAlmostEqual(-0.003998, dpsi, 6)
 
     def test_eqeq(self):
         """
-        doc
+        Equation of equinox = delta psi * cosine epsilon
         """
         print('testing equation of equinox')
-        # eqeq = solar.get_equation_of_equinox(self.dt_list) * 240.0
-        # print(eqeq, 'seconds')
-        # self.assertAlmostEqual(-0.8804575180994286, eqeq, 12)
+        eqeq = solar.get_equation_of_equinox(self.dt_list) * 240.0
+        print(eqeq, 'seconds')
+        self.assertEqual(-0.8807498174792597, eqeq, 12)
+        self.assertAlmostEqual(-0.8807498174792597, eqeq, 6)
 
 
     def test_get_dut1(self):
@@ -128,46 +139,55 @@ class TestTime(unittest.TestCase):
         print(dut1)
         self.assertEqual(dut1, self.dut1)
 
+    def test_get_leap_seconds(self):
+        """
+        doc
+        """
+        print('testing get leap seconds')
+        gls = time.get_leap_seconds(self.dt_list)
+        print(gls, 'returned')
+        self.assertEqual(gls, 32)
+
     def test_sideral_angles(self):
         """
         with or without delta t on the site calculator
         Date,Time,Greenwich mean sidereal time,Greenwich sidereal time
         10/17/2003,12:30:00,318.390236,318.386568
         """
-        # gmst = solar.get_gmst(self.dt_list)
         print('testing gmst')
-        # print(gmst)
-        # self.assertAlmostEqual(318.39024965674616, gmst, 6)
-        #self.assertAlmostEqual(318.390236, gmst, 6)
+        gmst = solar.get_gmst(self.dt_list)
+        print(gmst)
+        self.assertEqual(318.39024965674616, gmst, 6)
+        # self.assertAlmostEqual(318.390236, gmst, 6)
         print('testing gast')
-        # gast = solar.get_gast(self.dt_list)
-        # print(gast)
-        # self.assertAlmostEqual(318.3865810837518 , gast, 6)
-        #self.assertAlmostEqual(318.388061, gast, 6)
+        gast = solar.get_gast(self.dt_list)
+        print(gast)
+        self.assertEqual(318.38657986584 , gast, 6)
+        # self.assertAlmostEqual(318.386568, gast, 6)
+        print('testing lmst')
+        lmst = solar.get_lmst(self.dt_list)
+        print('testing last')
+        last = solar.get_last(self.dt_list)
 
-    def test_get_jlon(self):
-        """
-        MIDC SPA is 2452930.604171 at 19:30
-        """
-        print('testing jlon')
-        jlon = time.get_julian_day(self.dt_list) - self.lon_offset
-        # self.assertAlmostEqual(2452930.604171, jlon, 6)
-        self.assertAlmostEqual(2452930.604662778, jlon, 6)
 
     def test_jed1_jsd1(self):
         """
         doc
         """
         print('testing jed jsd difference')
-        # print(self.dut1)
-        # print((self.jed1 - self.jsd1) * 24.0 * 3600.0 - time.get_delta_t(self.dio))
-        # print(time.get_delta_t(self.dio))
+        print(self.dut1, 'DUT1')
+        jed1 = time.get_julian_ephemeris_day(self.dt_list) - time.get_delta_t(self.dt_list) / 86400.0
+        jed1 += self.delta_t / 86400.0
+        print(jed1, 'JED')
+        jsd1 = time.get_julian_day(self.dt_list)
+        print(jsd1, 'JSD')
+        print((jed1 - jsd1) * 86400 - self.delta_t)
 
     def test_solar_solar(self):
         """
         doc
         """
-        # solar.solar_test()
+        #solar.solar_test()
 
     def test_timestamp(self):
         """
@@ -196,25 +216,26 @@ class TestSolar(unittest.TestCase):
     temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
     slope = 30.0 # degrees
     slope_orientation = -10.0 # degrees east from south
-
+    dt_list = [2003, 10, 17, 19, 30, 0, 0, 0, 0]
+    delta_t = 67
     def setUp(self):
         # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
         # has no seconds setting so let's consider new test data.
         # changing the docstring to values found in MIDC SPA for expectation tests.
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
+            self.dt_list) - time.TT_OFFSET - time.get_leap_seconds(self.dt_list))
         self.dio += datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
+            self.dt_list) - time.TT_OFFSET - time.get_leap_seconds(self.dt_list))
         # Reda & Andreas say that this time is in "Local Standard Time", which they
         # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
         # to UTC.
-        self.jed = time.get_julian_ephemeris_day(self.dio)
-        self.jec = time.get_julian_ephemeris_century(self.jed)
-        self.jem = time.get_julian_ephemeris_millennium(self.jec)
-        self.jsd = time.get_julian_solar_day(self.dio)
+        self.jed = time.get_julian_ephemeris_day(self.dt_list)
+        self.jec = time.get_julian_ephemeris_century(self.dt_list)
+        self.jem = time.get_julian_ephemeris_millennium(self.dt_list)
+        self.jsd = time.get_julian_solar_day(self.dt_list)
 
-    def test_get_ac(self):
+    def get_ac(self):
         """
         MIDC SPA is -0.005711 at 12:30
         """
@@ -223,7 +244,7 @@ class TestSolar(unittest.TestCase):
         self.assertAlmostEqual(-0.005711, gac, 6)
         self.assertAlmostEqual(-0.005711359813021086, gac, 6)
 
-    def test_get_asl(self):
+    def get_asl(self):
         """
         MIDC SPA is 204.008183 at 12:30
         """
@@ -235,7 +256,7 @@ class TestSolar(unittest.TestCase):
         # self.assertAlmostEqual(204.008183, asl, 6)
         self.assertAlmostEqual(204.00818094267757, asl, 6)
 
-    def test_get_azimuth(self):
+    def get_azimuth(self):
         """
         194.18
         """
@@ -243,7 +264,7 @@ class TestSolar(unittest.TestCase):
         azm = solar.get_azimuth(loc, self.dio, self.elevation)
         self.assertAlmostEqual(-14.182528371336758, azm, 6)
 
-    def test_get_altitude(self):
+    def get_altitude(self):
         """
         39.91 elevation
         """
@@ -252,7 +273,7 @@ class TestSolar(unittest.TestCase):
             lat_lon_list, self.dio, self.elevation, self.temperature, self.pressure)
         self.assertAlmostEqual(-5.590197393234738, alt, 6)
 
-    def test_get_ehp(self):
+    def get_ehp(self):
         """
         MIDC SPA is 0.002451 at 12:30
         """
@@ -261,7 +282,7 @@ class TestSolar(unittest.TestCase):
         # self.assertAlmostEqual(0.002451, ehp, 6)
         self.assertAlmostEqual(0.002434331157052594, ehp, 6)
 
-    def test_get_lha(self):
+    def get_lha(self):
         """
         MIDC SPA is 10.982401 at 12:30
         """
@@ -280,7 +301,7 @@ class TestSolar(unittest.TestCase):
         # self.assertAlmostEqual(10.982401, lha, 6)
         self.assertAlmostEqual(10.98506227674136, lha, 6)
 
-    def test_get_nut(self):
+    def get_nut(self):
         """
         MIDC SPA is 0.001667 at 12:30
         MIDC SPA is -0.003998 at 12:30
@@ -291,28 +312,28 @@ class TestSolar(unittest.TestCase):
         self.assertAlmostEqual(-0.003998, nut['longitude'], 6)
         self.assertAlmostEqual(-0.003998424073879077, nut['longitude'], 6)
 
-    def test_get_pad(self):
+    def get_pad(self):
         """
         don't know what it should be
         """
         pad = solar.get_projected_axial_distance(self.elevation, self.latitude)
         self.assertAlmostEqual(0.6361121708785658, pad, 6)
 
-    def test_get_prd(self):
+    def get_prd(self):
         """
         MIDC SPA is not at 12:30
         """
         prd = solar.get_projected_radial_distance(self.elevation, self.latitude)
         self.assertAlmostEqual(0.7702006191191089, prd, 6)
 
-    def test_get_pwe(self):
+    def get_pwe(self):
         """
         MIDC SPA is not at 12:30
         """
         pwe = elevation.get_pressure_with_elevation(1567.7)
         self.assertAlmostEqual(83855.90227687225, pwe, 6)
 
-    def test_get_sed(self):
+    def get_sed(self):
         """
         MIDC SPA is 0.996542 at 12:30
         """
@@ -320,7 +341,7 @@ class TestSolar(unittest.TestCase):
         # self.assertAlmostEqual(0.996542, sed, 6)
         self.assertAlmostEqual(0.9965421031, sed, 6)
 
-    def test_get_twe(self):
+    def get_twe(self):
         """
         MIDC SPA is not at 12:30
         """
@@ -339,69 +360,66 @@ class TestGeocentricSolar(unittest.TestCase):
     temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
     slope = 30.0 # degrees
     slope_orientation = -10.0 # degrees east from south
-
+    dt_list = [2003, 10, 17, 19, 30, 0, 0, 0, 0]
+    delta_t = 67
     def setUp(self):
         # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
         # has no seconds setting so let's consider new test data.
         # changing the docstring to values found in MIDC SPA for expectation tests.
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
+            self.dt_list) - time.TT_OFFSET - time.get_leap_seconds(self.dt_list))
         self.dio += datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
+            self.dt_list) - time.TT_OFFSET - time.get_leap_seconds(self.dt_list))
         # Reda & Andreas say that this time is in "Local Standard Time", which they
         # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
         # to UTC.
-        self.jed = time.get_julian_ephemeris_day(self.dio)
-        self.jec = time.get_julian_ephemeris_century(self.jed)
-        self.jem = time.get_julian_ephemeris_millennium(self.jec)
-        self.jsd = time.get_julian_solar_day(self.dio)
+        self.jed = time.get_julian_ephemeris_day(self.dt_list)
+        self.jec = time.get_julian_ephemeris_century(self.dt_list)
+        self.jem = time.get_julian_ephemeris_millennium(self.dt_list)
+        self.jsd = time.get_julian_day(self.dt_list)
 
-    def test_get_glat(self):
+    def test_lat_lon(self):
         """
-        MIDC SPA is 0.000101 at 12:30
+        Date,Time,Earth heliocentric longitude,Earth heliocentric latitude,Geocentric longitude,Geocentric latitude
+        10/17/2003,12:30:00,24.017148,-0.000101,204.017148,0.000101
         """
-        glat = solar.get_geocentric_latitude(self.jem)
+        print('testing heliocentric longitude')
+        hlon = solar.get_heliocentric_longitude(self.dt_list)
+        print(hlon)
+        self.assertAlmostEqual(24.017890726564474, hlon, 6)
+        # self.assertAlmostEqual(24.017148, hlon, 6)
+        print('testing heliocentric latitude')
+        hlat = solar.get_heliocentric_latitude(self.dt_list)
+        print(hlat)
+        self.assertEqual(-0.00010111493548486615, hlat, 6)
+        self.assertAlmostEqual(-0.000101, hlat, 6)
+        print('testing geocentric longitude')
+        glon = solar.get_geocentric_longitude(self.dt_list)
+        print(glon)
+        self.assertEqual(204.01789072656447, glon, 6)
+        # self.assertAlmostEqual(204.017148, glon, 6)
+        print('testing geocentric latitude')
+        glat = solar.get_geocentric_latitude(self.dt_list)
+        print(glat)
+        self.assertEqual(0.00010111493548486615, glat, 6)
         self.assertAlmostEqual(0.000101, glat, 6)
-        self.assertAlmostEqual(0.00010111493548486615, glat, 6)
 
-    def test_get_glon(self):
+    def test_rad_dec(self):
         """
-        MIDC SPA is 204.017893 at 12:30
+        Date,Time,Geocentric sun right ascension,Geocentric sun declination
+        10/17/2003,12:30:00,202.226358,-9.313930
         """
-        glon = solar.get_geocentric_longitude(self.jem)
-        # self.assertAlmostEqual(204.017893, glon, 6)
-        self.assertAlmostEqual(204.01789072656447, glon, 6)
-
-    def test_get_gsd(self):
-        """
-        MIDC SPA is -9.314204 at 12:30
-        """
-        glon = solar.get_geocentric_longitude(self.jem)
-        nut = solar.get_nutation(time.get_julian_century(self.jsd))
-        sed = solar.get_sun_earth_distance(self.jem)
-        gac = solar.get_aberration_correction(sed)
-        asl = solar.get_apparent_sun_longitude(glon, nut, gac)
-        teo = solar.get_true_ecliptic_obliquity(self.jed)
-        glat = solar.get_geocentric_latitude(self.jem)
-        gsd = solar.get_geocentric_sun_declination(asl, teo, glat)
-        # self.assertAlmostEqual(-9.314204, gsd, 6)
-        self.assertAlmostEqual(-9.314203486059162, gsd, 6)
-
-    def test_get_gsra(self):
-        """
-        MIDC SPA is 202.227060 at 12:30
-        """
-        glon = solar.get_geocentric_longitude(self.jem)
-        nut = solar.get_nutation(time.get_julian_century(self.jsd))
-        sed = solar.get_sun_earth_distance(self.jem)
-        gac = solar.get_aberration_correction(sed)
-        asl = solar.get_apparent_sun_longitude(glon, nut, gac)
-        teo = solar.get_true_ecliptic_obliquity(self.jed)
-        glat = solar.get_geocentric_latitude(self.jem)
-        gsra = solar.get_geocentric_right_ascension(asl, teo, glat)
-        self.assertAlmostEqual(202.227060, gsra, 5)
-        self.assertAlmostEqual(202.22705829956698, gsra, 6)
+        print('testing Geocentric sun right ascension')
+        gsra = solar.get_geocentric_right_ascension(self.dt_list)
+        print(gsra)
+        self.assertEqual(202.23445859402972, gsra, 6)
+        # self.assertAlmostEqual(202.226358, gsra, 5)
+        print('testing Geocentric sun declination')
+        gsd = solar.get_geocentric_sun_declination(self.dt_list)
+        print(gsd)
+        self.assertEqual(-9.295743201206834, gsd, 6)
+        # self.assertAlmostEqual(-9.313830, gsd, 6)
 
 class TestTopocentricSolar(unittest.TestCase):
     """
@@ -422,9 +440,9 @@ class TestTopocentricSolar(unittest.TestCase):
         # changing the docstring to values found in MIDC SPA for expectation tests.
         self.dio = datetime.datetime(2003, 10, 17, 19, 30, 0, tzinfo=datetime.timezone.utc)
         self.dut1 = datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
+            self.dt_list) - time.TT_OFFSET - time.get_leap_seconds(self.dt_list))
         self.dio += datetime.timedelta(seconds=time.get_delta_t(
-            self.dio) - time.TT_OFFSET - time.get_leap_seconds(self.dio))
+            self.dt_list) - time.TT_OFFSET - time.get_leap_seconds(self.dt_list))
         # Reda & Andreas say that this time is in "Local Standard Time", which they
         # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
         # to UTC.
@@ -581,7 +599,7 @@ if __name__ == "__main__":
     GSOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestGeocentricSolar)
     TSOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestTopocentricSolar)
     unittest.TextTestRunner(verbosity=2).run(TIME)
-    # unittest.TextTestRunner(verbosity=2).run(SOLAR)
-    # unittest.TextTestRunner(verbosity=2).run(GSOLAR)
+    unittest.TextTestRunner(verbosity=2).run(SOLAR)
+    unittest.TextTestRunner(verbosity=2).run(GSOLAR)
     # unittest.TextTestRunner(verbosity=2).run(TSOLAR)
 #end if
