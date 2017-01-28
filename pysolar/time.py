@@ -29,7 +29,7 @@ DJ00 = 2451545.0
 DJC = 36525.0
 DJM = 365250.0
 
-def get_jdn(dt_list):
+def get_jdn(dt_list, default=None):
     """
     Given datetime object returns Julian Day Number as an integer.
     jjs named after Joseph Justice Scalager.
@@ -53,14 +53,14 @@ def get_jdn(dt_list):
     return math.floor(jjs)
 # end jdn
 
-def get_ajd(dt_list):
+def get_ajd(dt_list, default=None):
     """
     Given datetime object returns Astronomical Julian Day.
     Day is from midnight 00:00:00+00:00 with day fractional
     value added.
     """
     # day_decimal = day + (hour - tz + (minute + (second + dut1)/60.0)/60.0)/24.0
-    jdd = get_jdn(dt_list)
+    jdd = get_jdn(dt_list, default)
     day_fraction = (
         dt_list[3] - dt_list[8] + (
         dt_list[4]  + (
@@ -81,29 +81,35 @@ GREGORIAN_DAY_OFFSET = 719163
 UNIX_EPOCH_IN_CJD = 2440587.5
 EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
-def get_delta_t(dt_list):
+def get_delta_t(dt_list, default=None):
     """
     Given a date/time list returns a suitable value for delta_t
     """
     # now = now.utctimetuple()
     year, month = dt_list[0], dt_list[1]
-    if year < DELTA_T_BASE_YEAR:
-        year = DELTA_T_BASE_YEAR
-        month = 1
-    elif year == DELTA_T_BASE_YEAR:
-        month = max(0, month - DELTA_T_BASE_MONTH) + 1
-    elif year >= DELTA_T_BASE_YEAR + len(DELTA_T):
-        year = DELTA_T_BASE_YEAR + len(DELTA_T) - 1
-    #end if
-    if year == DELTA_T_BASE_YEAR + len(DELTA_T) - 1:
-        month = min(month, len(DELTA_T[year - DELTA_T_BASE_YEAR]))
-    #end if
-    return \
-        DELTA_T[year - DELTA_T_BASE_YEAR][month - 1]
+    if default != None:
+        return default
+    if default == 0:
+        return 0
+    if default != 0 or None:
+        if year < DELTA_T_BASE_YEAR:
+            year = DELTA_T_BASE_YEAR
+            month = 1
+        elif year == DELTA_T_BASE_YEAR:
+            month = max(0, month - DELTA_T_BASE_MONTH) + 1
+        elif year >= DELTA_T_BASE_YEAR + len(DELTA_T):
+            year = DELTA_T_BASE_YEAR + len(DELTA_T) - 1
+        #end if
+        if year == DELTA_T_BASE_YEAR + len(DELTA_T) - 1:
+            month = min(month, len(DELTA_T[year - DELTA_T_BASE_YEAR]))
+        #end if
+        return DELTA_T[year - DELTA_T_BASE_YEAR][month - 1]
           # don't bother doing any fancy interpolation
+    #end if
+    return None
 #end get_delta_t
 
-def timestamp_ymd(dt_list):
+def timestamp_ymd(dt_list, default=None):
     """
     Given date/time list returns total seconds for year, month, and day
     """
@@ -111,25 +117,27 @@ def timestamp_ymd(dt_list):
     # complicate this by rewriting C code. Too much work.
     return pytime.mktime((dt_list[0], dt_list[1], dt_list[2], 0, 0, 0, -1, -1, -1))
 
-def timestamp_hms(dt_list):
+def timestamp_hms(dt_list, default=None):
     """
     Given date/time list returns total seconds for hours, minutes, and seconds
     """
-    return dt_list[3] * 3600 + dt_list[4] * 60 + dt_list[5] + dt_list[6] / 1e6
+    secs = dt_list[3] * 3600 + dt_list[4] * 60 + dt_list[5] + dt_list[6] / 1e6
+    dt1 = get_delta_t(dt_list, default)
+    return secs + dt1
 
-def timestamp(dt_list):
+def timestamp(dt_list, default=None):
     """
     Given date/time list returns POSIX timestamp as a float
     in order to work on python 3.2
     cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py
     """
-    ymd_secs = timestamp_ymd(dt_list)
-    hmsms_secs = timestamp_hms(dt_list)
+    ymd_secs = timestamp_ymd(dt_list, default)
+    hmsms_secs = timestamp_hms(dt_list, default)
 
     # Return POSIX timestamp as float
     return ymd_secs + hmsms_secs
 
-def get_julian_day(dt_list):
+def get_julian_day(dt_list, default=None):
     """
     Given a datetime list returns the UT Julian day number
     (including fraction of a day) corresponding to
@@ -139,10 +147,10 @@ def get_julian_day(dt_list):
     """
 
     # return timestamp(dt_list) / 86400.0 + 2440587.5
-    return get_ajd(dt_list)
+    return get_ajd(dt_list, default)
 #end get_julian_solar_day
 
-def get_julian_ephemeris_day(dt_list):
+def get_julian_ephemeris_day(dt_list, default=None):
     """
     Given a datetime list  returns the TT Julian day number
     (including fraction of a day) corresponding to
@@ -150,22 +158,28 @@ def get_julian_ephemeris_day(dt_list):
     trying to adjust for pre-Gregorian dates/times seems pointless now the changeover
     happened over such wildly varying times in different regions.
     """
-    return get_delta_t(dt_list)  / 86400.0 + get_ajd(dt_list)
+    delta_t = 0.0
+    if default != None:
+        delta_t = default
+    else:
+        delta_t = get_delta_t(dt_list, default)
+
+    return delta_t  / 86400.0 + get_ajd(dt_list, default)
 #end get_julian_ephemeris_day
 
-def get_julian_century(dt_list):
+def get_julian_century(dt_list, default=None):
     """ Convert date/time list to fractional century """
-    jsd = get_julian_day(dt_list)
+    jsd = get_julian_day(dt_list, default)
     return (jsd - 2451545.0) / 36525.0
 
-def get_julian_ephemeris_century(dt_list):
+def get_julian_ephemeris_century(dt_list, default=None):
     """ Convert date/time list to fracional ephemeris century """
-    jed = get_julian_ephemeris_day(dt_list)
+    jed = get_julian_ephemeris_day(dt_list, default)
     return (jed - 2451545.0) / 36525.0
 
-def get_julian_ephemeris_millennium(dt_list):
+def get_julian_ephemeris_millennium(dt_list, default=None):
     """ Convert date/time list to fractional millennium """
-    jed = get_julian_ephemeris_day(dt_list)
+    jed = get_julian_ephemeris_day(dt_list, default)
     return (jed - 2451545.0) / 365250.0
 
 
