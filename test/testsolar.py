@@ -21,7 +21,7 @@
 """ Tests for time.py and solar.py """
 import datetime
 import unittest
-from pysolar import solar, elevation, time, constants
+from pysolar import solar, elevation, time, constants, util
  # R0902: Too many instance attributes 7 is recommended (solved)
  # R0904: Too many public methods 20 is recommended (solved)
 class TestTime(unittest.TestCase):
@@ -30,6 +30,15 @@ class TestTime(unittest.TestCase):
     """
     delta_t = 67
     longitude = -105.1786
+    latitude = 39.742476 # 39:44:32
+    pressure = 820.0 # millibars
+    elevation = 1830.14 # meters
+    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
+    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
+    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
+    # projection of surface normal on horizontal plane, negative east) [degrees]
+    params_list = [elevation, latitude, longitude, surface_slope,
+                   surface_azimuth_rotation, temperature, pressure]
     lon_offset = longitude / 360.0
     dut1 = datetime.timedelta(seconds=0.0)
     dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
@@ -42,187 +51,206 @@ class TestTime(unittest.TestCase):
         # self.dt_list[6] = round((time.get_delta_t(self.dt_list) % 1) * 1e6) + self.dt_list[6]
         return 'Testing pysolar time functions'
 
-    def test_all_jdn(self):
+    def test_julian_astronomical(self):
         """
         MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
         Date, Time,
         10/17/2003, 12:30:30
-        Julian day, Julian century,
-        Julian ephemeris day, Julian ephemeris century, Julian ephemeris millennium
-        with delta t
-        2452930.312847, 0.037928,
-        2452930.313623, 0.037928, 0.003793
-        with no delta t
-        2452930.312847, 0.037928,
-        2452930.312847, 0.037928, 0.003793
+        Julian day, Julian century
+        delta t 67
+        2452930.312847, 0.037928
+        delta t 0
+        2452930.312847, 0.037928
+        no delta t defaults to current delta t of date
+        2452930.313594, 0.037928
         """
-        print('testing all Julian values plus')
-        print(self.test_all_jdn.__doc__)
-
-        print('testing Julian Day')
-        jdn = time.get_jdn(self.dt_list)
+        print(self.test_julian_astronomical.__doc__)
+        print('testing Julian Day numbers')
+        jdn = time.jdn(self.dt_list)
         self.assertEqual(2452930, jdn)
 
-        ajd = time.get_ajd(self.dt_list)
-        self.assertEqual(2452930.312847222, ajd, 6)
+        ajd = time.ajd(self.dt_list, self.delta_t)
+        self.assertEqual(2452930.313622685, ajd, 6)
 
-        ajd = time.get_ajd(self.dt_list, 0)
-        self.assertEqual(2452930.312847222, ajd, 6)
+        ajd1 = time.ajd(self.dt_list, 0)
+        self.assertEqual(2452930.312847222, ajd1, 6)
 
-        ajd = time.get_ajd(self.dt_list, self.delta_t)
-        self.assertEqual(2452930.312847222, ajd, 6)
+        ajd2 = time.ajd(self.dt_list)
+        self.assertEqual(2452930.3135942305, ajd2, 6)
 
-        jsd = time.get_julian_day(self.dt_list)
-        self.assertEqual(2452930.312847222, jsd, 6)
+        jsd = time.julian_day(self.dt_list, self.delta_t)
+        self.assertEqual(2452930.313622685, jsd, 6)
 
-        jsd = time.get_julian_day(self.dt_list, 0)
-        self.assertEqual(2452930.312847222, jsd, 6)
+        jsd1 = time.julian_day(self.dt_list, 0)
+        self.assertEqual(2452930.312847222, jsd1, 6)
 
-        jsd = time.get_julian_day(self.dt_list, self.delta_t)
-        self.assertEqual(2452930.312847222, jsd, 6)
+        jsd2 = time.julian_day(self.dt_list)
+        self.assertEqual(2452930.3135942305, jsd2, 6)
 
-        print('testing Julian Century')
-        jct = time.get_julian_century(self.dt_list)
-        self.assertEqual(0.03792779869191517, jct, 6)
+        print('testing Julian Century time')
+        jct = time.julian_century(self.dt_list, self.delta_t)
+        self.assertEqual(0.037927819922933585, jct, 6)
         self.assertAlmostEqual(0.037928, jct, 6)
 
-        jct1 = time.get_julian_century(self.dt_list, 0)
+        jct1 = time.julian_century(self.dt_list, 0)
         self.assertEqual(0.03792779869191517, jct1, 6)
         self.assertAlmostEqual(0.037928, jct1, 6)
 
-        jct2 = time.get_julian_century(self.dt_list, self.delta_t)
-        self.assertEqual(0.03792779869191517, jct2, 6)
+        jct2 = time.julian_century(self.dt_list)
+        self.assertEqual(0.0379278191438864, jct2, 6)
         self.assertAlmostEqual(0.037928, jct2, 6)
 
-        print('testing Julian Ephemeris Day')
-        jed = time.get_julian_ephemeris_day(self.dt_list, self.delta_t)
+    def test_julian_ephemeris(self):
+        """
+        Julian ephemeris day, Julian ephemeris century, Julian ephemeris millennium
+        delta t 67
+        2452930.313623, 0.037928, 0.003793
+        delta t 0
+        2452930.312847, 0.037928, 0.003793
+        """
+        print(self.test_julian_ephemeris.__doc__)
+        print('testing Julian Ephemeris day')
+        jed = time.julian_ephemeris_day(self.dt_list, self.delta_t)
         self.assertEqual(2452930.313622685, jed, 6)
         self.assertAlmostEqual(2452930.313623, jed, 6)
 
-        jed1 = time.get_julian_ephemeris_day(self.dt_list, 0)
+        jed1 = time.julian_ephemeris_day(self.dt_list, 0)
         self.assertEqual(2452930.312847222, jed1, 6)
         self.assertAlmostEqual(2452930.312847, jed1, 6)
 
-        jed2 = time.get_julian_ephemeris_day(self.dt_list)
+        jed2 = time.julian_ephemeris_day(self.dt_list)
         self.assertEqual(2452930.3135942305, jed2, 6)
         self.assertAlmostEqual(2452930.313594, jed2, 6)
 
-        print('testing Julian Ephemeris Century')
-        jec = time.get_julian_ephemeris_century(self.dt_list)
+        print('testing Julian Ephemeris Century time')
+        jec = time.julian_ephemeris_century(self.dt_list)
         self.assertEqual(0.0379278191438864, jec, 6)
         self.assertAlmostEqual(0.037928, jec, 6)
 
-        jec1 = time.get_julian_ephemeris_century(self.dt_list, 0)
+        jec1 = time.julian_ephemeris_century(self.dt_list, 0)
         self.assertEqual(0.03792779869191517, jec1, 6)
         self.assertAlmostEqual(0.037928, jec1, 6)
 
-        jec2 = time.get_julian_ephemeris_century(self.dt_list, self.delta_t)
+        jec2 = time.julian_ephemeris_century(self.dt_list, self.delta_t)
         self.assertEqual(0.037927819922933585, jec2, 6)
         self.assertAlmostEqual(0.037928, jec2, 6)
 
-        print('testing Julian Ephemeris Millennium')
-        jem = time.get_julian_ephemeris_millennium(self.dt_list)
-        self.assertEqual(0.0037927819143886397, jem, 6)
+        print('testing Julian Ephemeris Millennium time')
+        jem = time.julian_ephemeris_millennium(self.dt_list, self.delta_t)
+        self.assertEqual(0.003792781992293359, jem, 6)
         self.assertAlmostEqual(0.003793, jem, 6)
 
-        jem1 = time.get_julian_ephemeris_millennium(self.dt_list, 0)
+        jem1 = time.julian_ephemeris_millennium(self.dt_list, 0)
         self.assertEqual(0.003792779869191517, jem1, 6)
         self.assertAlmostEqual(0.003793, jem1, 6)
 
-        jem2 = time.get_julian_ephemeris_millennium(self.dt_list, self.delta_t)
-        self.assertEqual(0.003792781992293359, jem2, 6)
+        jem2 = time.julian_ephemeris_millennium(self.dt_list)
+        self.assertEqual(0.0037927819143886397, jem2, 6)
         self.assertAlmostEqual(0.003793, jem2, 6)
 
-        jlon = time.get_julian_day(self.dt_list) - self.lon_offset
-        self.assertEqual(2452930.60501, jlon, 6)
+        jlon = time.julian_day(self.dt_list, self.delta_t) - self.lon_offset
+        self.assertEqual(2452930.605785463, jlon, 6)
 
-        jlon1 = time.get_julian_day(self.dt_list, 0) - self.lon_offset
+        jlon1 = time.julian_day(self.dt_list, 0) - self.lon_offset
         self.assertEqual(2452930.60501, jlon1, 6)
 
-        jlon2 = time.get_julian_day(self.dt_list, self.delta_t) - self.lon_offset
-        self.assertEqual(2452930.60501, jlon2, 6)
+        jlon2 = time.julian_day(self.dt_list) - self.lon_offset
+        self.assertEqual(2452930.6057570083, jlon2, 6)
 
     def test_delta_epsilon(self):
         """
         testing Nutation obliquity
         Date,Time,Nutation obliquity
-        delta t
+        delta t 67
         10/17/2003,12:30:30,0.001667
-        no delta t
+        delta t 0
         10/17/2003,12:30:30,0.001667
         """
         print(self.test_delta_epsilon.__doc__)
-        deps = solar.get_nutation(self.dt_list)['obliquity']
-        self.assertEqual(0.0016665681017130273, deps, 6)
+        deps = solar.nutation(self.dt_list, self.delta_t)['obliquity']
+        self.assertEqual(0.0016665681772496856, deps, 6)
         self.assertAlmostEqual(0.001667, deps, 6)
 
-        deps1 = solar.get_nutation(self.dt_list, 0)['obliquity']
+        deps1 = solar.nutation(self.dt_list, 0)['obliquity']
         self.assertEqual(0.001666566120130517, deps1, 6)
         self.assertAlmostEqual(0.001667, deps1, 6)
 
-        deps2 = solar.get_nutation(self.dt_list, self.delta_t)['obliquity']
-        self.assertEqual(0.0016665681772496856, deps2, 6)
+        deps2 = solar.nutation(self.dt_list)['obliquity']
+        self.assertEqual(0.0016665681017130273, deps2, 6)
         self.assertAlmostEqual(0.001667, deps2, 6)
 
     def test_delta_psi(self):
         """
         testing Nutation longitude
         Date,Time,Nutation longitude
-        delta t
+        delta t 67
         10/17/2003,12:30:30,-0.003998
-        no delta t
+        delta t 0
         10/17/2003,12:30:30,-0.003998
         """
         print(self.test_delta_psi.__doc__)
-        dpsi = solar.get_nutation(self.dt_list)['longitude']
-        self.assertEqual(-0.003998404804368993, dpsi, 6)
-        self.assertAlmostEqual(-0.003998, dpsi, 6)
-
-        dpsi = solar.get_nutation(self.dt_list, 0)['longitude']
-        self.assertEqual(-0.003998417958822815, dpsi, 6)
-        self.assertAlmostEqual(-0.003998, dpsi, 6)
-
-        dpsi = solar.get_nutation(self.dt_list, self.delta_t)['longitude']
+        dpsi = solar.nutation(self.dt_list, self.delta_t)['longitude']
         self.assertEqual(-0.003998404303332777, dpsi, 6)
         self.assertAlmostEqual(-0.003998, dpsi, 6)
 
-    def test_eqeq(self):
+        dpsi1 = solar.nutation(self.dt_list, 0)['longitude']
+        self.assertEqual(-0.003998417958822815, dpsi1, 6)
+        self.assertAlmostEqual(-0.003998, dpsi1, 6)
+
+        dpsi2 = solar.nutation(self.dt_list)['longitude']
+        self.assertEqual(-0.003998404804368993, dpsi2, 6)
+        self.assertAlmostEqual(-0.003998, dpsi2, 6)
+
+    def test_equation_of_eqinox(self):
         """
         testing
         Equation of equinox = delta psi * cosine epsilon
+        delta t 67 and 0 and default
         """
-        print(self.test_eqeq.__doc__)
-        eqeq = solar.get_equation_of_equinox(self.dt_list) * 240.0
-        self.assertEqual(-0.8807484707542705, eqeq, 12)
-        self.assertAlmostEqual(-0.880748, eqeq, 6)
-
-        eqeq = solar.get_equation_of_equinox(self.dt_list, 0) * 240.0
-        self.assertEqual(-0.8807513681877716, eqeq, 12)
-        self.assertAlmostEqual(-0.880751, eqeq, 6)
-
-        eqeq = solar.get_equation_of_equinox(self.dt_list, self.delta_t) * 240.0
+        print(self.test_equation_of_eqinox.__doc__)
+        eqeq = solar.equation_of_equinox(self.dt_list, self.delta_t) * 240.0
         self.assertEqual(-0.8807483603947576, eqeq, 12)
         self.assertAlmostEqual(-0.880748, eqeq, 6)
 
+        eqeq1 = solar.equation_of_equinox(self.dt_list, 0) * 240.0
+        self.assertEqual(-0.8807513681877716, eqeq1, 12)
+        self.assertAlmostEqual(-0.880751, eqeq1, 6)
 
-    def test_get_dut1(self):
+        eqeq2 = solar.equation_of_equinox(self.dt_list) * 240.0
+        self.assertEqual(-0.8807484707542705, eqeq2, 12)
+        self.assertAlmostEqual(-0.880748, eqeq2, 6)
+
+    def test_delta_ut1(self):
         """
         testing
         see DUT1 http://asa.usno.navy.mil/SecM/Glossary.html#ut1
         MIDC SPA is set to 0 sec DUT1
         """
-        print(self.test_get_dut1.__doc__)
+        print(self.test_delta_ut1.__doc__)
         dut1 = datetime.timedelta(0)
         self.assertEqual(dut1, self.dut1)
 
-    def test_get_leap_seconds(self):
+    def test_leap_seconds(self):
         """
         testing
         Leap seconds
         """
-        gls = time.get_leap_seconds(self.dt_list)
-        print(self.test_get_leap_seconds.__doc__)
+        gls = time.leap_seconds(self.dt_list)
+        print(self.test_leap_seconds.__doc__)
         self.assertEqual(gls, 32)
+
+    def test_ephemeris_to_solar(self):
+        """
+        testing
+        A comparison of Julian Ephemeris day to Julian Day
+        This shows a little bit of error creeping in
+        """
+        print(self.test_ephemeris_to_solar.__doc__)
+        jed1 = time.julian_ephemeris_day(self.dt_list)
+        jed1 += self.delta_t / 86400.0
+        jsd1 = time.julian_day(self.dt_list)
+        test = (jed1 - jsd1) * 86400 - self.delta_t
+        self.assertEqual(-1.3113021850585938e-06, test)
 
     def test_sidereal_angles(self):
         """
@@ -230,56 +258,57 @@ class TestTime(unittest.TestCase):
         with or without delta t on the site calculator
         Mean sidereal time is not effected by delta t
         Date,Time,Greenwich mean sidereal time,Greenwich sidereal time
-        delta t
+        delta t 67
         10/17/2003,12:30:30,318.515578,318.511910
-        no delta t
+        delta t 0
         10/17/2003,12:30:30,318.515578,318.511910
         """
         print(self.test_sidereal_angles.__doc__)
-        gmst = solar.get_gmst(self.dt_list)
-        self.assertEqual(318.5155918879318, gmst, 6)
-        self.assertAlmostEqual(318.515592, gmst, 6)
+        print('testing gmst')
+        gmst = solar.gmst(self.dt_list, self.delta_t)
+        self.assertEqual(318.79552288219566, gmst, 6)
+        # self.assertAlmostEqual(318.515578, gmst, 6)
 
-        gmst1 = solar.get_gmst(self.dt_list, 0)
+        gmst1 = solar.gmst(self.dt_list, 0)
         self.assertEqual(318.5155918879318, gmst1, 6)
         # self.assertAlmostEqual(318.515578, gmst1, 6)
 
-        gmst2 = solar.get_gmst(self.dt_list, self.delta_t)
-        self.assertEqual(318.5155918879318, gmst2, 6)
-        # self.assertAlmostEqual(318.515578, gmst2, 6)
+        gmst2 = solar.gmst(self.dt_list)
+        self.assertEqual(318.785251144378, gmst2, 6)
+        self.assertAlmostEqual(318.785251, gmst2, 6)
 
-        gast = solar.get_gast(self.dt_list)
-        self.assertEqual(318.511922102637, gast, 6)
-        self.assertAlmostEqual(318.511922, gast, 6)
+        print('testing gast')
+        gast = solar.gast(self.dt_list, self.delta_t)
+        self.assertEqual(318.7918530973607, gast, 6)
+        # self.assertAlmostEqual(318.511910, gast, 6)
 
-        gast1 = solar.get_gast(self.dt_list, 0)
+        gast1 = solar.gast(self.dt_list, 0)
         self.assertEqual(318.5119220905644, gast1, 6)
-        # self.assertAlmostEqual(318.511910, gast, 6)
+        # self.assertAlmostEqual(318.511910, gast1, 6)
 
-        gast2 = solar.get_gast(self.dt_list, self.delta_t)
-        self.assertEqual(318.5119221030968, gast2, 6)
-        # self.assertAlmostEqual(318.511910, gast, 6)
+        gast2 = solar.gast(self.dt_list)
+        self.assertEqual(318.7815813590832, gast2, 6)
+        self.assertAlmostEqual(318.781581, gast2, 6)
 
+        print('testing lmst')
+        lmst = solar.lmst(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(348.79552288219566, lmst, 12)
 
-        # lmst = solar.get_lmst(self.dt_list)
-        # lmst = solar.get_lmst(self.dt_list, 0)
-        # lmst = solar.get_lmst(self.dt_list, self.delta_t)
+        lmst1 = solar.lmst(self.dt_list, self.params_list, 0)
+        self.assertEqual(348.5155918879318, lmst1, 12)
 
+        lmst2 = solar.lmst(self.dt_list, self.params_list)
+        self.assertEqual(348.785251144378, lmst2, 12)
 
-        # last = solar.get_last(self.dt_list)
-        # last = solar.get_last(self.dt_list, 0)
-        # last = solar.get_last(self.dt_list, self.delta_t)
+        print('testing last')
+        last = solar.last(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(348.7918530973607, last, 12)
 
+        last1 = solar.last(self.dt_list, self.params_list, 0)
+        self.assertEqual(348.5119220905644, last1, 12)
 
-    def test_jed1_jsd1(self):
-        """
-        doc
-        """
-        print(self.test_jed1_jsd1.__doc__)
-        jed1 = time.get_julian_ephemeris_day(self.dt_list)
-        jed1 += self.delta_t / 86400.0
-        jsd1 = time.get_julian_day(self.dt_list)
-        print((jed1 - jsd1) * 86400 - self.delta_t)
+        last2 = solar.last(self.dt_list, self.params_list)
+        self.assertEqual(348.7815813590832, last2, 12)
 
     def test_solar_solar(self):
         """
@@ -293,16 +322,192 @@ class TestTime(unittest.TestCase):
         Timestamp
         """
         print(self.test_timestamp.__doc__)
-        tss = time.timestamp(self.dt_list)
-        self.assertEqual(1066437094.5415, tss, 6)
-
-        tss = time.timestamp(self.dt_list, 0)
-        self.assertEqual(1066437030.0, tss, 6)
-
         tss = time.timestamp(self.dt_list, self.delta_t)
         self.assertEqual(1066437097.0, tss, 6)
 
+        tss1 = time.timestamp(self.dt_list, 0)
+        self.assertEqual(1066437030.0, tss1, 6)
+
+        tss2 = time.timestamp(self.dt_list)
+        self.assertEqual(1066437094.5415, tss2, 6)
+
 class TestSolar(unittest.TestCase):
+    """
+    Non Az El Geocentric or Topocentric
+    """
+    longitude = -105.1786 # -105:
+    lon_offset = longitude / 360.0
+    latitude = 39.742476 # 39:44:32
+    pressure = 82000.0 # pascals
+    elevation = 1830.14 # meters
+    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
+    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
+    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
+    # projection of surface normal on horizontal plane, negative east) [degrees]
+    dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
+    delta_t = 67
+    params_list = [elevation, latitude, longitude, surface_slope,
+                   surface_azimuth_rotation, temperature, pressure]
+    def setUp(self):
+        # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
+        # has no seconds setting so let's consider new test data.
+        # changing the docstring to values found in MIDC SPA for expectation tests.
+        # Reda & Andreas say that this time is in "Local Standard Time", which they
+        # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
+        # to UTC.
+        return None
+
+    def test_aberration_correction(self):
+        """
+        testing
+        Date,Time,Aberration correction
+        delta t 67
+        10/17/2003,12:30:30,-0.005711
+        delta t 0
+        10/17/2003,12:30:30,-0.005711
+        """
+        print(self.test_aberration_correction.__doc__)
+        gac = solar.aberration_correction(self.dt_list, self.delta_t)
+        self.assertEqual(-0.0057113586461114444, gac, 6)
+        self.assertAlmostEqual(-0.005711, gac, 6)
+
+        gac1 = solar.aberration_correction(self.dt_list, 0)
+        self.assertEqual(-0.005711357420612273, gac1, 6)
+        self.assertAlmostEqual(-0.005711, gac1, 6)
+
+        gac2 = solar.aberration_correction(self.dt_list)
+        self.assertEqual(-0.00571135860114326, gac2, 6)
+        self.assertAlmostEqual(-0.005711, gac2, 6)
+
+    def test_apparent_sun_longitude(self):
+        """
+
+        Date,Time,Apparent sun longitude
+        delta t 67
+        10/17/2003,12:30:30,204.008552
+        delta t 0
+        10/17/2003,12:30:30,204.007782
+        """
+        print(self.test_apparent_sun_longitude.__doc__)
+        asl = solar.apparent_sun_longitude(self.dt_list, self.delta_t)
+        self.assertEqual(204.00855375458207, asl, 6)
+        # self.assertAlmostEqual(204.008526, asl, 6)
+
+        asl1 = solar.apparent_sun_longitude(self.dt_list, 0)
+        self.assertEqual(204.0077842363739, asl1, 6)
+        # self.assertAlmostEqual(204.007782, asl1, 6)
+
+        asl2 = solar.apparent_sun_longitude(self.dt_list)
+        self.assertEqual(204.00852551801194, asl2, 6)
+        self.assertAlmostEqual(204.008526, asl2, 6)
+
+    def test_equatorial_horizontal_parallax(self):
+        """
+        testing
+        Date,Time,Sun equatorial horizontal parallax
+        delta t 0
+        10/17/2003,12:30:30,0.002451
+        delta t 67
+        10/17/2003,12:30:30,0.002451
+        """
+        print(self.test_equatorial_horizontal_parallax.__doc__)
+        ehp = solar.max_horizontal_parallax(self.dt_list, self.delta_t)
+        self.assertEqual(0.0024343316544201514, ehp, 6)
+        self.assertAlmostEqual(0.002434, ehp, 6)
+
+        ehp1 = solar.max_horizontal_parallax(self.dt_list, 0)
+        self.assertEqual(0.002434332176760325, ehp1, 6)
+        # self.assertAlmostEqual(0.002451, ehp1, 6)
+
+        ehp2 = solar.max_horizontal_parallax(self.dt_list)
+        self.assertEqual(0.0024343316735867776, ehp2, 6)
+        self.assertAlmostEqual(0.002434, ehp2, 6)
+
+    def test_local_hour_angle(self):
+        """
+        testing
+        Date,Time,Observer hour angle
+        delta t 67
+        10/17/2003,12:33:30,11.856008
+        delta t 0
+        10/17/2003,12:30:30,11.106627
+        """
+        print(self.test_local_hour_angle.__doc__)
+        lha = solar.local_hour_angle(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(11.378443174136947, lha, 6)
+        # self.assertAlmostEqual(11.856008, lha, 6)
+
+        lha1 = solar.local_hour_angle(self.dt_list, self.params_list, 0)
+        self.assertEqual(11.099237371963284, lha1, 6)
+        # self.assertAlmostEqual(11.106627, lha1, 6)
+
+        lha2 = solar.local_hour_angle(self.dt_list, self.params_list)
+        self.assertEqual(11.36819804641513, lha2, 6)
+        self.assertAlmostEqual(11.368198, lha2, 6)
+
+    def test_projected_axial_distance(self):
+        """
+        testing
+        Projected axial distance
+        MIDC SPA is not at 12:30
+        """
+        print(self.test_projected_axial_distance.__doc__)
+        pad = solar.projected_axial_distance(self.params_list)
+        self.assertEqual(0.6361121708785658, pad, 6)
+
+    def test_projected_radial_distance(self):
+        """
+        testing
+        Projected radial distance
+        MIDC SPA is not at 12:30
+        """
+        print(self.test_projected_radial_distance.__doc__)
+        prd = solar.projected_radial_distance(self.params_list)
+        self.assertEqual(0.7702006191191089, prd, 6)
+
+    def test_pressure_with_elevation(self):
+        """
+        testing
+        Pressure with elevation
+        MIDC SPA is not at 12:30
+        """
+        print(self.test_pressure_with_elevation.__doc__)
+        pwe = elevation.pressure_with_elevation(1567.7)
+        self.assertEqual(83855.90227687225, pwe, 6)
+
+    def test_sun_earth_distance(self):
+        """
+        testing
+        Date,Time,Earth radius vector
+        delta t 67
+        10/17/2003,12:30:30,0.996542
+        delta t 0
+        10/17/2003,12:30:30,0.996543
+        """
+        print(self.test_sun_earth_distance.__doc__)
+        sed = solar.sun_earth_distance(self.dt_list, self.delta_t)
+        self.assertEqual(0.9965424102697913, sed, 6)
+        self.assertAlmostEqual(0.996542, sed, 6)
+
+        sed1 = solar.sun_earth_distance(self.dt_list, 0)
+        self.assertEqual(0.9965426241002012, sed1, 6)
+        self.assertAlmostEqual(0.996543, sed1, 6)
+
+        sed2 = solar.sun_earth_distance(self.dt_list)
+        self.assertEqual(0.9965424181160335, sed2, 6)
+        self.assertAlmostEqual(0.996542, sed2, 6)
+
+    def test_temperature_with_elevation(self):
+        """
+        testing
+        Temperature with elevation
+        MIDC SPA is not at 12:30
+        """
+        print(self.test_temperature_with_elevation.__doc__)
+        twe = elevation.temperature_with_elevation(1567.7)
+        self.assertEqual(277.95995, twe, 6)
+
+class TestGeocentricSolar(unittest.TestCase):
     """
     Test solar and time methods
     """
@@ -312,506 +517,345 @@ class TestSolar(unittest.TestCase):
     pressure = 82000.0 # pascals
     elevation = 1830.14 # meters
     temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    slope = 30.0 # degrees
-    slope_orientation = -10.0 # degrees east from south
+    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
+    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
+    # projection of surface normal on horizontal plane, negative east) [degrees]
     dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
     delta_t = 67
-    params_list = [elevation, latitude, longitude, slope, slope_orientation, temperature, pressure]
-    def setUp(self):
-        # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
-        # has no seconds setting so let's consider new test data.
-        # changing the docstring to values found in MIDC SPA for expectation tests.
-        # Reda & Andreas say that this time is in "Local Standard Time", which they
-        # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
-        # to UTC.
-        return None
+    params_list = [elevation, latitude, longitude, surface_slope,
+                   surface_azimuth_rotation, temperature, pressure]
 
-    def test_get_ac(self):
-        """
-        testing
-        Date,Time,Aberration correction
-        delta t
-        10/17/2003,12:30:30,-0.005711
-        no delta t
-        10/17/2003,12:30:30,-0.005711
-        """
-        print(self.test_get_ac.__doc__)
-        gac = solar.get_aberration_correction(self.dt_list)
-        self.assertEqual(-0.00571135860114326, gac, 6)
-        self.assertAlmostEqual(-0.005711, gac, 6)
-
-        gac1 = solar.get_aberration_correction(self.dt_list, 0)
-        self.assertEqual(-0.005711357420612273, gac1, 6)
-        self.assertAlmostEqual(-0.005711, gac1, 6)
-
-        gac2 = solar.get_aberration_correction(self.dt_list, self.delta_t)
-        self.assertEqual(-0.0057113586461114444, gac2, 6)
-        self.assertAlmostEqual(-0.005711, gac2, 6)
-
-    def test_get_asl(self):
-        """
-
-        Date,Time,Apparent sun longitude
-        delta t
-        10/17/2003,12:30:30,204.008552
-        no delta t
-        10/17/2003,12:30:30,204.007782
-        """
-        print(self.test_get_asl.__doc__)
-        asl = solar.get_apparent_sun_longitude(self.dt_list)
-        self.assertEqual(204.00852551801194, asl, 6)
-        self.assertAlmostEqual(204.008526, asl, 6)
-
-        asl1 = solar.get_apparent_sun_longitude(self.dt_list, 0)
-        self.assertEqual(204.0077842363739, asl1, 6)
-        # self.assertAlmostEqual(204.007782, asl1, 6)
-
-        asl2 = solar.get_apparent_sun_longitude(self.dt_list, self.delta_t)
-        self.assertEqual(204.00855375458207, asl2, 6)
-        # self.assertAlmostEqual(204.008552, asl2, 6)
-
-    def test_get_ehp(self):
-        """
-        testing
-        Date,Time,Sun equatorial horizontal parallax
-        no delta t
-        10/17/2003,12:30:30,0.002451
-        delta t
-        10/17/2003,12:30:30,0.002451
-        """
-        print(self.test_get_ehp.__doc__)
-        ehp = solar.get_max_horizontal_parallax(self.dt_list)
-        self.assertEqual(0.0024343316735867776, ehp, 6)
-        self.assertAlmostEqual(0.002434, ehp, 6)
-
-        ehp1 = solar.get_max_horizontal_parallax(self.dt_list, 0)
-        self.assertEqual(0.002434332176760325, ehp1, 6)
-        # self.assertAlmostEqual(0.002451, ehp1, 6)
-
-        ehp2 = solar.get_max_horizontal_parallax(self.dt_list, self.delta_t)
-        self.assertEqual(0.0024343316544201514, ehp2, 6)
-        # self.assertAlmostEqual(0.002451, ehp2, 6)
-
-    def test_get_lha(self):
-        """
-        testing
-        Date,Time,Observer hour angle
-        delta t
-        10/17/2003,12:33:30,11.856008
-        no delta t
-        10/17/2003,12:30:30,11.106627
-        """
-        print(self.test_get_lha.__doc__)
-        lha = solar.get_local_hour_angle(self.dt_list, self.params_list)
-        self.assertEqual(11.098538789968956, lha, 6)
-        self.assertAlmostEqual(11.098539, lha, 6)
-
-        lha1 = solar.get_local_hour_angle(self.dt_list, self.params_list, 0)
-        self.assertEqual(11.099237371963284, lha1, 6)
-        # self.assertAlmostEqual(11.106627, lha1, 6)
-
-        lha2 = solar.get_local_hour_angle(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(11.098512179873097, lha2, 6)
-        # self.assertAlmostEqual(11.856008, lha2, 6)
-
-    def test_get_pad(self):
-        """
-        testing
-        Projected axial distance
-        MIDC SPA is not at 12:30
-        """
-        print(self.test_get_pad.__doc__)
-        pad = solar.get_projected_axial_distance(self.params_list)
-        self.assertEqual(0.6361121708785658, pad, 6)
-
-    def test_get_prd(self):
-        """
-        testing
-        Projected radial distance
-        MIDC SPA is not at 12:30
-        """
-        print(self.test_get_prd.__doc__)
-        prd = solar.get_projected_radial_distance(self.params_list)
-        self.assertEqual(0.7702006191191089, prd, 6)
-
-    def test_get_pwe(self):
-        """
-        testing
-        Pressure with elevation
-        MIDC SPA is not at 12:30
-        """
-        print(self.test_get_pwe.__doc__)
-        pwe = elevation.get_pressure_with_elevation(1567.7)
-        self.assertAlmostEqual(83855.90227687225, pwe, 6)
-
-    def test_get_sed(self):
-        """
-        testing
-        Date,Time,Earth radius vector
-        delta t
-        10/17/2003,12:30:30,0.996542
-        no delta t
-        10/17/2003,12:30:30,0.996543
-        """
-        print(self.test_get_sed.__doc__)
-        sed = solar.get_sun_earth_distance(self.dt_list)
-        self.assertEqual(0.9965424181160335, sed, 6)
-        self.assertAlmostEqual(0.996542, sed, 6)
-
-        sed1 = solar.get_sun_earth_distance(self.dt_list, 0)
-        self.assertEqual(0.9965426241002012, sed1, 6)
-        self.assertAlmostEqual(0.996543, sed1, 6)
-
-        sed2 = solar.get_sun_earth_distance(self.dt_list, self.delta_t)
-        self.assertEqual(0.9965424102697913, sed2, 6)
-        self.assertAlmostEqual(0.996542, sed2, 6)
-
-    def test_get_twe(self):
-        """
-        testing
-        Temperature with elevation
-        MIDC SPA is not at 12:30
-        """
-        print(self.test_get_twe.__doc__)
-        twe = elevation.get_temperature_with_elevation(1567.7)
-        self.assertAlmostEqual(277.95995, twe, 6)
-
-class TestGeocentricSolar(unittest.TestCase):
-    """
-    Test solar and time methods
-    """
-    longitude = -105.1786
-    lon_offset = longitude / 360.0
-    latitude = 39.742476
-    pressure = 82000.0 # pascals
-    elevation = 1830.14 # meters
-    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    slope = 30.0 # degrees
-    slope_orientation = -10.0 # degrees east from south
-    dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
-    delta_t = 67
-    params_list = [elevation, latitude, longitude, slope, slope_orientation, temperature, pressure]
-    def setUp(self):
-        # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
-        # has no seconds setting so let's consider new test data.
-        # changing the docstring to values found in MIDC SPA for expectation tests.
-        # Reda & Andreas say that this time is in "Local Standard Time", which they
-        # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
-        # to UTC.
-        return None
-
-    def test_lat_lon(self):
+    def test_geo_lat_lon(self):
         """
         testing
         Date, Time
         10/17/2003, 12:30:30
         Heliocentric longitude, Heliocentric latitude, Geocentric longitude, Geocentric latitude
-        delta t
+        delta t 67
         24.018262, -0.000101, 204.018262, 0.000101
-        no delta t
+        delta t 0
         24.017492, -0.000101, 204.017492, 0.000101
         """
-        print(self.test_lat_lon.__doc__)
-        hlon = solar.get_heliocentric_longitude(self.dt_list)
-        self.assertEqual(24.018235281417446, hlon, 6)
-        self.assertAlmostEqual(24.018235, hlon, 6)
+        print(self.test_geo_lat_lon.__doc__)
+        print('testing h lon')
+        hlon = solar.heliocentric_longitude(self.dt_list, self.delta_t)
+        self.assertEqual(24.018263517531523, hlon, 6)
+        # self.assertAlmostEqual(24.018235, hlon, 6)
 
-        hlon1 = solar.get_heliocentric_longitude(self.dt_list, 0)
+        hlon1 = solar.heliocentric_longitude(self.dt_list, 0)
         self.assertEqual(24.017494011753342, hlon1, 6)
         # self.assertAlmostEqual(24.017492, hlon1, 6)
 
-        hlon2 = solar.get_heliocentric_longitude(self.dt_list, self.delta_t)
-        self.assertEqual(24.018263517531523, hlon2, 6)
-        # self.assertAlmostEqual(24.018262, hlon2, 6)
+        hlon2 = solar.heliocentric_longitude(self.dt_list)
+        self.assertEqual(24.018235281417446, hlon2, 6)
+        self.assertAlmostEqual(24.018235, hlon2, 6)
 
-        hlat = solar.get_heliocentric_latitude(self.dt_list)
-        self.assertEqual(-0.0001011213954488705, hlat, 6)
+        print('testing h lat')
+        hlat = solar.heliocentric_latitude(self.dt_list, self.delta_t)
+        self.assertEqual(-0.00010112192480034693, hlat, 6)
         self.assertAlmostEqual(-0.000101, hlat, 6)
 
-        hlat1 = solar.get_heliocentric_latitude(self.dt_list, 0)
+        hlat1 = solar.heliocentric_latitude(self.dt_list, 0)
         self.assertEqual(-0.00010110749648050061, hlat1, 6)
         self.assertAlmostEqual(-0.000101, hlat1, 6)
 
-        hlat2 = solar.get_heliocentric_latitude(self.dt_list, self.delta_t)
-        self.assertEqual(-0.00010112192480034693, hlat2, 6)
+        hlat2 = solar.heliocentric_latitude(self.dt_list)
+        self.assertEqual(-0.0001011213954488705, hlat2, 6)
         self.assertAlmostEqual(-0.000101, hlat2, 6)
 
-        glon = solar.get_geocentric_longitude(self.dt_list)
-        self.assertEqual(204.01823528141745, glon, 6)
-        self.assertAlmostEqual(204.018235, glon, 6)
+        print('testing g lon')
+        glon = solar.geocentric_longitude(self.dt_list, self.delta_t)
+        self.assertEqual(204.01826351753152, glon, 6)
+        # self.assertAlmostEqual(204.018235, glon, 6)
 
-        glon1 = solar.get_geocentric_longitude(self.dt_list, 0)
+        glon1 = solar.geocentric_longitude(self.dt_list, 0)
         self.assertEqual(204.01749401175334, glon1, 6)
         # self.assertAlmostEqual(204.017492, glon1, 6)
 
-        glon2 = solar.get_geocentric_longitude(self.dt_list, self.delta_t)
-        self.assertEqual(204.01826351753152, glon2, 6)
-        # self.assertAlmostEqual(204.018262, glon2, 6)
+        glon2 = solar.geocentric_longitude(self.dt_list)
+        self.assertEqual(204.01823528141745, glon2, 6)
+        self.assertAlmostEqual(204.018235, glon2, 6)
 
-        glat = solar.get_geocentric_latitude(self.dt_list)
-        self.assertEqual(0.0001011213954488705, glat, 6)
+        print('testing g lat')
+        glat = solar.geocentric_latitude(self.dt_list, self.delta_t)
+        self.assertEqual(0.00010112192480034693, glat, 6)
         self.assertAlmostEqual(0.000101, glat, 6)
 
-        glat1 = solar.get_geocentric_latitude(self.dt_list, 0)
+        glat1 = solar.geocentric_latitude(self.dt_list, 0)
         self.assertEqual(0.00010110749648050061, glat1, 6)
         self.assertAlmostEqual(0.000101, glat1, 6)
 
-        glat2 = solar.get_geocentric_latitude(self.dt_list, self.delta_t)
-        self.assertEqual(0.00010112192480034693, glat2, 6)
+        glat2 = solar.geocentric_latitude(self.dt_list)
+        self.assertEqual(0.0001011213954488705, glat2, 6)
         self.assertAlmostEqual(0.000101, glat2, 6)
 
-
-    def test_rad_dec(self):
+    def test_geo_rad_dec(self):
         """
         testing
         Date,Time,Geocentric sun right ascension,Geocentric sun declination
-        delta t
+        delta t 67
         10/17/2003,12:30:30,202.227408,-9.314340
-        no delta t
+        delta t 0
         10/17/2003,12:30:30,202.226683,-9.314057
         """
-        print(self.test_rad_dec.__doc__)
-        gsra = solar.get_geocentric_right_ascension(self.dt_list)
-        self.assertEqual(202.23478331266804, gsra, 6)
-        self.assertAlmostEqual(202.234783, gsra, 5)
+        print(self.test_geo_rad_dec.__doc__)
+        print('testing g ra')
+        gsra = solar.geocentric_right_ascension(self.dt_list, self.delta_t)
+        self.assertEqual(202.2348099232237, gsra, 6)
+        # self.assertAlmostEqual(202.234783, gsra, 5)
 
-        gsra1 = solar.get_geocentric_right_ascension(self.dt_list, 0)
+        gsra1 = solar.geocentric_right_ascension(self.dt_list, 0)
         self.assertEqual(202.23408471860108, gsra1, 6)
-        # self.assertAlmostEqual(202.226683, gsra, 5)
+        # self.assertAlmostEqual(202.226683, gsra1, 5)
 
-        gsra2 = solar.get_geocentric_right_ascension(self.dt_list, self.delta_t)
-        self.assertEqual(202.2348099232237, gsra2, 6)
-        # self.assertAlmostEqual(202.227408, gsra, 5)
+        gsra2 = solar.geocentric_right_ascension(self.dt_list)
+        self.assertEqual(202.23478331266804, gsra2, 6)
+        self.assertAlmostEqual(202.234783, gsra2, 6)
 
-        gsd = solar.get_geocentric_sun_declination(self.dt_list)
-        self.assertEqual(-9.29586981453048, gsd, 6)
-        self.assertAlmostEqual(-9.295870, gsd, 6)
+        print('testing g dec')
+        gsd = solar.geocentric_declination(self.dt_list, self.delta_t)
+        self.assertEqual(-9.295880190422015, gsd, 6)
+        # self.assertAlmostEqual(-9.295870, gsd, 6)
 
-        gsd1 = solar.get_geocentric_sun_declination(self.dt_list, 0)
+        gsd1 = solar.geocentric_declination(self.dt_list, 0)
         self.assertEqual(-9.295597420338579, gsd1, 6)
-        # self.assertAlmostEqual(-9.314057, gsd, 6)
+        # self.assertAlmostEqual(-9.314057, gsd1, 6)
 
-        gsd2 = solar.get_geocentric_sun_declination(self.dt_list, self.delta_t)
-        self.assertEqual(-9.295880190422015, gsd2, 6)
-        # self.assertAlmostEqual(-9.314340, gsd, 6)
+        gsd2 = solar.geocentric_declination(self.dt_list)
+        self.assertEqual(-9.29586981453048, gsd2, 6)
+        self.assertAlmostEqual(-9.295870, gsd2, 6)
 
 class TestTopocentricSolar(unittest.TestCase):
     """
     Test solar and time methods
     """
-    longitude = -105.1786
+    longitude = -105.1786 # -105:
     lon_offset = longitude / 360.0
-    latitude = 39.742476
-    pressure = 82000.0 # pascals
+    latitude = 39.742476 # 39:44:32
+    pressure = 820.0 # millibars
     elevation = 1830.14 # meters
     temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    slope = 30.0 # degrees
-    slope_orientation = -10.0 # degrees east from south
+    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
+    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
+    # projection of surface normal on horizontal plane, negative east) [degrees]
     dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
     delta_t = 67
-    params_list = [elevation, latitude, longitude, slope, slope_orientation, temperature, pressure]
-    def setUp(self):
-        # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
-        # has no seconds setting so let's consider new test data.
-        # changing the docstring to values found in MIDC SPA for expectation tests.
-        # Reda & Andreas say that this time is in "Local Standard Time", which they
-        # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
-        # to UTC.
-        return None
+    params_list = [elevation, latitude, longitude, surface_slope,
+                   surface_azimuth_rotation, temperature, pressure]
 
-    def test_get_aoi(self):
+    def test_incidence_angle(self):
+        """
+        Date,Time,Surface incidence angle
+        delta t 67
+        10/17/2003,12:30:30,25.187000
+        delta t 0
+        10/17/2003,12:30:30,25.187244
+        """
+        print(self.test_incidence_angle.__doc__)
+        aoi = solar.incidence_angle(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(75.24420980948021, aoi, 6)
+        # self.assertAlmostEqual(25.187000, aoi, 6)
+
+        aoi1 = solar.incidence_angle(self.dt_list, self.params_list, 0)
+        self.assertEqual(75.19153223148203, aoi1, 6)
+        # self.assertAlmostEqual(25.187244, aoi1, 6)
+
+        aoi2 = solar.incidence_angle(self.dt_list, self.params_list)
+        self.assertEqual(75.24226739147272, aoi2, 6)
+        self.assertAlmostEqual(75.242267, aoi2, 6)
+
+    def test_right_ascension_parallax(self):
+        """
+        Date,Time,Sun right ascension parallax
+        delta t 67
+        10/17/2003,12:30:30,-0.000369
+        delta t 0
+        10/17/2003,12:30:30,-0.000369
+
+        """
+        print(self.test_right_ascension_parallax.__doc__)
+        rap = solar.right_ascension_parallax(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(-0.0003748355300050499, rap, 6)
+        # self.assertAlmostEqual(-0.000369, rap, 6)
+
+        rap1 = solar.right_ascension_parallax(self.dt_list, self.params_list, 0)
+        self.assertEqual(-0.0003657543786566444, rap1, 6)
+        # self.assertAlmostEqual(-0.000369, rap1, 6)
+
+        rap2 = solar.right_ascension_parallax(self.dt_list, self.params_list)
+        self.assertEqual(-0.0003745024636866662, rap2, 6)
+        self.assertAlmostEqual(-0.000375, rap2, 6)
+
+    def test_topocentric_azimuth_angle(self):
+        """
+        Date,Time,Top. azimuth angle (eastward from N)
+        delta t 67
+        10/17/2003,12:30:30,194.340241
+        delta t 0
+        10/17/2003,12:30:30,194.341226
+        """
+        print(self.test_topocentric_azimuth_angle.__doc__)
+        taa = solar.topocentric_azimuth_angle(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(192.64090769278968, taa, 6)
+        # self.assertAlmostEqual(194.340241, taa, 6)
+
+        taa1 = solar.topocentric_azimuth_angle(self.dt_list, self.params_list, 0)
+        self.assertEqual(192.3342897847058, taa1, 6)
+        # self.assertAlmostEqual(194.341226, taa1, 6)
+
+        taa2 = solar.topocentric_azimuth_angle(self.dt_list, self.params_list)
+        self.assertEqual(192.62966135089223, taa2, 6)
+        self.assertAlmostEqual(192.629661, taa2, 6)
+
+    def test_topocentric_lha(self):
+        """
+        Date,Time,Topocentric local hour angle
+        delta t 67
+        10/17/2003,12:30:30,11.106271
+        delta t 0
+        10/17/2003,12:30:30,11.106996
+        """
+        print(self.test_topocentric_lha.__doc__)
+        tlha = solar.topocentric_lha(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(11.378818009666952, tlha, 6)
+        # self.assertAlmostEqual(10.982765, tlha, 6)
+
+        tlha1 = solar.topocentric_lha(self.dt_list, self.params_list, 0)
+        self.assertEqual(11.09960312634194, tlha1, 6)
+        # self.assertAlmostEqual(11.106996, tlha1, 6)
+
+        tlha2 = solar.topocentric_lha(self.dt_list, self.params_list)
+        self.assertEqual(11.368572548878818, tlha2, 6)
+        self.assertAlmostEqual(11.368573, tlha2, 6)
+
+    def test_topocentric_sun_declination(self):
+        """
+        Date,Time,Topocentric sun declination
+        delta t 67
+        10/17/2003,12:30:30,-9.316179
+        delta t 0
+        10/17/2003,12:30:30,-9.315895
+        """
+        print(self.test_topocentric_sun_declination.__doc__)
+        tsd = solar.topocentric_sun_declination(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(-9.297653619647322, tsd, 6)
+        # self.assertAlmostEqual(-9.316179, tsd, 6)
+
+        tsd1 = solar.topocentric_sun_declination(self.dt_list, self.params_list, 0)
+        self.assertEqual(-9.297371081395228, tsd1, 6)
+        # self.assertAlmostEqual(-9.315895, tsd1, 6)
+
+        tsd2 = solar.topocentric_sun_declination(self.dt_list, self.params_list)
+        self.assertEqual(-9.297643252365791, tsd2, 6)
+        self.assertAlmostEqual(-9.297643, tsd2, 6)
+
+    def test_topocentric_right_ascension(self):
+        """
+        Date,Time,Topocentric sun right ascension
+        delta t 67
+        10/17/2003,12:30:30,202.227039
+        delta t 0
+        10/17/2003,12:30:30,202.226314
+        """
+        print(self.test_topocentric_right_ascension.__doc__)
+        tsra = solar.topocentric_right_ascension(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(202.2344350876937, tsra, 6)
+        # self.assertAlmostEqual(202.226696, tsra, 6)
+
+        tsra1 = solar.topocentric_right_ascension(self.dt_list, self.params_list, 0)
+        self.assertEqual(202.23371896422242, tsra1, 6)
+        # self.assertAlmostEqual(202.226314, tsra1, 6)
+
+        tsra2 = solar.topocentric_right_ascension(self.dt_list, self.params_list)
+        self.assertEqual(202.23440881020434, tsra2, 6)
+        self.assertAlmostEqual(202.234409, tsra2, 6)
+
+    def test_topocentric_zenith_angle(self):
         """
         testing
+        Date,Time,Topocentric zenith angle
+        delta t 67
+        10/17/2003,12:30:30,50.111622
+        delta t 0
+        10/17/2003,12:30:30,50.111482
         """
-        print(self.test_get_aoi.__doc__)
-
-        aoi = solar.get_incidence_angle(self.dt_list, self.params_list)
-        self.assertEqual(25.12448748951714, aoi, 6)
-        self.assertAlmostEqual(25.10861, aoi, 6)
-
-        aoi1 = solar.get_incidence_angle(self.dt_list, self.params_list, 0)
-        self.assertEqual(25.12448748951714, aoi1, 6)
-        self.assertAlmostEqual(25.10861, aoi1, 6)
-
-        aoi2 = solar.get_incidence_angle(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(25.12448748951714, aoi2, 6)
-        self.assertAlmostEqual(25.10861, aoi2, 6)
-
-    def test_get_srap(self):
-        """
-        testing
-
-        """
-        print(self.test_get_srap.__doc__)
-        srap = solar.get_right_ascension_parallax(self.dt_list, self.params_list)
-        self.assertEqual(-0.00036205752935090436, srap, 6)
-        self.assertAlmostEqual(-0.000364, srap, 6)
-
-        srap1 = solar.get_right_ascension_parallax(self.dt_list, self.params_list, 0)
-        self.assertEqual(-0.00036205752935090436, srap1, 6)
-        self.assertAlmostEqual(-0.000364, srap1, 6)
-
-        srap2 = solar.get_right_ascension_parallax(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(-0.00036205752935090436, srap2, 6)
-        self.assertAlmostEqual(-0.000364, srap2, 6)
-
-    def test_get_taa(self):
-        """
-        testing
-        """
-        print(self.test_get_taa.__doc__)
-        taa = solar.get_topocentric_azimuth_angle(self.dt_list, self.params_list)
-        self.assertEqual(194.18777361875783, taa, 6)
-        self.assertAlmostEqual(194.184400, taa, 6)
-
-        taa1 = solar.get_topocentric_azimuth_angle(self.dt_list, self.params_list, 0)
-        self.assertEqual(194.18777361875783, taa1, 6)
-        self.assertAlmostEqual(194.184400, taa1, 6)
-
-        taa2 = solar.get_topocentric_azimuth_angle(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(194.18777361875783, taa2, 6)
-        self.assertAlmostEqual(194.184400, taa2, 6)
-
-    def test_get_teo(self):
-        """
-        testing
-
-        """
-        print(self.test_get_teo.__doc__)
-        teo = solar.get_true_ecliptic_obliquity(self.dt_list)
-        self.assertEqual(23.440464516774025, teo, 6)
-        self.assertAlmostEqual(23.440465, teo, 6)
-
-        teo1 = solar.get_true_ecliptic_obliquity(self.dt_list, 0)
-        self.assertEqual(23.440464516774025, teo1, 6)
-        self.assertAlmostEqual(23.440465, teo1, 6)
-
-        teo2 = solar.get_true_ecliptic_obliquity(self.dt_list, self.delta_t)
-        self.assertEqual(23.440464516774025, teo2, 6)
-        self.assertAlmostEqual(23.440465, teo2, 6)
-
-    def test_get_tlha(self):
-        """
-        testing
-        """
-        print(self.test_get_tlha.__doc__)
-        tlha = solar.get_topocentric_lha(self.dt_list, self.params_list)
-        self.assertEqual(10.98542433427071, tlha, 6)
-        self.assertAlmostEqual(10.982765, tlha, 6)
-
-        tlha1 = solar.get_topocentric_lha(self.dt_list, self.params_list, 0)
-        self.assertEqual(10.98542433427071, tlha1, 6)
-        self.assertAlmostEqual(10.982765, tlha1, 6)
-
-        tlha2 = solar.get_topocentric_lha(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(10.98542433427071, tlha2, 6)
-        self.assertAlmostEqual(10.982765, tlha2, 6)
-
-    def test_get_tsd(self):
-        """
-        MIDC SPA
-        """
-        print('testing Topocentric sun declination')
-        tsd = solar.get_topocentric_sun_declination(self.dt_list, self.params_list)
-        self.assertEqual(-9.31597764750972, tsd, 6)
-        # self.assertAlmostEqual(-9.316043, self.t_tsd(), 6)
-
-        tsd1 = solar.get_topocentric_sun_declination(self.dt_list, self.params_list, 0)
-        self.assertEqual(-9.31597764750972, tsd1, 6)
-        # self.assertAlmostEqual(-9.316043, tsd1, 6)
-
-        tsd2 = solar.get_topocentric_sun_declination(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(-9.31597764750972, tsd2, 6)
-        # self.assertAlmostEqual(-9.316043, tsd2, 6)
-
-    def test_get_tsra(self):
-        """
-        MIDC SPA
-        """
-        print('testing Topocentric sun right ascension')
-        tsra = solar.get_topocentric_right_ascension(self.dt_list, self.params_list)
-        self.assertEqual(202.22669624203763, tsra, 6)
-        self.assertAlmostEqual(202.226696, tsra, 6)
-
-        tsra1 = solar.get_topocentric_right_ascension(self.dt_list, self.params_list, 0)
-        self.assertEqual(202.22669624203763, tsra1, 6)
-        self.assertAlmostEqual(202.226696, tsra1, 6)
-
-        tsra2 = solar.get_topocentric_right_ascension(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(202.22669624203763, tsra2, 6)
-        self.assertAlmostEqual(202.226696, tsra2, 6)
-
-    def test_get_tza(self):
-        """
-        MIDC SPA
-        """
-        print('testing Topocentric zenith angle')
-        tza = solar.get_topocentric_zenith_angle(self.dt_list, self.params_list)
-        self.assertAlmostEqual(89.60770246659617, tza, 6)
+        print(self.test_topocentric_zenith_angle.__doc__)
+        tza = solar.topocentric_zenith_angle(self.dt_list, self.params_list, self.delta_t)
+        self.assertAlmostEqual(103.00770331673101, tza, 6)
         # self.assertAlmostEqual(50.088106, tza, 6)
 
-        tza1 = solar.get_topocentric_zenith_angle(self.dt_list, self.params_list, 0)
-        self.assertAlmostEqual(50.08855158690924, tza1, 6)
-        # self.assertAlmostEqual(50.088106, tza1, 6)
+        tza1 = solar.topocentric_zenith_angle(self.dt_list, self.params_list, 0)
+        self.assertAlmostEqual(103.01424323886502, tza1, 6)
+        # self.assertAlmostEqual(50.111482, tza1, 6)
 
-        tza2 = solar.get_topocentric_zenith_angle(self.dt_list, self.params_list, self.delta_t)
-        self.assertAlmostEqual(50.08855158690924, tza2, 6)
-        # self.assertAlmostEqual(50.088106, tza2, 6)
+        tza2 = solar.topocentric_zenith_angle(self.dt_list, self.params_list)
+        self.assertAlmostEqual(103.00794630291433, tza2, 6)
+        self.assertAlmostEqual(103.007946, tza2, 6)
 
 class TestAzElSolar(unittest.TestCase):
     """
-    Test azimuth and elevation
+    Tests functions that use when as a time parameter
     """
-    longitude = -105.1786
+    longitude = -105.1786 # -105:
     lon_offset = longitude / 360.0
-    latitude = 39.742476
-    pressure = 82000.0 # pascals
+    latitude = 39.742476 # 39:44:32
+    pressure = 820.0 # millibars
     elevation = 1830.14 # meters
     temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    slope = 30.0 # degrees
-    slope_orientation = -10.0 # degrees east from south
+    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
+    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
+    # projection of surface normal on horizontal plane, negative east) [degrees]
     dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
     delta_t = 67
-    params_list = [elevation, latitude, longitude, slope, slope_orientation, temperature, pressure]
-    def setUp(self):
-        # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
-        # has no seconds setting so let's consider new test data.
-        # changing the docstring to values found in MIDC SPA for expectation tests.
-        # Reda & Andreas say that this time is in "Local Standard Time", which they
-        # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
-        # to UTC.
-        return None
-
-    def test_get_azimuth(self):
+    params_list = [elevation, latitude, longitude, surface_slope,
+                   surface_azimuth_rotation, temperature, pressure]
+    when = datetime.datetime(
+        2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
+    def test_azimuth(self):
         """
         testing
         Azimuth
         """
-        print(self.test_get_azimuth.__doc__)
-        azm = solar.get_azimuth(self.dt_list, self.params_list)
-        self.assertAlmostEqual(-14.182528371336758, azm, 6)
+        print(self.test_azimuth.__doc__)
+        azm = solar.azimuth(self.when, self.params_list, self.delta_t)
+        self.assertAlmostEqual(-12.640907692789682, azm, 6)
 
-        azm1 = solar.get_azimuth(self.dt_list, self.params_list, 0)
-        self.assertAlmostEqual(-14.182528371336758, azm1, 6)
+        azm1 = solar.azimuth(self.when, self.params_list, 0)
+        self.assertAlmostEqual(-12.334289784705788, azm1, 6)
 
-        azm2 = solar.get_azimuth(self.dt_list, self.params_list, self.delta_t)
-        self.assertAlmostEqual(-14.182528371336758, azm2, 6)
+        azm2 = solar.azimuth(self.when, self.params_list)
+        self.assertAlmostEqual(-12.629661350892235, azm2, 6)
 
-    def test_get_altitude(self):
+    def test_altitude(self):
         """
         testing
         Altitude
         """
-        print(self.test_get_altitude.__doc__)
-        alt = solar.get_altitude(self.dt_list, self.params_list)
-        self.assertEqual(-5.590197393234738, alt, 6)
+        print(self.test_altitude.__doc__)
+        alt = solar.altitude(self.when, self.params_list, self.delta_t)
+        self.assertEqual(-13.007703316731012, alt, 6)
 
-        alt1 = solar.get_altitude(self.dt_list, self.params_list, 0)
-        self.assertEqual(-5.590197393234738, alt1, 6)
+        alt1 = solar.altitude(self.when, self.params_list, 0)
+        self.assertEqual(-13.014243238865022, alt1, 6)
 
-        alt2 = solar.get_altitude(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(-5.590197393234738, alt2, 6)
+        alt2 = solar.altitude(self.when, self.params_list)
+        self.assertEqual(-13.00794630291433, alt2, 6)
 
+    def test_sunrise_sunset(self):
+        """
+        testing
+        Date,Time,Local sunrise time
+        10/17/2003,12:30:30, 6.212067
+        Date,Time,Local sunset time
+
+        """
+        print(self.test_sunrise_sunset.__doc__)
+        srise = util.sunrise_sunset(self.when, self.params_list)
+        self.assertEqual(
+            (datetime.datetime(
+                2003, 10, 17, 13, 21, 59, 486508, tzinfo=datetime.timezone.utc),
+             datetime.datetime(
+                 2003, 10, 18, 0, 10, 3, 617537, tzinfo=datetime.timezone.utc)), srise)
 
 
 if __name__ == "__main__":

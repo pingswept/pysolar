@@ -40,16 +40,16 @@ See also ftp://ftp.imcce.fr/pub/ephem/planets/vsop87/VSOP87D.ear
 
 # ABERRATION_COEFFS = None
 
-def get_aberration_coeffs():
+def aberration_coeffs(nutation_coeffs=None):
     """
     This function builds a dictionary of polynomial functions from a list of
     coefficients, so that the functions can be called by name. This is used in
     calculating nutation.
     """
-    aberration_coeffs = None
+
     # global ABERRATION_COEFFS
-    if aberration_coeffs is None:
-        aberration_coeffs = dict \
+    if nutation_coeffs is None:
+        nutation_coeffs = dict \
           (
               (name, (
                   lambda a, b, c, d:
@@ -64,7 +64,7 @@ def get_aberration_coeffs():
               )
           )
     #end if
-    return aberration_coeffs
+    return nutation_coeffs
 #end get_aberration_coeffs
 
 EARTH_RADIUS = 6378140.0 # meters

@@ -27,7 +27,7 @@ from .constants import \
     EARTH_GRAVITY, \
     EARTH_ATMOSPHERE_MOLAR_MASS
 
-def get_pressure_with_elevation(
+def pressure_with_elevation(
         hgt, psi=STANDARD_PRESSURE, stt=STANDARD_TEMPERATURE,
         tlr=EARTH_TEMPERATURE_LAPSE_RATE, hbl=0.0, air=AIR_GAS_CONSTANT,
         gfc=EARTH_GRAVITY, amm=EARTH_ATMOSPHERE_MOLAR_MASS):
@@ -61,7 +61,7 @@ def get_pressure_with_elevation(
         psi * (stt / (stt + tlr * (hgt - hbl))) ** ((gfc * amm) / (air * tlr))
 #end get_pressure_with_elevation
 
-def get_temperature_with_elevation(hgt, stt=STANDARD_TEMPERATURE, tlr=EARTH_TEMPERATURE_LAPSE_RATE):
+def temperature_with_elevation(hgt, stt=STANDARD_TEMPERATURE, tlr=EARTH_TEMPERATURE_LAPSE_RATE):
     """
     This function returns an estimate of temperature as a function above sea level.
     NOTES:
@@ -81,8 +81,8 @@ def elevation_test():
     print("Elevation(m) Pressure(Pa) Temperature(K)")
     hgt = 0
     for _idx in range(11):
-        pwe = get_pressure_with_elevation(hgt)
-        twe = get_temperature_with_elevation(hgt)
+        pwe = pressure_with_elevation(hgt)
+        twe = temperature_with_elevation(hgt)
         print("%i %i %i" % (hgt, pwe, twe))
         hgt += 1000
     #end for
