@@ -167,7 +167,7 @@ def mean_earth_sun_distance(when):
 
     return 1 - 0.0335 * math.sin(2 * math.pi * (when.utctimetuple().tm_yday - 94)) / 365
 
-def extraterrestrial_irrad(when, latitude_deg, longitude_deg, spc=SC_DEFAULT):
+def extraterrestrial_irrad(when, params_list, spc=SC_DEFAULT):
     """
     Equation calculates Extratrestrial radiation. Solar radiation incident outside the earth's
     atmosphere is called extraterrestrial radiation. On average the extraterrestrial irradiance
@@ -209,15 +209,15 @@ def extraterrestrial_irrad(when, latitude_deg, longitude_deg, spc=SC_DEFAULT):
     cos_cd = math.cos(2 * (2 * math.pi * (day - 1.0) / (365.0)))
     sin_df = math.sin(2 * (2 * math.pi * (day - 1.0) / (365.0)))
     decl = solar.declination(day)
-    lha = solar.hour_angle(when, longitude_deg)
+    lha = solar.hour_angle(when, params_list[2])
     zap = math.sin(
-        latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(lha)
+        params_list[1]) * math.sin(decl) + math.cos(params_list[1]) * math.cos(decl) * math.cos(lha)
 
     return spc * zap * (
         1.00010 + 0.034221 * cos_ab + 0.001280 * sin_bc + 0.000719 * cos_cd + 0.000077 * sin_df)
 
 
-def declination_degree(when, tyr=TY_DEFAULT):
+def declination_degree(when, params_list):
     """
     The declination of the sun is the angle between Earth's equatorial plane and a line
     between the Earth and the sun. It varies between 23.45 degrees and -23.45 degrees,
@@ -241,7 +241,7 @@ def declination_degree(when, tyr=TY_DEFAULT):
 
     """
     return constants.EARTH_AXIS_INCLINATION * math.sin(
-        (2 * math.pi / (tyr)) * ((when.utctimetuple().tm_yday) - 81))
+        2 * math.pi / params_list[7] * (when.utctimetuple().tm_yday - 81))
 
 
 def solar_elevation_func_clear(when, params_list):
@@ -328,7 +328,7 @@ def solar_el_function_overcast(when, params_list):
             0.78600 * (math.sin(altitude)))) + (0.22401 * (0.5 * (1 - math.cos(2 * altitude))))
 
 
-def diffuse_transmittance(ltf=TL_DEFAULT):
+def diffuse_transmittance(params_list):
     """
     Equation calculates the Diffuse_transmittance and the is the Theoretical Diffuse Irradiance
     on a horizontal surface when the sun is at the zenith.
@@ -349,10 +349,10 @@ def diffuse_transmittance(ltf=TL_DEFAULT):
            present status and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    return -21.657 + 41.752 * ltf + 0.51905 * ltf * ltf
+    return -21.657 + 41.752 * params_list[9] + 0.51905 * params_list[9] * params_list[9]
 
 
-def diffuse_underclear(when, params_list, ltf=TL_DEFAULT):
+def diffuse_underclear(when, params_list):
     """Equation calculates diffuse radiation under clear sky conditions.
 
     Parameters
@@ -387,12 +387,12 @@ def diffuse_underclear(when, params_list, ltf=TL_DEFAULT):
            present status and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    dtl = -21.657 + 41.752 * ltf + 0.51905 * ltf * ltf
+    dtl = -21.657 + 41.752 * params_list[9] + 0.51905 * params_list[9] * params_list[9]
     altitude = solar.altitude(when, params_list)
 
     return mean_earth_sun_distance(when) * dtl * altitude
 
-def diffuse_underovercast(when, params_list, ltf=TL_DEFAULT):
+def diffuse_underovercast(when, params_list):
     """Function calculates the diffuse radiation under overcast conditions.
 
     Parameters
@@ -428,14 +428,14 @@ def diffuse_underovercast(when, params_list, ltf=TL_DEFAULT):
            present status and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    dtl = -21.657 + 41.752 * ltf + 0.51905 * ltf * ltf
+    dtl = -21.657 + 41.752 * params_list[9] + 0.51905 * params_list[9] * params_list[9]
 
     difoc = (
         (mean_earth_sun_distance(when)) * dtl * (
             solar.altitude(when, params_list)))
     return difoc
 
-def direct_underclear(when, params_list, tyn=TY_DEFAULT, amd=AM_DEFAULT, ltf=TL_DEFAULT):
+def direct_underclear(when, params_list):
     """Equation calculates direct radiation under clear sky conditions.
 
     Parameters
@@ -482,18 +482,17 @@ def direct_underclear(when, params_list, tyn=TY_DEFAULT, amd=AM_DEFAULT, ltf=TL_
     """
     aud = mean_earth_sun_distance(when)
 
-    dec = declination_degree(when, tyn)
+    dec = declination_degree(when, params_list[7])
 
     dirc = (
-        1367 * aud * math.exp(-0.8662 * amd * ltf * dec * math.sin(
+        1367 * aud * math.exp(-0.8662 * params_list[8] * params_list[9] * dec * math.sin(
             solar.altitude(when, params_list))))
 
     return dirc
 
 # too many argument parameters. who calls this? we need to group those defaults.
 # 5 is the recommended limit.
-def global_irradiance_clear(dirc, diffc, when, params_list, tyr=TY_DEFAULT,
-                            amd=AM_DEFAULT, ltf=TL_DEFAULT):
+def global_irradiance_clear(dirc, diffc, when, params_list):
 
     """Equation calculates global irradiance under clear sky conditions.
 
@@ -547,7 +546,7 @@ def global_irradiance_clear(dirc, diffc, when, params_list, tyr=TY_DEFAULT,
               present status and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    dirc = direct_underclear(when, params_list, tyr, amd, ltf)
+    dirc = direct_underclear(when, params_list)
 
     diffc = diffuse_underclear(when, params_list)
 
@@ -626,7 +625,7 @@ def diffuse_ratio(diff_data, ghi_data):
     return diff_ratio
 
 
-def clear_index(ghi_data, when, latitude_deg, longitude_deg):
+def clear_index(ghi_data, when, params_list):
 
     """This calculates the clear index ratio.
 
@@ -654,7 +653,7 @@ def clear_index(ghi_data, when, latitude_deg, longitude_deg):
            present status and proposed new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    params = extraterrestrial_irrad(when, latitude_deg, longitude_deg)
+    params = extraterrestrial_irrad(when, params_list)
 
     clr_index_ratio = (ghi_data / params)
 

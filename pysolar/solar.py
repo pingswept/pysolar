@@ -52,14 +52,15 @@ def coefficients(dt_list, coeffs, default=None):
     """
     jem = time.julian_ephemeris_millennium(dt_list, default)
     result = 0.0
-    group = 1.0
-    for line in coeffs:
-        term = 0.0
-        for element in line:
-            term += element[0] * math.cos(element[1] + element[2] * jem)
-        #end for
-        result += term * group
-        group *= jem
+    mult = 1.0
+    term = 0.0
+    for group in coeffs:
+        print(group)
+        for item in group:
+            print(item)
+            term += item[0] * math.cos(item[1] + item[2] * jem)
+        result += term * mult
+        mult *= jem
     #end for
     return result
 #end coefficients
@@ -161,17 +162,21 @@ def geocentric_right_ascension(dt_list, default=None):
 
 def heliocentric_latitude(dt_list, default=None):
     """
-    docstring goes here
+    That based on the Sun as a center.
+    The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
     return math.degrees(
         coefficients(dt_list, constants.HELIOCENTRIC_LATITUDE_COEFFS, default) / 1e8)
 
 def heliocentric_longitude(dt_list, default=None):
     """
-    docstring goes here
+    That based on the Sun as a center.
+    The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
+    # return math.degrees(
+    #     coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360
     return math.degrees(
-        coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360
+        coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360.0
 
 def incidence_angle(dt_list, params_list, default=None):
     """
@@ -208,6 +213,18 @@ def max_horizontal_parallax(dt_list, default=None):
     sed = sun_earth_distance(dt_list, default)
     return 8.794 / (3600 / sed)
 
+def mean_ecliptic_obliquity(dt_list, default=None):
+    """
+    docstring goes here
+    """
+    tmu = time.julian_ephemeris_century(dt_list, default)
+    mean_eps1 = ((((((((((
+        2.45 * tmu + 5.79) * tmu + 27.87) * tmu + 7.12) * tmu -
+                       39.05) * tmu - 249.67) * tmu - 51.38) * tmu +
+                    1999.25) * tmu - 1.55) * tmu - 4680.93) * tmu +
+                 84381.448)
+    return mean_eps1
+
 def nutation(dt_list, default=None):
     """
     docstring goes here
@@ -222,14 +239,14 @@ def nutation(dt_list, default=None):
           coef[k](jec)
           for k in
           ( # order is important
-              'MeanElongationOfMoon',
-              'MeanAnomalyOfSun',
               'MeanAnomalyOfMoon',
+              'MeanAnomalyOfSun',
               'ArgumentOfLatitudeOfMoon',
+              'MeanElongationOfMoon',
               'LongitudeOfAscendingNode',
           )
       )
-    sin_terms = constants.ABERRATION_SIN_TERMS
+    sin_terms = constants.FAM
     for idx, _idx in enumerate(abcd):
         sigmaxy = 0.0
         for jdx, _jdx in enumerate(xdx):
@@ -403,11 +420,18 @@ def true_ecliptic_obliquity(dt_list, default=None):
     """
     docstring goes here
     """
-    delta_eps = nutation(dt_list, default)['obliquity']
     tmu = time.julian_ephemeris_century(dt_list, default)
     mean_eps = 84381.448 - (4680.93 * tmu) - (1.55 * tmu ** 2) + (1999.25 * tmu ** 3) \
     - (51.38 * tmu ** 4) -(249.67 * tmu ** 5) - (39.05 * tmu ** 6) + (7.12 * tmu ** 7) \
-    + (27.87 * tmu ** 8) + (5.79 * tmu ** 9) + (2.45 * tmu ** 10)
+    + (27.87 * tmu ** 8) + (5.79 * tmu ** 9) + (2.45 * tmu)
+
+    mean_eps = ((((-0.0000000434 * tmu - 0.000000576) * tmu +
+                  0.00200340) * tmu - 0.0001831) * tmu -
+                46.836769) * tmu + 84381.406
+
+    mean_eps = mean_ecliptic_obliquity(dt_list, default)
+    delta_eps = nutation(dt_list, default)['obliquity']
+
     return (mean_eps / 3600.0) + delta_eps
 
 
@@ -507,21 +531,22 @@ def solar_time(when, longitude_deg):
         60
         )
 
-def solar_test():
+def solar_test(params_list):
     """
     docstring goes here
     """
     latitude_deg = 42.364908
     longitude_deg = -71.112828
     when = datetime.datetime(
-        2003, 10, 17, 19, 30, tzinfo=datetime.timezone.utc)
+        2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
     # dto = (dto - time.EPOCH)
     thirty_minutes = datetime.timedelta(hours=0.5)
-    lat_lon_list = [latitude_deg, longitude_deg]
+    params_list[1] = latitude_deg
+    params_list[2] = longitude_deg
     for _idx in range(48):
         timestamp = when.ctime()
-        altitude_deg = altitude(when, lat_lon_list)
-        azimuth_deg = azimuth(when, lat_lon_list)
+        altitude_deg = altitude(when, params_list)
+        azimuth_deg = azimuth(when, params_list)
         power = radiation.get_radiation_direct(when, altitude_deg)
         if altitude_deg > 0:
             print(timestamp, "UTC", altitude_deg, azimuth_deg, power)
