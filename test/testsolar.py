@@ -917,10 +917,10 @@ if __name__ == "__main__":
     TSOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestTopocentricSolar)
     AESOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestAzElSolar)
     # unittest.TextTestRunner(verbosity=2).run(TIME)
-    unittest.TextTestRunner(verbosity=2).run(HSOLAR)
+    # unittest.TextTestRunner(verbosity=2).run(HSOLAR)
     # unittest.TextTestRunner(verbosity=2).run(SOLAR)
     # unittest.TextTestRunner(verbosity=2).run(GSOLAR)
     # unittest.TextTestRunner(verbosity=2).run(TSOLAR)
-    # unittest.TextTestRunner(verbosity=2).run(AESOLAR)
+    unittest.TextTestRunner(verbosity=2).run(AESOLAR)
 
 #end if
