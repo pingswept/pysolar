@@ -52,15 +52,17 @@ def coefficients(dt_list, coeffs, default=None):
     """
     jem = time.julian_ephemeris_millennium(dt_list, default)
     result = 0.0
-    mult = 1.0
+    jexp = 1.0
     term = 0.0
+    count = 0.0
     for group in coeffs:
         print(group)
         for item in group:
             print(item)
             term += item[0] * math.cos(item[1] + item[2] * jem)
-        result += term * mult
-        mult *= jem
+        result += term * jexp
+        count += 1
+        jexp = math.pow(jem, count)
     #end for
     return result
 #end coefficients
