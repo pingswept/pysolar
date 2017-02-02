@@ -22,6 +22,7 @@ This module contains the most important functions for calculation of the positio
 
 """
 import datetime
+from decimal import *
 import math
 
 from . import constants
@@ -55,12 +56,15 @@ def coefficients(dt_list, coeffs, default=None):
     result = []
     count = 0.0
     for group in coeffs:
-        term = 0.0
+        termsum = 0.0
         jexp = math.pow(jem, count)
         for item in group:
-            term += item[0] * math.cos(item[1] + item[2] * jem)
+            # print(type(item[0]))
+            # print(type(item[1]))
+            # print(type(item[2]))
+            termsum += jexp * float(item[0]) * math.cos(float(item[1]) + float(item[2]) * jem)
         #end for
-        result.append(term * jexp)
+        result.append(termsum)# * jexp)
         count += 1
     #end for
     return result
@@ -180,7 +184,7 @@ def heliocentric_longitude(dt_list, default=None):
     # jem = (2452930.312847 - 2451545.0) / 365250.0
     hlc = coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default)
     hlv = hlc[0] + hlc[1] + hlc[2] + hlc[3] + hlc[4] + hlc[5]
-    return (hlv / 1.0e8) % 360.0
+    return hlv % 360.0
 
 def incidence_angle(dt_list, params_list, default=None):
     """

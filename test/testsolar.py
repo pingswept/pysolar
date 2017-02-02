@@ -20,6 +20,7 @@
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 """ Tests for time.py and solar.py """
 import datetime
+import time as pytime
 import unittest
 from pysolar import solar, elevation, time, constants, util
  # R0902: Too many instance attributes 7 is recommended (solved)
@@ -49,7 +50,7 @@ class TestTime(unittest.TestCase):
         # below are ways to make adjustments for delta t. But we are using dt_list[7] for now
         # self.dt_list[5] = math.floor(time.get_delta_t(self.dt_list)) + self.dt_list[5]
         # self.dt_list[6] = round((time.get_delta_t(self.dt_list) % 1) * 1e6) + self.dt_list[6]
-        return 'Testing pysolar time functions'
+        return 'Testing pysolar time functions', int(pytime.time())
 
     def test_julian_astronomical(self):
         """
@@ -359,6 +360,11 @@ class TestHeliocentricSolar(unittest.TestCase):
     delta_t = 67
     params_list = [elevation, latitude, longitude, surface_slope,
                    surface_azimuth_rotation, temperature, pressure]
+    def setup(self):
+        """
+        doc
+        """
+        return 'Testing pysolar helio functions'
 
     def test_heliocentric_longitude(self):
         """
@@ -370,13 +376,14 @@ class TestHeliocentricSolar(unittest.TestCase):
         delta t = 0
         Heliocentric longitude 24.017492
         """
+        print(int(pytime.time())/86400.0 + 2440587.5)
         print(self.test_heliocentric_longitude.__doc__)
         # data from PDF
         hlc = [172067561.526586, 628332010650.051147, 61368.682493,
                -26.902819, -121.279536, -0.999999]
         jem = (2452930.312847 - 2451545.0) / 365250.0
-        hlv = ((((
-            hlc[5] * jem + hlc[4]) * jem + hlc[3]) * jem + hlc[2]) * jem + hlc[1]) * jem + hlc[0]
+        hlv = hlc[0] + jem * (
+            hlc[1] + jem * (hlc[2] + jem * (hlc[2] + jem * (hlc[4] + jem * hlc[5]))))
         hlv /= 1.0e8
         # hlon = solar.heliocentric_longitude(self.dt_list, self.delta_t)
         # self.assertEqual(25.897172409192308, hlon, 12)
@@ -438,6 +445,7 @@ class TestSolar(unittest.TestCase):
         # Reda & Andreas say that this time is in "Local Standard Time", which they
         # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
         # to UTC.
+        print(int(pytime.time()))
         return None
 
     def test_aberration_correction(self):
