@@ -168,17 +168,17 @@ def julian_ephemeris_day(dt_list, default=None):
 def julian_century(dt_list, default=None):
     """ Convert date/time list to fractional century """
     jsd = julian_day(dt_list, default)
-    return (jsd - 2451545.0) / 36525.0
+    return (jsd - DJ00) / 36525.0
 
 def julian_ephemeris_century(dt_list, default=None):
     """ Convert date/time list to fracional ephemeris century """
     jed = julian_ephemeris_day(dt_list, default)
-    return (jed - 2451545.0) / 36525.0
+    return (jed - DJ00) / 36525.0
 
 def julian_ephemeris_millennium(dt_list, default=None):
     """ Convert date/time list to fractional millennium """
     jed = julian_ephemeris_day(dt_list, default)
-    return (jed - 2451545.0) / 365250.0
+    return (jed - DJ00) / 365250.0
 
 
  # seconds to add to TAI to get TT

@@ -826,6 +826,12 @@ double greenwich_mean_sidereal_time (double jd, double jc)
                                        jc*jc*(0.000387933 - jc/38710000.0));
 }
 
+double sun_mean_longitude(double jme)
+{
+    return limit_degrees(280.4664567 + jme*(360007.6982779 + jme*(0.03032028 +
+                    jme*(1/49931.0   + jme*(-1/15300.0     + jme*(-1/2000000.0))))));
+}
+
 double greenwich_sidereal_time (double nu0, double delta_psi, double epsilon)
 {
     return nu0 + delta_psi*cos(deg2rad(epsilon));
@@ -943,12 +949,6 @@ double surface_incidence_angle(double zenith, double azimuth_astro, double azm_r
 
     return rad2deg(acos(cos(zenith_rad)*cos(slope_rad)  +
                         sin(slope_rad )*sin(zenith_rad) * cos(deg2rad(azimuth_astro - azm_rotation))));
-}
-
-double sun_mean_longitude(double jme)
-{
-    return limit_degrees(280.4664567 + jme*(360007.6982779 + jme*(0.03032028 +
-                    jme*(1/49931.0   + jme*(-1/15300.0     + jme*(-1/2000000.0))))));
 }
 
 double eot(double m, double alpha, double del_psi, double epsilon)

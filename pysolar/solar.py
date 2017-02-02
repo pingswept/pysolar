@@ -51,18 +51,17 @@ def coefficients(dt_list, coeffs, default=None):
     coefficients array and the current Julian millennium.
     """
     jem = time.julian_ephemeris_millennium(dt_list, default)
-    result = 0.0
-    jexp = 1.0
-    term = 0.0
+    # jem = (2452930.312847 - 2451545.0) / 365250.0
+    result = []
     count = 0.0
     for group in coeffs:
-        print(group)
-        for item in group:
-            print(item)
-            term += item[0] * math.cos(item[1] + item[2] * jem)
-        result += term * jexp
-        count += 1
+        term = 0.0
         jexp = math.pow(jem, count)
+        for item in group:
+            term += item[0] * math.cos(item[1] + item[2] * jem)
+        #end for
+        result.append(term * jexp)
+        count += 1
     #end for
     return result
 #end coefficients
@@ -177,8 +176,11 @@ def heliocentric_longitude(dt_list, default=None):
     """
     # return math.degrees(
     #     coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360
-    return math.degrees(
-        coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360.0
+    # jem = time.julian_ephemeris_millennium(dt_list, default)
+    # jem = (2452930.312847 - 2451545.0) / 365250.0
+    hlc = coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default)
+    hlv = hlc[0] + hlc[1] + hlc[2] + hlc[3] + hlc[4] + hlc[5]
+    return (hlv / 1.0e8) % 360.0
 
 def incidence_angle(dt_list, params_list, default=None):
     """
