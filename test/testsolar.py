@@ -379,20 +379,25 @@ class TestHeliocentricSolar(unittest.TestCase):
         print(int(pytime.time())/86400.0 + 2440587.5)
         print(self.test_heliocentric_longitude.__doc__)
         # data from PDF
-        hlc = [172067561.526586, 628332010650.051147, 61368.682493,
-               -26.902819, -121.279536, -0.999999]
+        hlc = [1.72067561526586, 6283.32010650051147, 0.00061368682493,
+               -0.00000026902819, -0.00000121279536, -0.00000000999999]
         jem = (2452930.312847 - 2451545.0) / 365250.0
         hlv = hlc[0] + jem * (
             hlc[1] + jem * (hlc[2] + jem * (hlc[2] + jem * (hlc[4] + jem * hlc[5]))))
-        hlv /= 1.0e8
         # hlon = solar.heliocentric_longitude(self.dt_list, self.delta_t)
         # self.assertEqual(25.897172409192308, hlon, 12)
         # self.assertAlmostEqual(24.018235, hlon, 6)
 
         hlon1 = solar.heliocentric_longitude(self.dt_list, 0)
-        self.assertEqual(hlv, hlon1, 12)
+        # self.assertEqual(hlv, hlon1, 12)
         # self.assertAlmostEqual(24.017492, hlon1, 6)
+        print(hlc)
         print(hlon1)
+        hlct = hlc[0] + hlc[1] + hlc[2] + hlc[3] + hlc[4] + hlc[5]
+        hlon1t = hlon1[0] + jem * (
+            hlon1[1] + jem * (hlon1[2] + jem * (hlon1[3] + jem * (hlon1[4] + jem * hlon1[5]))))
+        print(hlv % 360.0)
+        print(hlon1t % 360.0)
 
         # hlon2 = solar.heliocentric_longitude(self.dt_list)
         # self.assertEqual(24.01823503086598, hlon2, 12)
