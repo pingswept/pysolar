@@ -81,7 +81,6 @@ def sunrise_sunset(when, params_list):
     >>> sr, ss = sb.get_sunrise_sunset(lat, lon, now)
     >>> print('sunrise: ', sr)
     >>> print('sunset:', ss)
-
     """
 
     utc_offset = when.utcoffset()
@@ -131,15 +130,15 @@ def sunrise_sunset(when, params_list):
             (12 / math.pi)
         )
     same_day = datetime(year=when.year, month=when.month, day=when.day, tzinfo=when.tzinfo)
-    sunrise_time = same_day + timedelta(hours=ton - sunn + time_adst)
-    sunset_time = same_day + timedelta(hours=ton + sunn - time_adst)
-    return sunrise_time, sunset_time
+    sunrise = same_day + timedelta(hours=ton - sunn + time_adst)
+    sunset = same_day + timedelta(hours=ton + sunn - time_adst)
+    return sunrise, sunset
 
-def get_sunrise_time(when, params_list):
+def sunrise_time(when, params_list):
     "Wrapper for get_sunrise_sunset that returns just the sunrise time."
     return sunrise_sunset(when, params_list)[0]
 
-def get_sunset_time(when, params_list):
+def sunset_time(when, params_list):
     "Wrapper for get_sunrise_sunset that returns just the sunset time."
     return sunrise_sunset(when, params_list)[1]
 

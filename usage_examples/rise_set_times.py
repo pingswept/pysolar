@@ -11,19 +11,19 @@ Examples
 """
 
 import datetime
-import pytz
+# import pytz
 from pysolar import util
 
 DTN = datetime
-LAT = 51.477811 # approximate Greenwich Maritime Museum
-LON = -0.001475 # new prime merridian :D
+LAT = 39.742476
+LON = -105.1786
 PARAMS_LIST = [0, LAT, LON]
 
-UTC = DTN.datetime.utcnow()
-UTC = pytz.utc.localize(UTC)
+UTC = DTN.datetime(2003, 10, 17, tzinfo=datetime.timezone.utc)
+# UTC = pytz.utc.localize(UTC)
 
 SUNRISE, SUNSET = util.sunrise_sunset(UTC, PARAMS_LIST)
 
 print(DTN.date(UTC.year, UTC.month, UTC.day))
-print('sunrise: ', SUNRISE.strftime('%H:%M:%S'))
-print('sunset:  ', SUNSET.strftime('%H:%M:%S'))
+print('sunrise: ', SUNRISE.strftime('%H:%M:%S'), ' UTC')
+print('sunset:  ', SUNSET.strftime('%H:%M:%S'), ' UTC')
