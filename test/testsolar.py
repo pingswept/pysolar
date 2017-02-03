@@ -18,194 +18,20 @@
 #
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
-""" Tests for time.py and solar.py """
+
+# file: 'file:///c%3A/Users/kb9agt/github/python_lang/pysolar/test/testsolar.py'
+# severity: 'Info'
+# message: 'C0302:Too many lines in module (1117/1000)'
+# at: '1,1'
+# source: 'pylint'
+# probably should move time.py tests out to their own take out some comments.
+""" Tests for solar.py """
 import datetime
 import time as pytime
 import unittest
-from pysolar import solar, elevation, time, constants, util
+from pysolar import solar, elevation, constants, util
  # R0902: Too many instance attributes 7 is recommended (solved)
  # R0904: Too many public methods 20 is recommended (solved)
-class TestTime(unittest.TestCase):
-    """
-    Test time methods
-    """
-    delta_t = 67
-    longitude = -105.1786
-    latitude = 39.742476 # 39:44:32
-    pressure = 820.0 # millibars
-    elevation = 1830.14 # meters
-    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
-    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
-    # projection of surface normal on horizontal plane, negative east) [degrees]
-    params_list = [elevation, latitude, longitude, surface_slope,
-                   surface_azimuth_rotation, temperature, pressure]
-    lon_offset = longitude / 360.0
-    dut1 = datetime.timedelta(seconds=0.0)
-    dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
-    def setUp(self):
-        # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
-        # has no seconds setting so let's consider new test data.
-        # changing the docstring to values found in MIDC SPA for expectation tests.
-        # below are ways to make adjustments for delta t. But we are using dt_list[7] for now
-        # self.dt_list[5] = math.floor(time.get_delta_t(self.dt_list)) + self.dt_list[5]
-        # self.dt_list[6] = round((time.get_delta_t(self.dt_list) % 1) * 1e6) + self.dt_list[6]
-        return 'Testing pysolar time functions', int(pytime.time())
-
-    def test_delta_ut1(self):
-        """
-        testing
-        see DUT1 http://asa.usno.navy.mil/SecM/Glossary.html#ut1
-        MIDC SPA is set to 0 sec DUT1
-        """
-        # print(self.test_delta_ut1.__doc__)
-        print('testing time.py Delta T method')
-        dut1 = datetime.timedelta(0)
-        self.assertEqual(dut1, self.dut1)
-
-    def test_julian_astronomical(self):
-        """
-        MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
-        Date, Time,
-        10/17/2003, 12:30:30
-        Julian day, Julian century
-        delta t 67
-        2452930.312847, 0.037928
-        delta t 0
-        2452930.312847, 0.037928
-        no delta t defaults to current delta t of date
-        2452930.313594, 0.037928
-        """
-        # print(self.test_julian_astronomical.__doc__)
-        print('testing time.py Julian Day method')
-        jdn = time.jdn(self.dt_list)
-        self.assertEqual(2452930, jdn)
-
-        ajd = time.ajd(self.dt_list, self.delta_t)
-        self.assertEqual(2452930.313622685, ajd, 6)
-
-        ajd1 = time.ajd(self.dt_list, 0)
-        self.assertEqual(2452930.312847222, ajd1, 6)
-
-        ajd2 = time.ajd(self.dt_list)
-        self.assertEqual(2452930.3135942305, ajd2, 6)
-
-        jsd = time.julian_day(self.dt_list, self.delta_t)
-        self.assertEqual(2452930.313622685, jsd, 6)
-
-        jsd1 = time.julian_day(self.dt_list, 0)
-        self.assertEqual(2452930.312847222, jsd1, 6)
-
-        jsd2 = time.julian_day(self.dt_list)
-        self.assertEqual(2452930.3135942305, jsd2, 6)
-
-        print('testing time.py Julian Century method')
-        jct = time.julian_century(self.dt_list, self.delta_t)
-        self.assertEqual(0.037927819922933585, jct, 6)
-        self.assertAlmostEqual(0.037928, jct, 6)
-
-        jct1 = time.julian_century(self.dt_list, 0)
-        self.assertEqual(0.03792779869191517, jct1, 6)
-        self.assertAlmostEqual(0.037928, jct1, 6)
-
-        jct2 = time.julian_century(self.dt_list)
-        self.assertEqual(0.0379278191438864, jct2, 6)
-        self.assertAlmostEqual(0.037928, jct2, 6)
-
-    def test_julian_ephemeris(self):
-        """
-        Julian ephemeris day, Julian ephemeris century, Julian ephemeris millennium
-        delta t 67
-        2452930.313623, 0.037928, 0.003793
-        delta t 0
-        2452930.312847, 0.037928, 0.003793
-        """
-        # print(self.test_julian_ephemeris.__doc__)
-        print('testing time.py Julian Ephemeris Day method')
-        jed = time.julian_ephemeris_day(self.dt_list, self.delta_t)
-        self.assertEqual(2452930.313622685, jed, 6)
-        self.assertAlmostEqual(2452930.313623, jed, 6)
-
-        jed1 = time.julian_ephemeris_day(self.dt_list, 0)
-        self.assertEqual(2452930.312847222, jed1, 6)
-        self.assertAlmostEqual(2452930.312847, jed1, 6)
-
-        jed2 = time.julian_ephemeris_day(self.dt_list)
-        self.assertEqual(2452930.3135942305, jed2, 6)
-        self.assertAlmostEqual(2452930.313594, jed2, 6)
-
-        print('testing time.py Julian Ephemeris Century method')
-        jec = time.julian_ephemeris_century(self.dt_list)
-        self.assertEqual(0.0379278191438864, jec, 6)
-        self.assertAlmostEqual(0.037928, jec, 6)
-
-        jec1 = time.julian_ephemeris_century(self.dt_list, 0)
-        self.assertEqual(0.03792779869191517, jec1, 6)
-        self.assertAlmostEqual(0.037928, jec1, 6)
-
-        jec2 = time.julian_ephemeris_century(self.dt_list, self.delta_t)
-        self.assertEqual(0.037927819922933585, jec2, 6)
-        self.assertAlmostEqual(0.037928, jec2, 6)
-
-        print('testing time.py Julian Ephemeris Millennium method')
-        jem = time.julian_ephemeris_millennium(self.dt_list, self.delta_t)
-        self.assertEqual(0.003792781992293359, jem, 6)
-        self.assertAlmostEqual(0.003793, jem, 6)
-
-        jem1 = time.julian_ephemeris_millennium(self.dt_list, 0)
-        self.assertEqual(0.003792779869191517, jem1, 6)
-        self.assertAlmostEqual(0.003793, jem1, 6)
-
-        jem2 = time.julian_ephemeris_millennium(self.dt_list)
-        self.assertEqual(0.0037927819143886397, jem2, 6)
-        self.assertAlmostEqual(0.003793, jem2, 6)
-
-        jlon = time.julian_day(self.dt_list, self.delta_t) - self.lon_offset
-        self.assertEqual(2452930.605785463, jlon, 6)
-
-        jlon1 = time.julian_day(self.dt_list, 0) - self.lon_offset
-        self.assertEqual(2452930.60501, jlon1, 6)
-
-        jlon2 = time.julian_day(self.dt_list) - self.lon_offset
-        self.assertEqual(2452930.6057570083, jlon2, 6)
-
-    def test_leap_seconds(self):
-        """
-        testing Leap seconds
-        """
-        # print(self.test_leap_seconds.__doc__)
-        print('testing time.py Leap Seconds method')
-        gls = time.leap_seconds(self.dt_list)
-        self.assertEqual(gls, 32)
-
-    def test_ephemeris_to_solar(self):
-        """
-        testing
-        A comparison of Julian Ephemeris day to Julian Day
-        This shows a little bit of error creeping in
-        """
-        # print(self.test_ephemeris_to_solar.__doc__)
-        jed1 = time.julian_ephemeris_day(self.dt_list)
-        jed1 += self.delta_t / 86400.0
-        jsd1 = time.julian_day(self.dt_list)
-        test = (jed1 - jsd1) * 86400 - self.delta_t
-        self.assertEqual(-1.3113021850585938e-06, test)
-
-    def test_timestamp(self):
-        """
-        testing Timestamp
-        """
-        # print(self.test_timestamp.__doc__)
-        # print(int(pytime.time())/86400.0 + 2440587.5)
-        print('testing time.py Timestamp method')
-        tss = time.timestamp(self.dt_list, self.delta_t)
-        self.assertEqual(1066437097.0, tss, 6)
-
-        tss1 = time.timestamp(self.dt_list, 0)
-        self.assertEqual(1066437030.0, tss1, 6)
-
-        tss2 = time.timestamp(self.dt_list)
-        self.assertEqual(1066437094.5415, tss2, 6)
 
 class TestSiderealTime(unittest.TestCase):
     """
@@ -330,51 +156,114 @@ class TestSiderealTime(unittest.TestCase):
         10/17/2003, 12:30:30, 318.515578, 318.511910
         """
         # print(self.test_sidereal_angles.__doc__)
-        print('testing solar.py Greenwich Mean Sideral Time method')
-        gmst = solar.gmst(self.dt_list, self.delta_t)
-        self.assertEqual(318.79552288219566, gmst, 12)
-        # self.assertAlmostEqual(318.515578, gmst, 6)
+        print('testing solar.py Greenwich Mean Sideral Angle method')
+        gmsa = solar.gmsa(self.dt_list, self.delta_t)
+        self.assertEqual(318.79565530328546, gmsa, 12)
+        # self.assertAlmostEqual(318.515578, gmsa, 6)
 
-        gmst1 = solar.gmst(self.dt_list, 0)
-        self.assertEqual(318.5155918879318, gmst1, 12)
-        # self.assertAlmostEqual(318.515578, gmst1, 6)
+        gmsa1 = solar.gmsa(self.dt_list, 0)
+        self.assertEqual(318.5157243089634, gmsa1, 12)
+        # self.assertAlmostEqual(318.515578, gmsa1, 6)
 
-        gmst2 = solar.gmst(self.dt_list)
-        self.assertEqual(318.785251144378, gmst2, 12)
-        self.assertAlmostEqual(318.785251, gmst2, 6)
+        gmsa2 = solar.gmsa(self.dt_list)
+        self.assertEqual(318.7853835654678, gmsa2, 12)
+        self.assertAlmostEqual(318.785384, gmsa2, 6)
 
-        print('testing solar.py Greenwich Apparent Sidereal Time method')
-        gast = solar.gast(self.dt_list, self.delta_t)
-        self.assertEqual(318.791863232335, gast, 12)
-        # self.assertAlmostEqual(318.511910, gast, 6)
+        print('testing solar.py Greenwich Apparent Sidereal Angle method')
+        gasa = solar.gasa(self.dt_list, self.delta_t)
+        self.assertEqual(318.7919956534248, gasa, 12)
+        # self.assertAlmostEqual(318.511910, gasa, 6)
 
-        gast1 = solar.gast(self.dt_list, 0)
-        self.assertEqual(318.51193221862866, gast1, 12)
-        # self.assertAlmostEqual(318.511910, gast1, 6)
+        gasa1 = solar.gasa(self.dt_list, 0)
+        self.assertEqual(318.51206463966025, gasa1, 12)
+        # self.assertAlmostEqual(318.511910, gasa1, 6)
 
-        gast2 = solar.gast(self.dt_list)
-        self.assertEqual(318.78159149380394, gast2, 12)
-        self.assertAlmostEqual(318.781591, gast2, 6)
+        gasa2 = solar.gasa(self.dt_list)
+        self.assertEqual(318.78172391489375, gasa2, 12)
+        self.assertAlmostEqual(318.781724, gasa2, 6)
 
-        print('testing solar.py Local Mean Sidereal Time method')
-        lmst = solar.lmst(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(348.79552288219566, lmst, 12)
+        print('testing solar.py Local Mean Sidereal Angle method')
+        lmsa = solar.lmsa(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(213.61705530328544, lmsa, 12)
+        self.assertAlmostEqual(213.617055, lmsa, 6)
 
-        lmst1 = solar.lmst(self.dt_list, self.params_list, 0)
-        self.assertEqual(348.5155918879318, lmst1, 12)
+        lmsa1 = solar.lmsa(self.dt_list, self.params_list, 0)
+        self.assertEqual(213.33712430896338, lmsa1, 12)
+        self.assertAlmostEqual(213.337124, lmsa1, 6)
 
-        lmst2 = solar.lmst(self.dt_list, self.params_list)
-        self.assertEqual(348.785251144378, lmst2, 12)
+        lmsa2 = solar.lmsa(self.dt_list, self.params_list)
+        self.assertEqual(213.60678356546777, lmsa2, 12)
+        self.assertAlmostEqual(213.606784, lmsa2, 6)
 
         print('testing solar.py Local Apparent Sidereal Time method')
         last = solar.last(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(348.791863232335, last, 12)
+        self.assertEqual(14.240893043561652, last, 12)
+        self.assertAlmostEqual(14.240893, last, 6)
 
         last1 = solar.last(self.dt_list, self.params_list, 0)
-        self.assertEqual(348.51193221862866, last1, 12)
+        self.assertEqual(14.222230975977348, last1, 12)
+        self.assertAlmostEqual(14.222231, last1, 6)
 
         last2 = solar.last(self.dt_list, self.params_list)
-        self.assertEqual(348.78159149380394, last2, 12)
+        self.assertEqual(14.240208260992915, last2, 12)
+        self.assertAlmostEqual(14.240208, last2, 6)
+
+    def test_sidereal_time(self):
+        """
+        testing
+        """
+        # print(self.test_sidereal_angles.__doc__)
+        print('testing solar.py Greenwich Mean Sideral Time method')
+        gmst = solar.gmst(self.dt_list, self.delta_t)
+        self.assertEqual(21.253043686885697, gmst, 12)
+        self.assertAlmostEqual(21.253044, gmst, 6)
+
+        gmst1 = solar.gmst(self.dt_list, 0)
+        self.assertEqual(21.23438162059756, gmst1, 12)
+        self.assertAlmostEqual(21.234382, gmst1, 6)
+
+        gmst2 = solar.gmst(self.dt_list)
+        self.assertEqual(21.25235890436452, gmst2, 12)
+        self.assertAlmostEqual(21.252359, gmst2, 6)
+
+        print('testing solar.py Greenwich Apparent Sidereal Time method')
+        gast = solar.gast(self.dt_list, self.delta_t)
+        self.assertEqual(21.25279971022832, gast, 12)
+        self.assertAlmostEqual(21.2528, gast, 6)
+
+        gast1 = solar.gast(self.dt_list, 0)
+        self.assertEqual(21.23413764264402, gast1, 12)
+        self.assertAlmostEqual(21.234138, gast1, 6)
+
+        gast2 = solar.gast(self.dt_list)
+        self.assertEqual(21.252114927659584, gast2, 12)
+        self.assertAlmostEqual(21.252115, gast2, 6)
+
+        print('testing solar.py Local Mean Sidereal Time method')
+        lmst = solar.lmst(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(14.24113702021903, lmst, 12)
+        self.assertAlmostEqual(14.241137, lmst, 6)
+
+        lmst1 = solar.lmst(self.dt_list, self.params_list, 0)
+        self.assertEqual(14.222474953930892, lmst1, 12)
+        self.assertAlmostEqual(14.222475, lmst1, 6)
+
+        lmst2 = solar.lmst(self.dt_list, self.params_list)
+        self.assertEqual(14.24045223769785, lmst2, 12)
+        self.assertAlmostEqual(14.240452, lmst2, 6)
+
+        print('testing solar.py Local Apparent Sidereal Time method')
+        last = solar.last(self.dt_list, self.params_list, self.delta_t)
+        self.assertEqual(14.240893043561652, last, 12)
+        self.assertAlmostEqual(14.240893, last, 6)
+
+        last1 = solar.last(self.dt_list, self.params_list, 0)
+        self.assertEqual(14.222230975977348, last1, 12)
+        self.assertAlmostEqual(14.222231, last1, 6)
+
+        last2 = solar.last(self.dt_list, self.params_list)
+        self.assertEqual(14.240208260992915, last2, 12)
+        self.assertAlmostEqual(14.240208, last2, 6)
 
 class TestHeliocentricSolar(unittest.TestCase):
     """
@@ -570,6 +459,23 @@ class TestGeocentricSolar(unittest.TestCase):
         self.assertEqual(-9.856619566348034, gsd2, 12)
         self.assertAlmostEqual(-9.856620, gsd2, 6)
 
+    def test_mean_geocentric_longitude(self):
+        """
+        test Mean Geocentric Longitude
+        """
+        print('testing solar.py Mean Geocentric Longitude')
+        mgl = solar.mean_geocentric_longitude(self.dt_list, self.delta_t)
+        self.assertEqual(205.8971722516585, mgl, 12)
+        self.assertAlmostEqual(205.897172, mgl, 6)
+
+        mgl1 = solar.mean_geocentric_longitude(self.dt_list, 0)
+        self.assertEqual(205.89640791865077, mgl1, 12)
+        self.assertAlmostEqual(205.896408, mgl1, 6)
+
+        mgl2 = solar.mean_geocentric_longitude(self.dt_list)
+        self.assertEqual(205.89714420536006, mgl2, 12)
+        self.assertAlmostEqual(205.897144, mgl2, 6)
+
 class TestSolar(unittest.TestCase):
     """
     Non Az El Geocentric or Topocentric
@@ -642,6 +548,27 @@ class TestSolar(unittest.TestCase):
         self.assertEqual(205.5422403667672, asl2, 12)
         self.assertAlmostEqual(205.542240, asl2, 6)
 
+    def test_greenwich_hour_angle(self):
+        """
+        testing
+        Date, Time, Greenwich hour angle
+        delta t 67
+        10/17/2003, 12:33:30, 11.856008
+        delta t 0
+        10/17/2003, 12:30:30, 11.106627
+        """
+        # print(self.test_local_hour_angle.__doc__)
+        print('testing solar.py Greewich Hour Angle method')
+        gha = solar.greenwich_hour_angle(self.dt_list, self.delta_t)
+        self.assertEqual(115.10950125936236, gha, 12)
+
+        gha1 = solar.greenwich_hour_angle(self.dt_list, 0)
+        self.assertEqual(114.82958296713653, gha1, 12)
+
+        gha2 = solar.greenwich_hour_angle(self.dt_list)
+        self.assertEqual(115.09922998763324, gha2, 12)
+        self.assertAlmostEqual(115.099230, gha2, 6)
+
     def test_local_hour_angle(self):
         """
         testing
@@ -654,16 +581,16 @@ class TestSolar(unittest.TestCase):
         # print(self.test_local_hour_angle.__doc__)
         print('testing solar.py Local Hour Angle method')
         lha = solar.local_hour_angle(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(9.930768838272542, lha, 12)
+        self.assertEqual(9.930901259362358, lha, 12)
         # self.assertAlmostEqual(11.856008, lha, 6)
 
         lha1 = solar.local_hour_angle(self.dt_list, self.params_list, 0)
-        self.assertEqual(9.65085054610492, lha1, 12)
+        self.assertEqual(9.650982967136528, lha1, 12)
         # self.assertAlmostEqual(11.106627, lha1, 6)
 
         lha2 = solar.local_hour_angle(self.dt_list, self.params_list)
-        self.assertEqual(9.920497566543418, lha2, 12)
-        self.assertAlmostEqual(9.920498, lha2, 6)
+        self.assertEqual(9.920629987633234, lha2, 12)
+        self.assertAlmostEqual(9.920630, lha2, 6)
 
     def test_max_horizontal_parallax(self):
         """
@@ -1006,105 +933,27 @@ class TestSolarSolar(unittest.TestCase):
     when = datetime.datetime(
         2003, 10, 17, 19, 30, 30, tzinfo=datetime.timezone.utc)
 
-    def test_solar_test(self):
+    def solar_test(self):
         """
-        doc
+        test for solar_test
         """
         print('testing solar.py Solar Test method')
         solar.solar_test(self.params_list)
 
-class TestUtil(unittest.TestCase):
-    """
-    Tests functions that use when as a time parameter
-    """
-    longitude = -105.1786 # -105:
-    lon_offset = longitude / 360.0
-    latitude = 39.742476 # 39:44:32
-    pressure = 820.0 # millibars
-    elevation = 1830.14 # meters
-    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
-    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
-    # projection of surface normal on horizontal plane, negative east) [degrees]
-    dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
-    delta_t = 67
-    tyn = util.TY_DEFAULT
-    amd = util.AM_DEFAULT
-    ltf = util.TL_DEFAULT
-    spc = util.SC_DEFAULT
-    params_list = [elevation, latitude, longitude, surface_slope,
-                   surface_azimuth_rotation, temperature, pressure,
-                   tyn, amd, ltf, spc]
-    when = datetime.datetime(2003, 10, 17, tzinfo=datetime.timezone.utc)
-
-    def test_sunrise_sunset(self):
-        """
-        testing
-        Date, Time, Local sunrise time
-        10/17/2003, 12:30:30, 6.212067
-        Date, Time, Local sunset time
-
-        """
-        # print(self.test_sunrise_sunset.__doc__)
-        print('testing util.py Sunrise Sunset method')
-        srs = util.sunrise_sunset(self.when, self.params_list)
-        # print(srs)
-        rtv = datetime.datetime(
-            2003, 10, 17, 13, 21, 59, 486508, tzinfo=datetime.timezone.utc)
-        stv = datetime.datetime(
-            2003, 10, 18, 0, 10, 3, 617537, tzinfo=datetime.timezone.utc)
-        self.assertEqual((rtv, stv), srs)
-
-    def test_sunrise(self):
-        """
-        testing
-        Date, Time, Local sunrise time
-        10/17/2003, 12:30:30, 6.212067
-        Date, Time, Local sunset time
-
-        """
-        # print(self.test_sunrise_sunset.__doc__)
-        print('testing util.py Sunrise Time method')
-        usr = util.sunrise_time(self.when, self.params_list)
-        # print(usr)
-        rval = datetime.datetime(
-            2003, 10, 17, 13, 21, 59, 486508, tzinfo=datetime.timezone.utc)
-        self.assertEqual(rval, usr)
-
-    def test_sunset(self):
-        """
-        testing
-        Date, Time, Local sunrise time
-        10/17/2003, 12:30:30, 6.212067
-        Date, Time, Local sunset time
-
-        """
-        # print(self.test_sunrise_sunset.__doc__)
-        print('testing util.py Sunset Time method')
-        uss = util.sunset_time(self.when, self.params_list)
-        # print(uss)
-        sval = datetime.datetime(
-            2003, 10, 18, 0, 10, 3, 617537, tzinfo=datetime.timezone.utc)
-        self.assertEqual(sval, uss)
-
 if __name__ == "__main__":
     SOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar)
-    TIME = unittest.defaultTestLoader.loadTestsFromTestCase(TestTime)
     HSOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestHeliocentricSolar)
     GSOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestGeocentricSolar)
     TSOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestTopocentricSolar)
     AESOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestAzElSolar)
     SIDEREAL = unittest.defaultTestLoader.loadTestsFromTestCase(TestSiderealTime)
-    UTIL = unittest.defaultTestLoader.loadTestsFromTestCase(TestUtil)
     INSOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolarSolar)
-    #unittest.TextTestRunner(verbosity=2).run(TIME)
-    #unittest.TextTestRunner(verbosity=2).run(HSOLAR)
-    #unittest.TextTestRunner(verbosity=2).run(GSOLAR)
-    #unittest.TextTestRunner(verbosity=2).run(SIDEREAL)
-    #unittest.TextTestRunner(verbosity=2).run(SOLAR)
-    #unittest.TextTestRunner(verbosity=2).run(TSOLAR)
-    #unittest.TextTestRunner(verbosity=2).run(AESOLAR)
-    unittest.TextTestRunner(verbosity=2).run(UTIL)
-    #unittest.TextTestRunner(verbosity=2).run(INSOLAR)
+    unittest.TextTestRunner(verbosity=2).run(HSOLAR)
+    unittest.TextTestRunner(verbosity=2).run(GSOLAR)
+    unittest.TextTestRunner(verbosity=2).run(SIDEREAL)
+    unittest.TextTestRunner(verbosity=2).run(SOLAR)
+    # unittest.TextTestRunner(verbosity=2).run(TSOLAR)
+    # unittest.TextTestRunner(verbosity=2).run(AESOLAR)
+    unittest.TextTestRunner(verbosity=2).run(INSOLAR)
 
 #end if
