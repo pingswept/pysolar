@@ -362,9 +362,27 @@ class TestHeliocentricSolar(unittest.TestCase):
                    surface_azimuth_rotation, temperature, pressure]
     def setup(self):
         """
-        doc
+        'Testing pysolar helio functions'
         """
-        return 'Testing pysolar helio functions'
+        return print(self.setup.__doc__)
+
+    def test_L00_to_l05(self):
+        """
+        test each longitude term Element
+        """
+        print('testing heliocentric longitude terms')
+        l00 = solar.heliocentric_lon_elements(self.dt_list, 0)[0]
+        l01 = solar.heliocentric_lon_elements(self.dt_list, 0)[1]
+        l02 = solar.heliocentric_lon_elements(self.dt_list, 0)[2]
+        l03 = solar.heliocentric_lon_elements(self.dt_list, 0)[3]
+        l04 = solar.heliocentric_lon_elements(self.dt_list, 0)[4]
+        l05 = solar.heliocentric_lon_elements(self.dt_list, 0)[5]
+        self.assertEqual(1.7206761295918584, l00, 12)
+        self.assertEqual(6283.320106689305, l01, 12)
+        self.assertEqual(0.0006137595190144218, l02, 12)
+        self.assertEqual(-2.690138511587399e-07, l03, 12)
+        self.assertEqual(-1.2093960852868582e-06, l04, 12)
+        self.assertEqual(-8.79323698930542e-09, l05, 12)
 
     def test_heliocentric_longitude(self):
         """
