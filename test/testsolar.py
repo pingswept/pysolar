@@ -330,10 +330,10 @@ class TestTime(unittest.TestCase):
 
     def test_timestamp(self):
         """
-        testing
-        Timestamp
+        testing Timestamp
         """
-        print(self.test_timestamp.__doc__)
+        # print(self.test_timestamp.__doc__)
+        print(int(pytime.time())/86400.0 + 2440587.5)
         tss = time.timestamp(self.dt_list, self.delta_t)
         self.assertEqual(1066437097.0, tss, 6)
 
@@ -376,34 +376,34 @@ class TestHeliocentricSolar(unittest.TestCase):
         delta t = 0
         Heliocentric longitude 24.017492
         """
-        print(int(pytime.time())/86400.0 + 2440587.5)
-        print(self.test_heliocentric_longitude.__doc__)
+        # print(self.test_heliocentric_longitude.__doc__)
+        print('testing Heliocentric longitude')
         # data from PDF
-        hlc = [1.72067561526586, 6283.32010650051147, 0.00061368682493,
-               -0.00000026902819, -0.00000121279536, -0.00000000999999]
-        jem = (2452930.312847 - 2451545.0) / 365250.0
-        hlv = hlc[0] + jem * (
-            hlc[1] + jem * (hlc[2] + jem * (hlc[2] + jem * (hlc[4] + jem * hlc[5]))))
-        # hlon = solar.heliocentric_longitude(self.dt_list, self.delta_t)
-        # self.assertEqual(25.897172409192308, hlon, 12)
+        # hlc = [1.72067561526586, 6283.32010650051147, 0.00061368682493,
+         #       -0.00000026902819, -0.00000121279536, -0.00000000999999]
+        # jem = (2452930.312847 - 2451545.0) / 365250.0
+        # hlcs = hlc[0] + jem * (
+        #     hlc[1] + jem * (hlc[2] + jem * (hlc[2] + jem * (hlc[4] + jem * hlc[5]))))
+        hlon = solar.heliocentric_longitude(self.dt_list, self.delta_t)
+        self.assertEqual(25.551939581155224, hlon, 12)
         # self.assertAlmostEqual(24.018235, hlon, 6)
 
         hlon1 = solar.heliocentric_longitude(self.dt_list, 0)
-        # self.assertEqual(hlv, hlon1, 12)
+        self.assertEqual(25.551926150758376, hlon1, 12)
         # self.assertAlmostEqual(24.017492, hlon1, 6)
-        print(hlc)
-        print(hlon1)
-        hlct = hlc[0] + hlc[1] + hlc[2] + hlc[3] + hlc[4] + hlc[5]
-        hlon1t = hlon1[0] + jem * (
-            hlon1[1] + jem * (hlon1[2] + jem * (hlon1[3] + jem * (hlon1[4] + jem * hlon1[5]))))
-        print(hlv % 360.0)
-        print(hlon1t % 360.0)
+        # jem = time.julian_ephemeris_millennium(self.dt_list, 0)
+        # print(jem * 365250 + 2451545.0)
+        # print(hlc)
+        # hlone = solar.heliocentric_lon_elements(self.dt_list, 0)
+        # print(hlone)
+        # print(hlcs % 360.0)
+        # print(hlon1 % 360.0)
 
-        # hlon2 = solar.heliocentric_longitude(self.dt_list)
-        # self.assertEqual(24.01823503086598, hlon2, 12)
-        # self.assertAlmostEqual(24.018235, hlon2, 6)
+        hlon2 = solar.heliocentric_longitude(self.dt_list)
+        self.assertEqual(25.551939088342525, hlon2, 12)
+        self.assertAlmostEqual(25.551939, hlon2, 6)
 
-    def heliocentric_latitude(self):
+    def test_heliocentric_latitude(self):
         """
         testing Heliocentric latitude
         Date 10/17/2003
@@ -413,18 +413,111 @@ class TestHeliocentricSolar(unittest.TestCase):
         delta t = 0
         Heliocentric latitude  -0.000101
         """
-        print(self.heliocentric_latitude.__doc__)
+        # print(self.heliocentric_latitude.__doc__)
+        print('testing Heliocentric latitude')
         hlat = solar.heliocentric_latitude(self.dt_list, self.delta_t)
-        self.assertEqual(-0.00010112192480034693, hlat, 12)
-        self.assertAlmostEqual(-0.000101, hlat, 6)
+        self.assertEqual(-1.7637728852017975e-06, hlat, 12)
+        # self.assertAlmostEqual(-0.000101, hlat, 6)
 
         hlat1 = solar.heliocentric_latitude(self.dt_list, 0)
-        self.assertEqual(-0.00010110749648050061, hlat1, 12)
-        self.assertAlmostEqual(-0.000101, hlat1, 6)
+        self.assertEqual(-1.763521346957271e-06, hlat1, 12)
+        # self.assertAlmostEqual(-0.000101, hlat1, 6)
 
         hlat2 = solar.heliocentric_latitude(self.dt_list)
-        self.assertEqual(-0.0001011213954488705, hlat2, 12)
-        self.assertAlmostEqual(-0.000101, hlat2, 6)
+        self.assertEqual(-1.7637636566742287e-06, hlat2, 12)
+        self.assertAlmostEqual(-1.763764e-06, hlat2, 6)
+
+class TestGeocentricSolar(unittest.TestCase):
+    """
+    Test solar and time methods
+    """
+    longitude = -105.1786 # -105:
+    lon_offset = longitude / 360.0
+    latitude = 39.742476 # 39:44:32
+    pressure = 82000.0 # pascals
+    elevation = 1830.14 # meters
+    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
+    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
+    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
+    # projection of surface normal on horizontal plane, negative east) [degrees]
+    dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
+    delta_t = 67
+    params_list = [elevation, latitude, longitude, surface_slope,
+                   surface_azimuth_rotation, temperature, pressure]
+
+    def test_geo_lat_lon(self):
+        """
+        testing
+        Date, Time
+        10/17/2003, 12:30:30
+        Geocentric longitude, Geocentric latitude
+        delta t 67
+        204.018262, 0.000101
+        delta t 0
+        204.017492, 0.000101
+        """
+        # print(self.test_geo_lat_lon.__doc__)
+        print('testing geocentric longitude')
+        glon = solar.geocentric_longitude(self.dt_list, self.delta_t)
+        self.assertEqual(205.55193958115524, glon, 12)
+        # self.assertAlmostEqual(204.018235, glon, 6)
+
+        glon1 = solar.geocentric_longitude(self.dt_list, 0)
+        self.assertEqual(205.5519261507584, glon1, 12)
+        # self.assertAlmostEqual(204.017492, glon1, 6)
+
+        glon2 = solar.geocentric_longitude(self.dt_list)
+        self.assertEqual(205.55193908834252, glon2, 12)
+        self.assertAlmostEqual(205.551939, glon2, 6)
+
+        print('testing geocentric latitude')
+        glat = solar.geocentric_latitude(self.dt_list, self.delta_t)
+        self.assertEqual(1.7637728852017975e-06, glat, 12)
+        # self.assertAlmostEqual(0.000101, glat, 6)
+
+        glat1 = solar.geocentric_latitude(self.dt_list, 0)
+        self.assertEqual(1.763521346957271e-06, glat1, 12)
+        # self.assertAlmostEqual(0.000101, glat1, 6)
+
+        glat2 = solar.geocentric_latitude(self.dt_list)
+        self.assertEqual(1.7637636566742287e-06, glat2, 12)
+        self.assertAlmostEqual(1.763764e-06, glat2, 6)
+
+    def test_geo_rad_dec(self):
+        """
+        testing
+        Date, Time, Geocentric sun right ascension, Geocentric sun declination
+        delta t 67
+        10/17/2003, 12:30:30, 202.227408, -9.314340
+        delta t 0
+        10/17/2003, 12:30:30, 202.226683, -9.314057
+        """
+        # print(self.test_geo_rad_dec.__doc__)
+        print('testing geocentric right ascension')
+        gsra = solar.geocentric_right_ascension(self.dt_list, self.delta_t)
+        self.assertEqual(203.68249439406245, gsra, 12)
+        # self.assertAlmostEqual(202.234783, gsra, 5)
+
+        gsra1 = solar.geocentric_right_ascension(self.dt_list, 0)
+        self.assertEqual(203.68248167252372, gsra1, 12)
+        # self.assertAlmostEqual(202.226683, gsra1, 5)
+
+        gsra2 = solar.geocentric_right_ascension(self.dt_list)
+        self.assertEqual(203.6824939272605, gsra2, 12)
+        self.assertAlmostEqual(203.682494, gsra2, 6)
+
+        print('testing geocentric declination')
+        gsd = solar.geocentric_declination(self.dt_list, self.delta_t)
+        self.assertEqual(-9.856619745423947, gsd, 12)
+        # self.assertAlmostEqual(-9.295870, gsd, 6)
+
+        gsd1 = solar.geocentric_declination(self.dt_list, 0)
+        self.assertEqual(-9.85661486515095, gsd1, 12)
+        # self.assertAlmostEqual(-9.314057, gsd1, 6)
+
+        gsd2 = solar.geocentric_declination(self.dt_list)
+        self.assertEqual(-9.856619566348034, gsd2, 12)
+        self.assertAlmostEqual(-9.856620, gsd2, 6)
 
 class TestSolar(unittest.TestCase):
     """
@@ -602,98 +695,6 @@ class TestSolar(unittest.TestCase):
         print(self.test_temperature_with_elevation.__doc__)
         twe = elevation.temperature_with_elevation(1567.7)
         self.assertEqual(277.95995, twe, 6)
-
-class TestGeocentricSolar(unittest.TestCase):
-    """
-    Test solar and time methods
-    """
-    longitude = -105.1786 # -105:
-    lon_offset = longitude / 360.0
-    latitude = 39.742476 # 39:44:32
-    pressure = 82000.0 # pascals
-    elevation = 1830.14 # meters
-    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
-    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
-    # projection of surface normal on horizontal plane, negative east) [degrees]
-    dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
-    delta_t = 67
-    params_list = [elevation, latitude, longitude, surface_slope,
-                   surface_azimuth_rotation, temperature, pressure]
-
-    def test_geo_lat_lon(self):
-        """
-        testing
-        Date, Time
-        10/17/2003, 12:30:30
-        Geocentric longitude, Geocentric latitude
-        delta t 67
-        204.018262, 0.000101
-        delta t 0
-        204.017492, 0.000101
-        """
-        print(self.test_geo_lat_lon.__doc__)
-        print('testing g lon')
-        glon = solar.geocentric_longitude(self.dt_list, self.delta_t)
-        self.assertEqual(204.01826326698006, glon, 12)
-        # self.assertAlmostEqual(204.018235, glon, 6)
-
-        glon1 = solar.geocentric_longitude(self.dt_list, 0)
-        self.assertEqual(204.01749376120438, glon1, 12)
-        # self.assertAlmostEqual(204.017492, glon1, 6)
-
-        glon2 = solar.geocentric_longitude(self.dt_list)
-        self.assertEqual(204.01823503086598, glon2, 12)
-        self.assertAlmostEqual(204.018235, glon2, 6)
-
-        print('testing g lat')
-        glat = solar.geocentric_latitude(self.dt_list, self.delta_t)
-        self.assertEqual(0.00010112192480034693, glat, 12)
-        self.assertAlmostEqual(0.000101, glat, 6)
-
-        glat1 = solar.geocentric_latitude(self.dt_list, 0)
-        self.assertEqual(0.00010110749648050061, glat1, 12)
-        self.assertAlmostEqual(0.000101, glat1, 6)
-
-        glat2 = solar.geocentric_latitude(self.dt_list)
-        self.assertEqual(0.0001011213954488705, glat2, 12)
-        self.assertAlmostEqual(0.000101, glat2, 6)
-
-    def geo_rad_dec(self):
-        """
-        testing
-        Date, Time, Geocentric sun right ascension, Geocentric sun declination
-        delta t 67
-        10/17/2003, 12:30:30, 202.227408, -9.314340
-        delta t 0
-        10/17/2003, 12:30:30, 202.226683, -9.314057
-        """
-        # print(self.test_geo_rad_dec.__doc__)
-        print('testing geocentric right ascension')
-        gsra = solar.geocentric_right_ascension(self.dt_list, self.delta_t)
-        self.assertEqual(202.2348211973249, gsra, 12)
-        # self.assertAlmostEqual(202.234783, gsra, 5)
-
-        gsra1 = solar.geocentric_right_ascension(self.dt_list, 0)
-        self.assertEqual(202.23408471860108, gsra1, 12)
-        # self.assertAlmostEqual(202.226683, gsra1, 5)
-
-        gsra2 = solar.geocentric_right_ascension(self.dt_list)
-        self.assertEqual(202.23478331266804, gsra2, 12)
-        self.assertAlmostEqual(202.234783, gsra2, 6)
-
-        print('testing geocentric declination')
-        gsd = solar.geocentric_declination(self.dt_list, self.delta_t)
-        self.assertEqual(-9.295880190422015, gsd, 12)
-        # self.assertAlmostEqual(-9.295870, gsd, 6)
-
-        gsd1 = solar.geocentric_declination(self.dt_list, 0)
-        self.assertEqual(-9.295597420338579, gsd1, 12)
-        # self.assertAlmostEqual(-9.314057, gsd1, 6)
-
-        gsd2 = solar.geocentric_declination(self.dt_list)
-        self.assertEqual(-9.29586981453048, gsd2, 12)
-        self.assertAlmostEqual(-9.295870, gsd2, 6)
 
 class TestTopocentricSolar(unittest.TestCase):
     """
@@ -949,7 +950,7 @@ if __name__ == "__main__":
     # unittest.TextTestRunner(verbosity=2).run(TIME)
     unittest.TextTestRunner(verbosity=2).run(HSOLAR)
     # unittest.TextTestRunner(verbosity=2).run(SOLAR)
-    # unittest.TextTestRunner(verbosity=2).run(GSOLAR)
+    unittest.TextTestRunner(verbosity=2).run(GSOLAR)
     # unittest.TextTestRunner(verbosity=2).run(TSOLAR)
     # unittest.TextTestRunner(verbosity=2).run(AESOLAR)
 

@@ -171,8 +171,10 @@ def heliocentric_latitude(dt_list, default=None):
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
-    return math.degrees(
-        coefficients(dt_list, constants.HELIOCENTRIC_LATITUDE_COEFFS, default) / 1e8)
+    jem = time.julian_ephemeris_millennium(dt_list, default)
+    hlc = coefficients(dt_list, constants.HELIOCENTRIC_LATITUDE_COEFFS, default)
+    return hlc[0] + jem * (
+            hlc[1] + jem * (hlc[2] + jem * (hlc[3] + jem * hlc[4])))
 
 def heliocentric_longitude(dt_list, default=None):
     """
@@ -181,10 +183,18 @@ def heliocentric_longitude(dt_list, default=None):
     """
     # return math.degrees(
     #     coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360
-    # jem = time.julian_ephemeris_millennium(dt_list, default)
+    jem = time.julian_ephemeris_millennium(dt_list, default)
     # jem = (2452930.312847 - 2451545.0) / 365250.0
+    hlc = heliocentric_lon_elements(dt_list, default)
+    return hlc[0] + jem * (
+            hlc[1] + jem * (hlc[2] + jem * (hlc[3] + jem * (hlc[4] + jem * hlc[5]))))
+
+def heliocentric_lon_elements(dt_list, default=None):
+    """
+    That based on the Sun as a center.
+    The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
+    """
     hlc = coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default)
-    hlv = hlc[0] + hlc[1] + hlc[2] + hlc[3] + hlc[4] + hlc[5]
     return hlc
 
 def incidence_angle(dt_list, params_list, default=None):
@@ -346,7 +356,9 @@ def sun_earth_distance(dt_list, default=None):
     """
     docstring goes here
     """
-    return coefficients(dt_list, constants.AU_DISTANCE_COEFFS, default) / 1e8
+    jem = time.julian_ephemeris_millennium(dt_list, default)
+    rvc = coefficients(dt_list, constants.AU_DISTANCE_COEFFS, default)
+    return (rvc[0] + jem * (rvc[1] + jem * (rvc[2] + jem * (rvc[3] + jem * rvc[4]))))  / 1e8
 
 # Topocentric functions calculate angles relative to a location on the surface of the earth.
 
