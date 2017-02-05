@@ -34,16 +34,16 @@ def aberration_correction(dt_list, default=None):
     """
     sed = sun_earth_distance(dt_list, default)
     # param is sun-earth distance is in astronomical units
-    return -20.4898/(3600.0 * sed)
+    return -20.4898 / (3600.0 * sed)
 
 def apparent_sun_longitude(dt_list, default=None):
     """
     docstring goes here
     """
-    mgl = geocentric_longitude(dt_list, default)
+    tgl = true_geocentric_longitude(dt_list, default)
     dpsi = nutation(dt_list, default)['longitude']
     aberration = aberration_correction(dt_list, default)
-    return mgl + dpsi + aberration
+    return tgl + dpsi + aberration
 
 def coefficients(dt_list, coeffs, default=None):
     """
@@ -56,15 +56,11 @@ def coefficients(dt_list, coeffs, default=None):
 
     for group in coeffs:
         count = 0.0
-        termsum = 0.0
-        jexp = math.pow(jem, count)
+        tsum = 0.0
         for item in group:
-            # print(type(item[0]))
-            # print(type(item[1]))
-            # print(type(item[2]))
-            termsum += jexp * float(item[0]) * math.cos(float(item[1]) + float(item[2]) * jem)
+            tsum += float(item[0]) * math.cos(float(item[1]) + float(item[2]) * jem) * 1e8
         #end for
-        result.append(termsum)# * jexp)
+        result.append(tsum)
         count += 1
     #end for
     return result
@@ -104,13 +100,13 @@ def gmsa(dt_list, default=None):
     """
     Greenwich Mean Sidereal Angle
     """
-    # print(dt_list)
+    # 280.46061837+ 360.98564736629*(JD-2451545)+0.000387933*T2-T3/38710000
     # This function doesn't agree with Andreas and Reda as well as it should.
     # Works to ~5 sig figs in current unit test
     jct = time.julian_century(dt_list, default)
     jdn = jct * 36525.0
     day_deg = (360.9856473659 * jdn) # 360.98564736629 is old and this is not SOFA
-    mean_st = day_deg + 280.46061837 + jct * (0.00387933 + jct * 1 / 38710000.0)
+    mean_st = day_deg + 280.46061837 + jct * (0.00387933 + jct * -1 / 38710000.0)
     return mean_st % 360
 
 def gmst(dt_list, default=None):
@@ -156,11 +152,11 @@ def geocentric_latitude(dt_list, default=None):
     """
     return -1 * heliocentric_latitude(dt_list, default)
 
-def geocentric_longitude(dt_list, default=None):
+def true_geocentric_longitude(dt_list, default=None):
     """
     docstring goes here
     """
-    return (heliocentric_longitude(dt_list, default) + 180) % 360
+    return (heliocentric_longitude(dt_list, default) + 180 - 0.000025) % 360
 
 def geocentric_declination(dt_list, default=None):
     """
@@ -180,6 +176,7 @@ def geocentric_right_ascension(dt_list, default=None):
     """
     docstring goes here
     """
+    # atan2((sind(lambda)*cosd(eps)-tand(beta)*sind(eps)),cosd(lambda))/dtr
     asl = apparent_sun_longitude(dt_list, default)
     teo = true_ecliptic_obliquity(dt_list, default)
     glat = geocentric_latitude(dt_list, default)
@@ -194,9 +191,9 @@ def greenwich_hour_angle(dt_list, default=None):
     """
     Greenwich Hour Angle
     """
-    true = gasa(dt_list, default)
+    gaa = gasa(dt_list, default)
     gra = geocentric_right_ascension(dt_list, default)
-    return (true - gra) % 360
+    return (gaa - gra) % 360
 
 def heliocentric_latitude(dt_list, default=None):
     """
@@ -204,9 +201,17 @@ def heliocentric_latitude(dt_list, default=None):
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
     jem = time.julian_ephemeris_millennium(dt_list, default)
+    hlc = heliocentric_lat_elements(dt_list, default)
+    return (hlc[0] + jem * (
+        hlc[1] + jem * (hlc[2] + jem * (hlc[3] + jem * hlc[4])))) / 1e8
+
+def heliocentric_lat_elements(dt_list, default=None):
+    """
+    That based on the Sun as a center.
+    The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
+    """
     hlc = coefficients(dt_list, constants.HELIOCENTRIC_LATITUDE_COEFFS, default)
-    return hlc[0] + jem * (
-        hlc[1] + jem * (hlc[2] + jem * (hlc[3] + jem * hlc[4])))
+    return hlc
 
 def heliocentric_longitude(dt_list, default=None):
     """
@@ -218,8 +223,12 @@ def heliocentric_longitude(dt_list, default=None):
     jem = time.julian_ephemeris_millennium(dt_list, default)
     # jem = (2452930.312847 - 2451545.0) / 365250.0
     hlc = heliocentric_lon_elements(dt_list, default)
-    return hlc[0] + jem * (
-        hlc[1] + jem * (hlc[2] + jem * (hlc[3] + jem * (hlc[4] + jem * hlc[5]))))
+    return math.degrees(
+        (hlc[0] + jem * (
+            hlc[1] + jem * (
+                hlc[2] + jem * (
+                    hlc[3] + jem * (
+                        hlc[4] + jem * hlc[5]))))) / 1e8) % 360.0
 
 def heliocentric_lon_elements(dt_list, default=None):
     """
@@ -265,26 +274,27 @@ def max_horizontal_parallax(dt_list, default=None):
 
 def mean_ecliptic_obliquity(dt_list, default=None):
     """
-    docstring goes here
+    mean epsilon
     """
-    tmu = time.julian_ephemeris_century(dt_list, default)
-    mean_eps1 = ((((((((((
-        2.45 * tmu + 5.79) * tmu + 27.87) * tmu + 7.12) * tmu -
-                       39.05) * tmu - 249.67) * tmu - 51.38) * tmu +
-                    1999.25) * tmu - 1.55) * tmu - 4680.93) * tmu +
-                 84381.448)
-    return mean_eps1
+    # (84381.448 - 46.815 * TE - 0.00059 * TE2 + 0.001813 * TE3) / 3600
+    jec = time.julian_ephemeris_century(dt_list, default)
+    return (84381.406 + jec * (
+        -46.836769 + jec * (
+            -0.0001831 + jec * (
+                0.00200340 + jec * (
+                    -0.000000576 + jec * -0.0000000434))))) / 3600
 
 def mean_geocentric_longitude(dt_list, default=None):
     """
     mean geocentric longitude
     """
+    # 280.4664567+360007.6982779*Tau+0.03032028*Tau2+Tau3/49931-Tau4/15299-Tau5/1988000
     jct = time.julian_century(dt_list, default)
 
     mgl = 280.4664567 + jct * (
         36000.76982779 + jct * (
             0.0003032028 + jct * (
-                1.0 / 499310.0 + jct * (1.0 / -152990.0 + jct * (1.0 / -19880000.0)))))
+                1.0 / 49931.0 + jct * (1.0 / -15299.0 + jct * (1.0 / -1988000.0)))))
     return mgl % 360.0
 
 def nutation(dt_list, default=None):
