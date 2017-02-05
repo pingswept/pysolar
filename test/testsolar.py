@@ -66,15 +66,15 @@ class TestHeliocentricSolar(unittest.TestCase):
         # print(self.heliocentric_latitude.__doc__)
         # print('testing solar.py Heliocentric Latitude method')
         hlat = solar.heliocentric_latitude(self.dt_list, self.delta_t)
-        self.assertEqual(-1.7650012591585153e-06, hlat, 12)
+        self.assertEqual(-0.00010112712298505897, hlat, 12)
         # self.assertEqual(-0.00010112192480034693, hlat, 12)
 
         hlat1 = solar.heliocentric_latitude(self.dt_list, 0)
-        self.assertEqual(-1.7647494287411136e-06, hlat1, 12)
+        self.assertEqual(-0.00010111269416498883, hlat1, 12)
         # self.assertEqual(-0.00010110749648050061, hlat1, 12)
 
         hlat2 = solar.heliocentric_latitude(self.dt_list)
-        self.assertEqual(-1.7649920199119944e-06, hlat2, 12)
+        self.assertEqual(-0.00010112659361522744, hlat2, 12)
         # self.assertEqual(-0.00010112139544887049, hlat2, 12)
 
     def test_heliocentric_longitude(self):

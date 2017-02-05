@@ -202,8 +202,10 @@ def heliocentric_latitude(dt_list, default=None):
     """
     jem = time.julian_ephemeris_millennium(dt_list, default)
     hlc = heliocentric_lat_elements(dt_list, default)
-    return (hlc[0] + jem * (
-        hlc[1] + jem * (hlc[2] + jem * (hlc[3] + jem * hlc[4])))) / 1e8
+    return math.degrees((hlc[0] + jem * (
+        hlc[1] + jem * (
+            hlc[2] + jem * (
+                hlc[3] + jem * hlc[4])))) / 1e8) % -360.0
 
 def heliocentric_lat_elements(dt_list, default=None):
     """
