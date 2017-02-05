@@ -67,15 +67,15 @@ class TestHeliocentricSolar(unittest.TestCase):
         # print('testing solar.py Heliocentric Latitude method')
         hlat = solar.heliocentric_latitude(self.dt_list, self.delta_t)
         self.assertEqual(-0.00010112712298505897, hlat, 12)
-        # self.assertEqual(-0.00010112192480034693, hlat, 12)
+        self.assertAlmostEqual(-0.00010112192480034693, hlat, 7)
 
         hlat1 = solar.heliocentric_latitude(self.dt_list, 0)
         self.assertEqual(-0.00010111269416498883, hlat1, 12)
-        # self.assertEqual(-0.00010110749648050061, hlat1, 12)
+        self.assertAlmostEqual(-0.00010110749648050061, hlat1, 7)
 
         hlat2 = solar.heliocentric_latitude(self.dt_list)
         self.assertEqual(-0.00010112659361522744, hlat2, 12)
-        # self.assertEqual(-0.00010112139544887049, hlat2, 12)
+        self.assertAlmostEqual(-0.00010112139544887049, hlat2, 7)
 
     def test_heliocentric_longitude(self):
         """
@@ -88,15 +88,15 @@ class TestHeliocentricSolar(unittest.TestCase):
         # print('testing solar.py Heliocentric longitude method')
         hlon = solar.heliocentric_longitude(self.dt_list, self.delta_t)
         self.assertEqual(24.01826175610472, hlon, 12)
-        # self.assertEqual(24.018261691679754, hlon, 12)
+        self.assertAlmostEqual(24.018261691679754, hlon, 6)
 
         hlon1 = solar.heliocentric_longitude(self.dt_list, 0)
         self.assertEqual(24.017492250274017, hlon1, 12)
-        # self.assertEqual(24.01749218593841, hlon1, 12)
+        self.assertAlmostEqual(24.01749218593841, hlon1, 6)
 
         hlon2 = solar.heliocentric_longitude(self.dt_list)
         self.assertEqual(24.0182335199886, hlon2, 12)
-        # self.assertEqual(24.018233455566815, hlon2, 12)
+        self.assertAlmostEqual(24.018233455566815, hlon2, 6)
 
     def test_lb0_to_lb4(self):
         """
@@ -110,8 +110,8 @@ class TestHeliocentricSolar(unittest.TestCase):
         lb2 = solar.heliocentric_lat_elements(self.dt_list, 0)[2]
         lb3 = solar.heliocentric_lat_elements(self.dt_list, 0)[3]
         lb4 = solar.heliocentric_lat_elements(self.dt_list, 0)[4]
-        self.assertEqual(-176.48654284285342, lb0, 12)
-        self.assertEqual(3.058434483982354, lb1, 12)
+        self.assertAlmostEqual(-176.48654284285342, lb0, 1)
+        self.assertAlmostEqual(3.058434483982354, lb1, 2)
         self.assertEqual(0.0, lb2, 12)
         self.assertEqual(0.0, lb3, 12)
         self.assertEqual(0.0, lb4, 12)
@@ -130,12 +130,12 @@ class TestHeliocentricSolar(unittest.TestCase):
         lo3 = solar.heliocentric_lon_elements(self.dt_list, 0)[3]
         lo4 = solar.heliocentric_lon_elements(self.dt_list, 0)[4]
         lo5 = solar.heliocentric_lon_elements(self.dt_list, 0)[5]
-        self.assertEqual(172067552.4204392, lo0, 12)
-        self.assertEqual(628332010700.2529, lo1, 12)
-        self.assertEqual(61368.64926580728, lo2, 12)
-        self.assertEqual(-26.897807223158654, lo3, 12)
-        self.assertEqual(-121.27947812216516, lo4, 12)
-        self.assertEqual(-0.9999987317275395, lo5, 12)
+        self.assertAlmostEqual(172067561.526586 / 100, lo0 / 100, 0)
+        self.assertAlmostEqual(628332010650.051147 / 1000, lo1 / 1000, 0)
+        self.assertAlmostEqual(61368.682493, lo2, 1)
+        self.assertAlmostEqual(-26.902819, lo3, 0)
+        self.assertAlmostEqual(-121.279536, lo4, 1)
+        self.assertAlmostEqual(-0.999999, lo5, 6)
 
 class TestSiderealTime(unittest.TestCase):
     """
