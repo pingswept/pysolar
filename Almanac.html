@@ -112,7 +112,7 @@ with(Math)
 		else if (10*GMSTs-floor(10*GMSTs)==0) GMSTs+="00";
 			else if (100*GMSTs-floor(100*GMSTs)==0) GMSTs+="0";
 	//return " "+GMSTh+"h"+" "+GMSTm+"m"+" "+GMSTs+"s";
-	return x;
+	return x / 15.0;
 	}
 }
 
@@ -201,7 +201,7 @@ with(Math)
 	var A = floor(year/100);
 	var B = 2-A+floor(A/4);
 	JD0h = floor(365.25*(year+4716))+floor(30.6001*(month+1))+day+B-1524.5;
-	JD = JD0h+dayfraction;
+	JD = JD0h+dayfraction+deltaT/86400;
 
 	//Julian centuries (GMT) since 2000 January 0.5
 	T = (JD-2451545)/36525;
@@ -211,7 +211,7 @@ with(Math)
 	T5 = T*T4;
 
 	//Julian ephemeris day (TDT)
-	JDE = JD+deltaT/86400;
+	JDE = JD
 
 	//Julian centuries (TDT) from 2000 January 0.5
 	TE = (JDE-2451545)/36525;
@@ -369,8 +369,13 @@ function Nutation()
       fF = eval(nut[x].substring(4,6));
       fD = eval(nut[x].substring(6,8));
       f_omega = eval(nut[x].substring(8,10));
-      dp += (eval(nut[x].substring(10,17))+TE*eval(nut[x].substring(17,23)))*sind(fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
-      de   += (eval(nut[x].substring(23,29))+TE*eval(nut[x].substring(29,33)))*cosd(fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
+
+      dp += (eval(
+		  nut[x].substring(10,17))+TE*eval(nut[x].substring(17,23)))*sind(
+			  fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
+      de   += (eval(
+		  nut[x].substring(23,29))+TE*eval(nut[x].substring(29,33)))*cosd(
+			  fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
    }
 
    //Corrections (Herring, 1987)
@@ -1068,7 +1073,7 @@ function Output()
 {
 //Sun
 
-GHAsun = OutHA(Lsun_true);
+GHAsun = OutHA(lambda);
 SHAsun = OutHA(RAsun);
 DECsun = OutDec(DECsun);
 SDsun = OutSDHP(SDsun);

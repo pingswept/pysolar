@@ -30,15 +30,19 @@ from . import radiation
 
 def aberration_correction(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates
+    a correction for abbereation
     """
     sed = sun_earth_distance(dt_list, default)
     # param is sun-earth distance is in astronomical units
     return -20.4898 / (3600.0 * sed)
 
-def apparent_sun_longitude(dt_list, default=None):
+def apparent_solar_longitude(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates
+    Apparent Solar Longitude in degrees
     """
     tgl = true_geocentric_longitude(dt_list, default)
     dpsi = nutation(dt_list, default)['longitude']
@@ -68,7 +72,9 @@ def coefficients(dt_list, coeffs, default=None):
 
 def equation_of_equinox(dt_list, default=None):
     """
-    doc
+    Given date/time list and optional delta T
+    calculates
+    Equation of Equinox in degrees
     """
     delta_psi = nutation(dt_list, default)['longitude']
     epsilon = true_ecliptic_obliquity(dt_list, default)
@@ -77,14 +83,17 @@ def equation_of_equinox(dt_list, default=None):
 
 def flattened_latitude(latitude):
     """
-    docstring goes here
+    Given latitude
+    calculates
     """
     tan_lat = math.tan(math.radians(latitude))
     return math.degrees(math.atan(0.99664719 * tan_lat))
 
 def gasa(dt_list, default=None):
     """
-    Greenwich Apparent Sidereal Angle
+    Given date/time list and optional delta T
+    calculates
+    Greenwich Apparent Sidereal Angle in degress
     """
     mean = gmsa(dt_list, default)
     eqeq = equation_of_equinox(dt_list, default)
@@ -92,32 +101,40 @@ def gasa(dt_list, default=None):
 
 def gast(dt_list, default=None):
     """
-    Greenwich Apparent Sidereal Time
+    Given date/time list and optional delta T
+    calculates
+    Greenwich Apparent Sidereal Time in hours
     """
     return gasa(dt_list, default) / 15.0
 
 def gmsa(dt_list, default=None):
     """
-    Greenwich Mean Sidereal Angle
+    Given date/time list and optional delta T
+    calculates
+    Greenwich Mean Sidereal Angle in degrees
     """
     # 280.46061837+ 360.98564736629*(JD-2451545)+0.000387933*T2-T3/38710000
     # This function doesn't agree with Andreas and Reda as well as it should.
     # Works to ~5 sig figs in current unit test
-    jct = time.julian_century(dt_list, default)
-    jdn = jct * 36525.0
-    day_deg = (360.9856473659 * jdn) # 360.98564736629 is old and this is not SOFA
-    mean_st = day_deg + 280.46061837 + jct * (0.00387933 + jct * -1 / 38710000.0)
+    jec = time.julian_ephemeris_century(dt_list, default)
+    jdn = jec * 36525.0
+    day_deg = (360.98564736629 * jdn) # 360.98564736629 is old value
+    mean_st = day_deg + 280.46061837 + jec * (0.000387933 + jec * -1 / 38710000.0)
     return mean_st % 360
 
 def gmst(dt_list, default=None):
     """
-    Greenwich Mean Sidereal Time
+    Given date/time list and optional delta T
+    calculates
+    Greenwich Mean Sidereal Time in hours
     """
     return gmsa(dt_list, default) / 15.0
 
 def lasa(dt_list, params_list, default=None):
     """
-    Loacal Apparent Sidereal Angle
+    Given date/time list and optional delta T
+    calculates
+    Loacal Apparent Sidereal Angle in degrees
     """
     gaa = gasa(dt_list, default)
     lla = params_list[2]
@@ -125,21 +142,27 @@ def lasa(dt_list, params_list, default=None):
 
 def last(dt_list, params_list, default=None):
     """
-    Loacal Apparent Sidereal Time
+    Given date/time list and optional delta T
+    calculates
+    Loacal Apparent Sidereal Time in hours
     """
     laa = lasa(dt_list, params_list, default)
     return laa / 15.0
 
 def lmsa(dt_list, params_list, default=None):
     """
-    Loacal Mean Sidereal Angle
+    Given date/time list and optional delta T
+    calculates
+    Loacal Mean Sidereal Angle in degrees
     """
     mean = gmsa(dt_list, default)
     return (mean + params_list[2]) % 360.0
 
 def lmst(dt_list, params_list, default=None):
     """
-    Loacal Mean Sidereal Time
+    Given date/time list and optional delta T
+    calculates
+    Loacal Mean Sidereal Time in hours
     """
     mean = lmsa(dt_list, params_list, default)
     return mean / 15.0
@@ -148,21 +171,19 @@ def lmst(dt_list, params_list, default=None):
 
 def geocentric_latitude(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates
+    Geocentric Latitude of the Sun in degress
     """
     return -1 * heliocentric_latitude(dt_list, default)
 
-def true_geocentric_longitude(dt_list, default=None):
-    """
-    docstring goes here
-    """
-    return (heliocentric_longitude(dt_list, default) + 180 - 0.000025) % 360
-
 def geocentric_declination(dt_list, default=None):
     """
-    Geocentric declination of the Sun
+    Given date/time list and optional delta T
+    calculates
+    Geocentric declination of the Sun in degress
     """
-    asl = apparent_sun_longitude(dt_list, default)
+    asl = apparent_solar_longitude(dt_list, default)
     teo = true_ecliptic_obliquity(dt_list, default)
     glat = geocentric_latitude(dt_list, default)
     sin_asl = math.sin(math.radians(asl))
@@ -174,10 +195,10 @@ def geocentric_declination(dt_list, default=None):
 
 def geocentric_right_ascension(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates Geocentric Right Ascension in degrees
     """
-    # atan2((sind(lambda)*cosd(eps)-tand(beta)*sind(eps)),cosd(lambda))/dtr
-    asl = apparent_sun_longitude(dt_list, default)
+    asl = apparent_solar_longitude(dt_list, default)
     teo = true_ecliptic_obliquity(dt_list, default)
     glat = geocentric_latitude(dt_list, default)
     sin_asl = math.sin(math.radians(asl))
@@ -189,7 +210,9 @@ def geocentric_right_ascension(dt_list, default=None):
 
 def greenwich_hour_angle(dt_list, default=None):
     """
-    Greenwich Hour Angle
+    Given date/time list and optional delta T
+    calculates
+    Greenwich Hour Angle in degrees
     """
     gaa = gasa(dt_list, default)
     gra = geocentric_right_ascension(dt_list, default)
@@ -197,6 +220,9 @@ def greenwich_hour_angle(dt_list, default=None):
 
 def heliocentric_latitude(dt_list, default=None):
     """
+    Given date/time list and optional delta T
+    calculates Heliocentric Latitude in degrees
+
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
@@ -209,6 +235,9 @@ def heliocentric_latitude(dt_list, default=None):
 
 def heliocentric_lat_elements(dt_list, default=None):
     """
+    Given date/time list and optional delta T
+    gets Coefficient terms for Heliocentric Latitude in radians
+
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
@@ -217,6 +246,8 @@ def heliocentric_lat_elements(dt_list, default=None):
 
 def heliocentric_longitude(dt_list, default=None):
     """
+    Given date/time list and optional delta T
+    calculates Heliocentric Longitude in degrees
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
@@ -234,6 +265,9 @@ def heliocentric_longitude(dt_list, default=None):
 
 def heliocentric_lon_elements(dt_list, default=None):
     """
+    Given date/time list and optional delta T
+    gets Coefficient terms for Heliocentric Longitude in radians
+
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
@@ -242,7 +276,9 @@ def heliocentric_lon_elements(dt_list, default=None):
 
 def incidence_angle(dt_list, params_list, default=None):
     """
-    docstring goes here
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Angle of Incedence in degrees
     """
     slope = params_list[3]
     slope_orientation = params_list[4]
@@ -261,7 +297,9 @@ def incidence_angle(dt_list, params_list, default=None):
 
 def local_hour_angle(dt_list, params_list, default=None):
     """
-    Local hour angle
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Local Hour Angle
     """
     longitude = params_list[2]
     gha = greenwich_hour_angle(dt_list, default)
@@ -269,14 +307,17 @@ def local_hour_angle(dt_list, params_list, default=None):
 
 def max_horizontal_parallax(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates
     """
     sed = sun_earth_distance(dt_list, default)
     return 8.794 / (3600 / sed)
 
 def mean_ecliptic_obliquity(dt_list, default=None):
     """
-    mean epsilon
+    Given date/time list and optional delta T
+    calculates
+    Mean Ecliptic Obliquity in degrees
     """
     # (84381.448 - 46.815 * TE - 0.00059 * TE2 + 0.001813 * TE3) / 3600
     jec = time.julian_ephemeris_century(dt_list, default)
@@ -286,9 +327,11 @@ def mean_ecliptic_obliquity(dt_list, default=None):
                 0.00200340 + jec * (
                     -0.000000576 + jec * -0.0000000434))))) / 3600
 
-def mean_geocentric_longitude(dt_list, default=None):
+def mean_solar_longitude(dt_list, default=None):
     """
-    mean geocentric longitude
+    Given date/time list and optional delta T
+    calculates
+    Mean Geocentric Longitude in degrees
     """
     # 280.4664567+360007.6982779*Tau+0.03032028*Tau2+Tau3/49931-Tau4/15299-Tau5/1988000
     jct = time.julian_century(dt_list, default)
@@ -301,7 +344,9 @@ def mean_geocentric_longitude(dt_list, default=None):
 
 def nutation(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates
+    Delta Epsilon and Delta Psi in degrees
     """
     jec = time.julian_ephemeris_century(dt_list, default)
     abcd = constants.NUTATION_COEFFICIENTS
@@ -340,7 +385,9 @@ def nutation(dt_list, default=None):
 
 def projected_axial_distance(params_list):
     """
-    docstring goes here
+    Given parameter list with elevation and latitude
+    calculates
+    a distance correction for
     """
     elevation = params_list[0]
     latitude = params_list[1]
@@ -351,7 +398,9 @@ def projected_axial_distance(params_list):
 
 def projected_radial_distance(params_list):
     """
-    docstring goes here
+    Given parameter list having elevation and latitude
+    calculates
+    a distance correction for
     """
     elevation = params_list[0]
     latitude = params_list[1]
@@ -362,7 +411,10 @@ def projected_radial_distance(params_list):
 
 def refraction_correction(dt_list, params_list, default=None):
     """
-    docstring goes here
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    a correction or offset of view caused by refraction of Earth
+    atmosphere and view angle.
     """
     #function and default values according to original NREL SPA C code
     #http://www.nrel.gov/midc/spa/
@@ -388,7 +440,9 @@ def refraction_correction(dt_list, params_list, default=None):
 
 def right_ascension_parallax(dt_list, params_list, default=None):
     """
-    docstring goes here
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    A delta of Right Ascension caused by parallax in degrees
     """
     gsd = geocentric_declination(dt_list, default)
     ehp = max_horizontal_parallax(dt_list, default)
@@ -405,11 +459,10 @@ def right_ascension_parallax(dt_list, params_list, default=None):
         math.atan2(-1 * prd * sin_ehp * sin_lha,
                    cos_gsd - prd * sin_ehp * cos_lha))
 
-
-
 def sun_earth_distance(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates
     """
     jem = time.julian_ephemeris_millennium(dt_list, default)
     rvc = coefficients(dt_list, constants.AU_DISTANCE_COEFFS, default)
@@ -419,10 +472,13 @@ def sun_earth_distance(dt_list, default=None):
 
 def topocentric_azimuth_angle(dt_list, params_list, default=None):
     """
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Topocentric Azimuth Angle in degrees
     Measured eastward from north
     """
     latitude = params_list[1]
-    tdec = topocentric_sun_declination(dt_list, params_list, default)
+    tdec = topocentric_solar_declination(dt_list, params_list, default)
     tlha = topocentric_lha(dt_list, params_list, default)
     cos_tlha = math.cos(math.radians(tlha))
     sin_tlha = math.sin(math.radians(tlha))
@@ -436,12 +492,14 @@ def topocentric_azimuth_angle(dt_list, params_list, default=None):
 
 def topocentric_elevation_angle(dt_list, params_list, default=None):
     """
-    docstring goes here
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Topocentric Elevation Angle in degrees
     """
     latitude = params_list[1]
     sin_latitude = math.sin(math.radians(latitude))
     cos_latitude = math.cos(math.radians(latitude))
-    tsd = topocentric_sun_declination(dt_list, params_list, default)
+    tsd = topocentric_solar_declination(dt_list, params_list, default)
     sin_tsd = math.sin(math.radians(tsd))
     cos_tsd = math.sin(math.radians(tsd))
     tlha = topocentric_lha(dt_list, params_list, default)
@@ -452,15 +510,19 @@ def topocentric_elevation_angle(dt_list, params_list, default=None):
 
 def topocentric_lha(dt_list, params_list, default=None):
     """
-    Date,Time,Topocentric local hour angle
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Topocentric Local Hour Angle in degrees
     """
     lha = local_hour_angle(dt_list, params_list, default)
     rap = right_ascension_parallax(dt_list, params_list, default)
     return lha - rap
 
-def topocentric_sun_declination(dt_list, params_list, default=None):
+def topocentric_solar_declination(dt_list, params_list, default=None):
     """
-    docstring goes here
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Topocentric Solar Declination in degerees
     """
     gsd = geocentric_declination(dt_list, default)
     pad = projected_axial_distance(params_list)
@@ -479,7 +541,9 @@ def topocentric_sun_declination(dt_list, params_list, default=None):
 
 def topocentric_right_ascension(dt_list, params_list, default=None):
     """
-    docstring goes here
+    Given date/time list parameter list and optional delta T
+    calculates
+    Topocentric Right Ascension in degrees
     """
     psra = right_ascension_parallax(dt_list, params_list, default)
     gsra = geocentric_right_ascension(dt_list, default)
@@ -487,28 +551,40 @@ def topocentric_right_ascension(dt_list, params_list, default=None):
 
 def topocentric_zenith_angle(dt_list, params_list, default=None):
     """
-    docstring goes here
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Topocentric Zenith Angle in degrees
     """
     tea = topocentric_elevation_angle(dt_list, params_list, default)
     return 90 - tea - refraction_correction(dt_list, params_list, default)
 
 def true_ecliptic_obliquity(dt_list, default=None):
     """
-    docstring goes here
+    Given date/time list and optional delta T
+    calculates
+    True Ecliptic Oblquity in degrees
     """
-    tmu = time.julian_ephemeris_century(dt_list, default)
-    mean_eps = 84381.448 - (4680.93 * tmu) - (1.55 * tmu ** 2) + (1999.25 * tmu ** 3) \
-    - (51.38 * tmu ** 4) -(249.67 * tmu ** 5) - (39.05 * tmu ** 6) + (7.12 * tmu ** 7) \
-    + (27.87 * tmu ** 8) + (5.79 * tmu ** 9) + (2.45 * tmu)
-
-    mean_eps = ((((-0.0000000434 * tmu - 0.000000576) * tmu +
-                  0.00200340) * tmu - 0.0001831) * tmu -
-                46.836769) * tmu + 84381.406
-
     mean_eps = mean_ecliptic_obliquity(dt_list, default)
     delta_eps = nutation(dt_list, default)['obliquity']
 
-    return (mean_eps / 3600.0) + delta_eps
+    return mean_eps + delta_eps
+
+def true_geocentric_longitude(dt_list, default=None):
+    """
+    Given date/time list and optional delta T
+    calculates
+    true Geocentric Longitude of the Sun in degress
+    """
+    return (heliocentric_longitude(dt_list, default) + 180) % 360
+
+def true_solar_longitude(dt_list, default=None):
+    """
+    Given date/time list and optional delta T
+    calculates
+    True Solar Longitude in degrees
+    """
+    hlon = heliocentric_longitude(dt_list, default)
+    return (hlon + 180 - 0.000025) % 360.0
 
 
 def altitude(when, params_list, default=None):
@@ -547,7 +623,7 @@ def azimuth(when, params_list, default=None):
                when.microsecond, 0, 0]
     return 180 - topocentric_azimuth_angle(dt_list, params_list, default)
 
-def azimuth_fast(when, dt_list, params_list, default=None):
+def azimuth_fast(when, params_list, default=None):
     """
     docstring goes here
     """
@@ -559,7 +635,7 @@ def azimuth_fast(when, dt_list, params_list, default=None):
     declination_rad = math.radians(declination(day))
     latitude_rad = math.radians(latitude)
     hour_angle_rad = math.radians(hour_angle(when, longitude))
-    altitude_rad = math.radians(altitude(dt_list, params_list, default))
+    altitude_rad = math.radians(altitude(when, params_list, default))
 
     azimuth_rad = math.asin(
         math.cos(declination_rad) * math.sin(hour_angle_rad) / math.cos(altitude_rad))
