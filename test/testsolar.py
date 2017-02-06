@@ -417,16 +417,16 @@ class TestGeocentricSolar(unittest.TestCase):
         # print(self.test_apparent_sun_longitude.__doc__)
         # print('testing solar.py Apparent Sun Longitude method')
         asl = solar.apparent_solar_longitude(self.dt_list, self.delta_t)
-        self.assertEqual(204.01426380938904, asl, 12)
-        self.assertAlmostEqual(204.0085272110777, asl, 1)
+        self.assertEqual(204.0085524502644, asl, 12)
+        self.assertAlmostEqual(204.0085272110777, asl, 4)
 
         asl1 = solar.apparent_solar_longitude(self.dt_list, 0)
-        self.assertEqual(204.01349429012174, asl1, 12)
-        self.assertAlmostEqual(204.00775769284664, asl1, 1)
+        self.assertEqual(204.00778293222274, asl1, 12)
+        self.assertAlmostEqual(204.00775769284664, asl1, 4)
 
         asl2 = solar.apparent_solar_longitude(self.dt_list)
-        self.assertEqual(204.0142355727799, asl2, 12)
-        self.assertAlmostEqual(204.0084989745065, asl2, 1)
+        self.assertEqual(204.00852421370024, asl2, 12)
+        self.assertAlmostEqual(204.0084989745065, asl2, 4)
 
     def test_true_ecliptic_obliquity(self):
         """
@@ -456,29 +456,29 @@ class TestGeocentricSolar(unittest.TestCase):
         # print(self.test_geo_rad_dec.__doc__)
         # print('testing solar.py Geocentric Right Ascension method')
         gsra = solar.geocentric_right_ascension(self.dt_list, self.delta_t)
-        self.assertEqual(202.23279111614949, gsra, 12)
-        self.assertAlmostEqual(202.2273842747809, gsra, 1)
+        self.assertEqual(202.2274101002196, gsra, 12)
+        self.assertAlmostEqual(202.2273842747809, gsra, 4)
 
         gsra1 = solar.geocentric_right_ascension(self.dt_list, 0)
-        self.assertEqual(202.23206609673502, gsra1, 12)
-        self.assertAlmostEqual(202.22665926504152, gsra1, 1)
+        self.assertEqual(202.22668509069, gsra1, 12)
+        self.assertAlmostEqual(202.22665926504152, gsra1, 4)
 
         gsra2 = solar.geocentric_right_ascension(self.dt_list)
-        self.assertEqual(202.23276451238965, gsra2, 12)
-        self.assertAlmostEqual(202.22735767137598, gsra2, 1)
+        self.assertEqual(202.22738349682245, gsra2, 12)
+        self.assertAlmostEqual(202.22735767137598, gsra2, 4)
 
         # print('testing solar.py Geocentric Declination method')
         gsd = solar.geocentric_declination(self.dt_list, self.delta_t)
-        self.assertEqual(-9.316438930060807, gsd, 12)
-        self.assertAlmostEqual(-9.314331649840488, gsd, 2)
+        self.assertEqual(-9.314335845556416, gsd, 12)
+        self.assertAlmostEqual(-9.314331649840488, gsd, 5)
 
         gsd1 = solar.geocentric_declination(self.dt_list, 0)
-        self.assertEqual(-9.316155588691206, gsd1, 12)
-        self.assertAlmostEqual(-9.314048298076031, gsd1, 2)
+        self.assertEqual(-9.314052493761887, gsd1, 12)
+        self.assertAlmostEqual(-9.314048298076031, gsd1, 5)
 
         gsd2 = solar.geocentric_declination(self.dt_list)
-        self.assertEqual(-9.316428533206587, gsd2, 12)
-        self.assertAlmostEqual(-9.3143212526048, gsd2, 2)
+        self.assertEqual(-9.314325448319655, gsd2, 12)
+        self.assertAlmostEqual(-9.3143212526048, gsd2, 5)
 
     def test_mean_geocentric_longitude(self):
         """
@@ -533,60 +533,55 @@ class TestSolar(unittest.TestCase):
         # print(self.test_aberration_correction.__doc__)
         # print('testing solar.py Aberration Correction method')
         gac = solar.aberration_correction(self.dt_list, self.delta_t)
-        self.assertEqual(-0.005711359293251812, gac, 12)
-        self.assertEqual(-0.005711359293251812, gac, 12)
+        self.assertEqual(-0.00571135918175518, gac, 12)
+        self.assertAlmostEqual(-0.005711, gac, 6)
 
         gac1 = solar.aberration_correction(self.dt_list, 0)
-        self.assertEqual(-0.0057113580676371465, gac1, 12)
-        self.assertEqual(-0.0057113580676371465, gac1, 6)
+        self.assertEqual(-0.005711357956140537, gac1, 12)
+        self.assertAlmostEqual(-0.005711, gac1, 6)
 
         gac2 = solar.aberration_correction(self.dt_list)
-        self.assertEqual(-0.005711359248279383, gac2, 12)
-        self.assertEqual(-0.005711359248279383, gac2, 12)
+        self.assertEqual(-0.005711359136782756, gac2, 12)
+        self.assertAlmostEqual(-0.00571136, gac2, 8)
 
     def test_greenwich_hour_angle(self):
         """
-        testing
-        Date, Time, Greenwich hour angle
-        delta t 67
-        10/17/2003, 12:33:30, 11.856008
-        delta t 0
-        10/17/2003, 12:30:30, 11.106627
+        testing Greenwich hour angle
+        67      116° 17' 04''
+        0       116° 17' 07'
+        default 116° 17' 04''
         """
         # print(self.test_local_hour_angle.__doc__)
         # print('testing solar.py Greewich Hour Angle method')
         gha = solar.greenwich_hour_angle(self.dt_list, self.delta_t)
-        self.assertEqual(113.24945232218289, gha, 12)
+        self.assertEqual(116.56444531010143, gha, 12)
 
         gha1 = solar.greenwich_hour_angle(self.dt_list, 0)
-        self.assertEqual(112.969534757091, gha1, 12)
+        self.assertEqual(116.28523931303943, gha1, 12)
 
         gha2 = solar.greenwich_hour_angle(self.dt_list)
-        self.assertEqual(113.23918107713291, gha2, 12)
-        self.assertEqual(113.23918107713291, gha2, 12)
+        self.assertEqual(116.5542001752286, gha2, 12)
+        self.assertAlmostEqual(116.55420018, gha2, 8)
 
     def test_local_hour_angle(self):
         """
-        testing
-        Date, Time, Observer hour angle
-        delta t 67
-        10/17/2003, 12:33:30, 11.856008
-        delta t 0
-        10/17/2003, 12:30:30, 11.106627
+        testing Observer hour angle
+        67      11.856008
+        0       11.106627
         """
         # print(self.test_local_hour_angle.__doc__)
         # print('testing solar.py Local Hour Angle method')
         lha = solar.local_hour_angle(self.dt_list, self.params_list, self.delta_t)
-        self.assertEqual(8.070852322182887, lha, 12)
-        # self.assertEqual(11.856008, lha, 12)
+        self.assertEqual(11.385845310101416, lha, 12)
+        # self.assertAlmostEqual(11.856008, lha, 6)
 
         lha1 = solar.local_hour_angle(self.dt_list, self.params_list, 0)
-        self.assertEqual(7.790934757090994, lha1, 12)
-        # self.assertEqual(11.106627, lha1, 12)
+        self.assertEqual(11.106639313039409, lha1, 12)
+        self.assertAlmostEqual(11.106627, lha1, 4)
 
         lha2 = solar.local_hour_angle(self.dt_list, self.params_list)
-        self.assertEqual(8.060581077132909, lha2, 12)
-        self.assertEqual(8.060581077132909, lha2, 12)
+        self.assertEqual(11.375600175228584, lha2, 12)
+        self.assertAlmostEqual(11.37560018, lha2, 8)
 
     def test_max_horizontal_parallax(self):
         """
@@ -600,16 +595,16 @@ class TestSolar(unittest.TestCase):
         # print(self.test_max_horizontal_parallax.__doc__)
         # print('testing solar.py Equitorial Horizontal Parallax method')
         ehp = solar.max_horizontal_parallax(self.dt_list, self.delta_t)
-        self.assertEqual(0.002434331378591894, ehp, 12)
-        # self.assertEqual(0.0024512534834335345, ehp, 12)
+        self.assertEqual(0.0024343313785918936, ehp, 12)
+        # self.assertAlmostEqual(0.002451, ehp, 6)
 
         ehp1 = solar.max_horizontal_parallax(self.dt_list, 0)
         self.assertEqual(0.0024343319009811756, ehp1, 12)
-        # self.assertEqual(0.0024512529574130092, ehp1, 12)
+        # self.assertAlmostEqual(0.002451, ehp1, 6)
 
         ehp2 = solar.max_horizontal_parallax(self.dt_list)
-        self.assertEqual(0.0024343313977603248, ehp2, 12)
-        self.assertEqual(0.0024343313977603248, ehp2, 12)
+        self.assertEqual(0.0024343313977603226, ehp2, 12)
+        self.assertAlmostEqual(0.00243433, ehp2, 8)
 
     def test_pressure_with_elevation(self):
         """
@@ -653,16 +648,16 @@ class TestSolar(unittest.TestCase):
         # print(self.test_sun_earth_distance.__doc__)
         # print('testing solar.py Sun Earth Distance method')
         sed = solar.sun_earth_distance(self.dt_list, self.delta_t)
-        self.assertEqual(0.9965422973539707, sed, 12)
-        self.assertEqual(0.9965422973539707, sed, 12)
+        self.assertEqual(0.9965422973539704, sed, 12)
+        self.assertAlmostEqual(0.996542, sed, 6)
 
         sed1 = solar.sun_earth_distance(self.dt_list, 0)
         self.assertEqual(0.996542511204484, sed1, 12)
-        self.assertEqual(0.996542511204484, sed1, 12)
+        self.assertAlmostEqual(0.996543, sed1, 6)
 
         sed2 = solar.sun_earth_distance(self.dt_list)
-        self.assertEqual(0.9965423052009517, sed2, 12)
-        self.assertEqual(0.9965423052009517, sed2, 12)
+        self.assertEqual(0.9965423052009508, sed2, 12)
+        self.assertAlmostEqual(0.99654231, sed2, 8)
 
     def test_temperature_with_elevation(self):
         """
@@ -947,7 +942,7 @@ if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=2).run(HSOLAR)
     unittest.TextTestRunner(verbosity=2).run(GSOLAR)
     unittest.TextTestRunner(verbosity=2).run(SIDEREAL)
-    # unittest.TextTestRunner(verbosity=2).run(SOLAR)
+    unittest.TextTestRunner(verbosity=2).run(SOLAR)
     # unittest.TextTestRunner(verbosity=2).run(TSOLAR)
     # unittest.TextTestRunner(verbosity=2).run(AESOLAR)
     # unittest.TextTestRunner(verbosity=2).run(INSOLAR)

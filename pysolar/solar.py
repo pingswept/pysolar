@@ -302,9 +302,12 @@ def local_hour_angle(dt_list, params_list, default=None):
     calculates
     Local Hour Angle
     """
+    gaa = gasa(dt_list, default)
     longitude = params_list[2]
-    gha = greenwich_hour_angle(dt_list, default)
-    return (gha + longitude) % 360
+    sra = geocentric_right_ascension(dt_list, default)
+    return gaa + longitude - sra
+
+
 
 def max_horizontal_parallax(dt_list, default=None):
     """
@@ -467,7 +470,11 @@ def sun_earth_distance(dt_list, default=None):
     """
     jem = time.julian_ephemeris_millennium(dt_list, default)
     rvc = coefficients(dt_list, constants.AU_DISTANCE_COEFFS, default)
-    return (rvc[0] + jem * (rvc[1] + jem * (rvc[2] + jem * (rvc[3] + jem * rvc[4]))))  / 1e8
+    return (
+        rvc[0] + jem * (
+            rvc[1] + jem * (
+                rvc[2] + jem * (
+                    rvc[3] + jem * rvc[4]))))  / 1e16
 
 # Topocentric functions calculate angles relative to a location on the surface of the earth.
 
