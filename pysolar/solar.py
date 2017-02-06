@@ -35,8 +35,9 @@ def aberration_correction(dt_list, default=None):
     a correction for abbereation
     """
     sed = sun_earth_distance(dt_list, default)
-    # param is sun-earth distance is in astronomical units
-    return -20.4898 / (3600.0 * sed)
+    # param sun-earth distance is in astronomical units
+    # return -20.4898 / (3600.0 * sed)
+    return -0.005691611 / sed
 
 def apparent_solar_longitude(dt_list, default=None):
     """
