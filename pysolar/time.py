@@ -126,7 +126,9 @@ EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
 def delta_t(jd0, default=None):
     """
-    Given a date/time list returns a suitable value for delta_t
+    Given a julian day returns a suitable value for delta_t
+    if no default value is given otherwise use the value given
+    as the delta t
     """
     dt_list = cal(jd0)
     # now = now.utctimetuple()

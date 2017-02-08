@@ -103,14 +103,14 @@ def coefficients(dt_list, coeffs, default=None):
     return result
 #end coefficients
 
-def equation_of_equinox(dt_list, default=None):
+def equation_of_equinox(jd0, jd1):
     """
     Given date/time list and optional delta T
     calculates
     Equation of Equinox in degrees
     """
-    delta_psi = nutation(dt_list, default)['longitude']
-    epsilon = true_ecliptic_obliquity(dt_list, default)
+    delta_psi = nutation(jd0, jd1)['longitude']
+    epsilon = true_ecliptic_obliquity(jd0, jd1)
     cos_eps = math.cos(math.radians(epsilon))
     return delta_psi * cos_eps
 
@@ -122,55 +122,65 @@ def flattened_latitude(latitude):
     tan_lat = math.tan(math.radians(latitude))
     return math.degrees(math.atan(0.99664719 * tan_lat))
 
-def gasa(jd0, jd1, default=None):
+def gasa(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Apparent Sidereal Angle in degress
     """
     mean = gmsa(jd0, jd1)
-    eqeq = equation_of_equinox(jd0 + jd1, default)
+    eqeq = equation_of_equinox(jd0, jd1)
     return (mean + eqeq) % 360.0
 
-def gast(jd0, jd1, default=None):
+def gast(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Apparent Sidereal Time in hours
     """
-    return gasa(jd0, jd1, default) / 15.0
+    return gasa(jd0, jd1) / 15
 
 def gmsa(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Mean Sidereal Angle in degrees
     see: http://aa.usno.navy.mil/publications/docs/Circular_179.pdf
          Resolution B1.8 note 3.
     theta_ut1 = (1.00273781191135448 * hours + 0.7790572732640) * 360
     """
+    """
+    pending further investigation
     if jd0 < jd1:
         dj1 = jd0
         dj2 = jd1
     else:
         dj1 = jd1
         dj2 = jd0
-    frac = dj1 % 1.0 + dj2 % 1.0
-    jdt = dj1 + (dj2- 2451545.0)
+
+    jdt = (dj1 - 2451545.0) + dj2
+
+    frac = dj1  % 1.0 + dj2 % 1.0
+    s_days = (0.00273781191135448 * jdt + 0.7790572732640 + frac) * 2 * math.pi
+    delta_t = time.delta_t(jd0 + jd1)
+    print(delta_t)
     jct = jdt / 36525
-    rval = ((
-        frac + 0.7790572732640 + 0.00273781191135448 * jdt) * math.pi * 2) % (math.pi * 2)
-    rval += 0.014506 + (
+    angle = 0.014506 + (
         4612.156534 + (
             1.3915817 + (
                 -0.00000044 + (
                     -0.000029956 + (
                         -0.0000000368 * jct) * jct) * jct) * jct) * jct) / 3600
-    return rval
+    # print(frac)
+    # print(math.degrees(s_days) % 360.0)
+    # print(math.degrees(angle) % 360.0)
+    return (math.degrees(s_days) % 360.0 + angle) / 15
+    """
+    return gmst(jd0, jd1) * 15
 
 def gmst(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Mean Sidereal Time in hours
     see: http://aa.usno.navy.mil/faq/docs/GAST.php
@@ -184,7 +194,7 @@ def gmst(jd0, jd1):
     # Applications of the USNO docs. see link above.
 
     # make sure dj2 has the date component
-    if jd0 < jd1:
+    if jd0 > jd1:
         dj1 = jd0
         dj2 = jd1
     else:
@@ -193,54 +203,54 @@ def gmst(jd0, jd1):
     jdt = dj1 + dj2 # total all jd
     jd2000 = jdt - 2451545.0 # total all jd for j2000 days
     gma = 6.697374558
-    days = 0.06570982441908 * (dj2 - 2451545.0) # days
+    days = 0.06570982441908 * (dj1 - 2451545.0) # days
 
     # all time components
     jct = jd2000 / 36525.0 # julian century time
-    frac = (dj1 + dj2 + 0.5) % 1.0# julian day fraction from midnight
-    print(frac)
+    frac = (dj1 + dj2 + 0.5) % 1.0 # julian day fraction from midnight
     hours = 1.0027379093508055 * frac * 24.0 # hours
-    coeff = 0.000026 * jct * jct # might not need this
+    coeff = 0.000026 * jct * jct
 
     mean_st = gma + days + hours + coeff
     return mean_st % 24.0
 
-def lasa(jd0, jd1, params_list, default=None):
+def lasa(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Loacal Apparent Sidereal Angle in degrees
     """
-    gaa = gasa(jd0, jd1, default)
-    lla = params_list[2]
-    return (gaa + lla) % 360.0
 
-def last(jd0, jd1, params_list, default=None):
+    return gasa(jd0, jd1)
+
+def last(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Loacal Apparent Sidereal Time in hours
     """
-    laa = lasa(jd0, jd1, params_list, default)
+    laa = lasa(jd0, jd1)
     return laa / 15.0
 
 def lmsa(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Loacal Mean Sidereal Angle in degrees
+    by adding a longitude offset on to the jd1
+    hence this is defined only for convinience
+    of naming functions otherwise it is the same
+    as gmsa(jd0, jd1)
     """
-    mean = gmsa(jd0, jd1)
-    return mean % 360.0
+    return gmsa(jd0, jd1)
 
-def lmst(jd0, jd1, params_list, default=None):
+def lmst(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Loacal Mean Sidereal Time in hours
     """
-    mean = lmsa(jd0, jd1, params_list, default)
-    return mean / 15.0
+    return gmst(jd0, jd1)
 
 # Geocentric functions calculate angles relative to the center of the earth.
 
@@ -391,14 +401,14 @@ def max_horizontal_parallax(dt_list, default=None):
     sed = astronomical_units(dt_list, default)
     return 8.794 / (3600 / sed)
 
-def mean_ecliptic_obliquity(jdn, default=None):
+def mean_ecliptic_obliquity(jd0, jd1):
     """
     Given date/time list and optional delta T
     calculates
     Mean Ecliptic Obliquity in degrees
     """
     # (84381.448 - 46.815 * TE - 0.00059 * TE2 + 0.001813 * TE3) / 3600
-    jec = time.julian_ephemeris_century(jdn)
+    jec = time.julian_ephemeris_century(jd0 + jd1)
     return (84381.406 + jec * (
         -46.836769 + jec * (
             -0.0001831 + jec * (
@@ -420,13 +430,13 @@ def mean_solar_longitude(dt_list, default=None):
                     1.0 / -15299.0 + jct * (1.0 / -1988000.0)))))
     return mgl % 360.0
 
-def nutation(jdn, default=None):
+def nutation(jd0, jd1):
     """
     Given date/time list and optional delta T
     calculates
     Delta Epsilon and Delta Psi in degrees
     """
-    jec = time.julian_ephemeris_century(jdn)
+    jec = time.julian_ephemeris_century(jd0 + jd1)
     abcd = constants.NUTATION_COEFFICIENTS
     nutation_long = []
     nutation_oblique = []
@@ -639,14 +649,14 @@ def topocentric_zenith_angle(dt_list, params_list, default=None):
     # 3.14.4. Calculate the topocentric zenith angle, 2 (in degrees),
     return 90 - tea
 
-def true_ecliptic_obliquity(dt_list, default=None):
+def true_ecliptic_obliquity(jd0, jd1):
     """
     Given date/time list and optional delta T
     calculates
     True Ecliptic Oblquity in degrees
     """
-    mean_eps = mean_ecliptic_obliquity(dt_list, default)
-    delta_eps = nutation(dt_list, default)['obliquity']
+    mean_eps = mean_ecliptic_obliquity(jd0, jd1)
+    delta_eps = nutation(jd0, jd1)['obliquity']
 
     return mean_eps + delta_eps
 

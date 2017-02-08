@@ -19,12 +19,6 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-# file: 'file:///c%3A/Users/kb9agt/github/python_lang/pysolar/test/testsolar.py'
-# severity: 'Info'
-# message: 'C0302:Too many lines in module (1117/1000)'
-# at: '1,1'
-# source: 'pylint'
-# probably should move time.py tests out to their own take out some comments.
 """ Tests for solar.py """
 import datetime
 import math
@@ -38,6 +32,7 @@ class TestSiderealTime(unittest.TestCase):
     """
     delta_t = 67 / 86400.0
     longitude = -105.1786
+    longitude_offset = longitude / 360.0
     latitude = 39.742476 # 39:44:32
     pressure = 820.0 # millibars
     elevation = 1830.14 # meters
@@ -51,78 +46,76 @@ class TestSiderealTime(unittest.TestCase):
     dut1 = datetime.timedelta(seconds=0.0)
     dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
     def setUp(self):
-        # time at MIDC SPA https://www.nrel.gov/midc/solpos/spa.html
-        self.jd1 = (
+        self.jd1 = 2452929.5
+
+        self.jd2 = (
             self.dt_list[3] / 24.0) + (
                 self.dt_list[4] / 1440.0) + (
                     self.dt_list[5] / 86400.0)
-        self.jd2 = 2452929.5
-        self.default = time.delta_t(self.jd1 + self.jd2) / 86400.0
-        print(self.default)
-        # print(self.jd1 + self.jd2)
-        # return 'Testing pysolar time functions', int(pytime.time())
 
-    def gasa(self):
+        self.default = time.delta_t(self.jd1 + self.jd2) / 86400.0
+
+    def test_gasa(self):
         """
         testing  Greenwich apparent sidereal angle
-        67       318.79184109456986
         0        318.51191008778073
         64.5415  318.7815693562905
+        67       318.79184109456986
         """
         # print('testing solar.py Greenwich Apparent Sidereal Angle method')
-        gasa = solar.gasa(self.jd1, self.jd2, self.delta_t)
-        self.assertEqual(318.7918412524542, gasa, 12)
-        self.assertAlmostEqual(318.79184109456986, gasa, 6)
+        gasa = solar.gasa(self.jd1, self.jd2)
+        self.assertEqual(318.51191024614667, gasa, 12)
+        self.assertAlmostEqual(318.51191008778073, gasa, 6)
 
-        gasa1 = solar.gasa(self.jd1, self.jd2, 0)
-        self.assertEqual(318.5119102459109, gasa1, 12)
-        self.assertAlmostEqual(318.51191008778073, gasa1, 6)
+        gasa1 = solar.gasa(self.jd1, self.default + self.jd2)
+        self.assertEqual(318.781569514435, gasa1, 12)
+        self.assertAlmostEqual(318.7815693562905, gasa1, 6)
 
-        gasa2 = solar.gasa(self.jd1, self.jd2)
-        self.assertEqual(318.78156951419896, gasa2, 12)
-        self.assertAlmostEqual(318.7815693562905, gasa2, 6)
+        gasa2 = solar.gasa(self.jd1, self.delta_t + self.jd2)
+        self.assertEqual(318.79184125269, gasa2, 12)
+        self.assertAlmostEqual(318.79184109456986, gasa2, 6)
 
-    def gast(self):
+    def test_gast(self):
         """
         testing Greenwich Apparent Sidereal Time
-        67      21.252789406304657
         0       21.23412733918538
         64.5415 21.2521046237527
+        67      21.252789406304657
         """
         # print(self.test_gast.__doc__)
         # print('testing solar.py Greenwich Apparent Sideral Time method')
-        gast = solar.gast(self.jd1, self.jd2, self.delta_t)
-        self.assertEqual(21.252788869282202, gast, 12)
-        self.assertAlmostEqual(21.252789406304657, gast, 5)
+        gast = solar.gast(self.jd1, self.jd2)
+        self.assertEqual(21.234127349743112, gast, 12)
+        self.assertAlmostEqual(21.23412733918538, gast, 7)
 
-        gast1 = solar.gast(self.jd1, self.jd2, 0)
-        self.assertEqual(21.234126802635974, gast1, 12)
-        self.assertAlmostEqual(21.23412733918538, gast1, 5)
+        gast1 = solar.gast(self.jd1, self.default + self.jd2)
+        self.assertEqual(21.252104634295666, gast1, 12)
+        self.assertAlmostEqual(21.2521046237527, gast1, 7)
 
-        gast2 = solar.gast(self.jd1, self.jd2)
-        self.assertEqual(21.252104082851623, gast2, 12)
-        self.assertAlmostEqual(21.2521046237527, gast2, 5)
+        gast2 = solar.gast(self.jd1, self.delta_t + self.jd2)
+        self.assertEqual(21.252789416846, gast2, 12)
+        self.assertAlmostEqual(21.252789406304657, gast2, 7)
 
-    def gmsa(self):
+    def test_gmsa(self):
         """
         testing Greenwich mean sidereal angle
-        67      318.7955092670163
         0       318.51557827281067
         64.5415 318.78523752919864
+        67      318.7955092670163
         """
         # print(self.test_sidereal_angles.__doc__)
         # print('testing solar.py Greenwich Mean Sideral Angle method')
-        gmsa = math.degrees(solar.gmsa(self.jd1 + self.delta_t, self.jd2))
-        self.assertEqual(318.79550926455414, gmsa, 12)
-        self.assertAlmostEqual(318.7955092670163, gmsa, 7)
+        gmsa0 = solar.gmsa(self.jd1, self.jd2)
+        self.assertEqual(318.51557827057434, gmsa0, 12)
+        self.assertAlmostEqual(318.51557827281067, gmsa0, 8)
 
-        gmsa1 = solar.gmsa(self.jd1, self.jd2) * 180 / math.pi
-        self.assertEqual(318.51557827033855, gmsa1, 12)
-        self.assertAlmostEqual(318.51557827281067, gmsa1, 8)
+        gmsa1 = solar.gmsa(self.jd1, self.default + self.jd2)
+        self.assertEqual(318.7852375269872, gmsa1, 12)
+        self.assertAlmostEqual(318.78523752919864, gmsa1, 8)
 
-        gmsa2 = solar.gmsa(self.jd1, self.jd2)
-        self.assertEqual(318.7852375267512, gmsa2, 12)
-        self.assertAlmostEqual(318.78523752919864, gmsa2, 8)
+        gmsa2 = solar.gmsa(self.jd1, self.delta_t + self.jd2)
+        self.assertEqual(318.7955092647899, gmsa2, 12)
+        self.assertAlmostEqual(318.7955092670163, gmsa2, 8)
 
     def test_gmst(self):
         """
@@ -137,83 +130,13 @@ class TestSiderealTime(unittest.TestCase):
         self.assertEqual(21.234371884704956, gmst, 12)
         self.assertAlmostEqual(21.234371884854045, gmst, 9)
 
-        gmst1 = solar.gmst(self.default + self.jd1, self.jd2)
+        gmst1 = solar.gmst(self.jd1, self.default + self.jd2)
         self.assertEqual(21.252349168465813, gmst1, 12)
         self.assertAlmostEqual(21.252349168613243, gmst1, 9)
 
-        gmst2 = solar.gmst(self.delta_t + self.jd1, self.jd2)
+        gmst2 = solar.gmst(self.jd1, self.delta_t + self.jd2)
         self.assertEqual(21.253033950985994, gmst2, 12)
         self.assertAlmostEqual(21.25303395113442, gmst2, 9)
-
-    def lasa(self):
-        """
-        testing Local apparent sidereal angle
-        67      318.79184109456986
-        0       318.51191008778073
-        64.5415 318.7815693562905
-        """
-        # print('testing solar.py Local Apparent Sidereal Time method')
-        lasa = solar.lasa(self.jd1, self.jd2, self.params_list, self.delta_t)
-        self.assertEqual(213.6132412524542, lasa, 12)
-
-        lasa1 = solar.lasa(self.jd1, self.jd2, self.params_list, 0)
-        self.assertEqual(213.33331024591087, lasa1, 12)
-
-        lasa2 = solar.lasa(self.jd1, self.jd2, self.params_list)
-        self.assertEqual(213.60296951419895, lasa2, 12)
-
-    def last(self):
-        """
-        testing Local Apparent Sidereal Time
-        67      14.240882202615534
-        0       14.222220135969307
-        64.5415 14.240197416184953
-        """
-        # print(self.test_sidereal_angles.__doc__)
-        # print('testing solar.py Local Apparent Sidereal Time method')
-        last = solar.last(self.jd1, self.jd2, self.params_list, self.delta_t)
-        self.assertEqual(14.240882202615534, last, 12)
-
-        last1 = solar.last(self.jd1, self.jd2, self.params_list, 0)
-        self.assertEqual(14.222220135969307, last1, 12)
-
-        last2 = solar.last(self.jd1, self.jd2, self.params_list)
-        self.assertEqual(14.240197416184953, last2, 12)
-
-    def lmsa(self):
-        """
-        testing Local mean sidereal angle
-        67      318.7955092670163
-        0       318.51557827281067
-        64.5415 318.78523752919864
-        """
-        # print('testing solar.py Local Mean Sidereal Angle method')
-        lmsa = solar.lmsa(self.jd1, self.jd2, self.params_list, self.delta_t)
-        self.assertEqual(213.61690926455412, lmsa, 12)
-
-        lmsa1 = solar.lmsa(self.jd1, self.jd2, self.params_list, 0)
-        self.assertEqual(213.33697827033853, lmsa1, 12)
-
-        lmsa2 = solar.lmsa(self.jd1, self.jd2, self.params_list)
-        self.assertEqual(213.60663752675117, lmsa2, 12)
-
-    def lmst(self):
-        """
-        testing local Mean Sideral Time
-        67      14.2411272850864
-        0       14.22246521844017
-        64.5415 14.240442498655819
-        """
-        # print(self.test_lmst.__doc__)
-        # print('testing solar.py Local Mean Sidereal Time method')
-        lmst = solar.lmst(self.jd1, self.jd2, self.params_list, self.delta_t)
-        self.assertEqual(14.2411272850864, lmst, 12)
-
-        lmst1 = solar.lmst(self.jd1, self.jd2, self.params_list, 0)
-        self.assertEqual(14.22246521844017, lmst1, 12)
-
-        lmst2 = solar.lmst(self.jd1, self.jd2, self.params_list)
-        self.assertEqual(14.240442498655819, lmst2, 12)
 
 class TestHeliocentricSolar(unittest.TestCase):
     """
@@ -348,7 +271,7 @@ class TestNutation(unittest.TestCase):
     def setUp(self):
         return 'Testing pysolar time functions', int(pytime.time())
 
-    def test_delta_epsilon(self):
+    def delta_epsilon(self):
         """
         testing Nutation obliquity delta epsilon
         67        0.001666547327214764
@@ -369,7 +292,7 @@ class TestNutation(unittest.TestCase):
         self.assertEqual(0.0016668061340751688, deps2, 12)
         self.assertAlmostEqual(0.0016665472500373482, deps2, 6)
 
-    def test_delta_psi(self):
+    def delta_psi(self):
         """
         testing Nutation longitude delta psi
         67        -0.003998121420285507
@@ -390,7 +313,7 @@ class TestNutation(unittest.TestCase):
         self.assertEqual(-0.003997947151572717, dpsi2, 12)
         self.assertAlmostEqual(-0.0039981219235174165, dpsi2, 6)
 
-    def test_equation_of_eqinox(self):
+    def equation_of_eqinox(self):
         """
         testing Equation of equinox = delta psi * cosine epsilon
         67         -0.0036681724464275732
@@ -411,7 +334,7 @@ class TestNutation(unittest.TestCase):
         self.assertEqual(-0.0036680125522307984, eqeq2, 15)
         self.assertAlmostEqual(-0.0036681729081316267, eqeq2, 6)
 
-    def test_mean_epsilon(self):
+    def mean_epsilon(self):
         """
         testing  Mean Obliquity epsilon
         67       23.43878599536264
@@ -431,6 +354,24 @@ class TestNutation(unittest.TestCase):
         meps2 = solar.mean_ecliptic_obliquity(self.dt_list)
         self.assertEqual(23.43878599537278, meps2, 12)
         self.assertAlmostEqual(23.43878599537278, meps2, 12)
+
+    def test_true_ecliptic_obliquity(self):
+        """
+        67      23.440452542689854
+        0       23.44045254086425
+        64.5415 23.440452542622815
+        """
+        teo = solar.true_ecliptic_obliquity(self.dt_list, self.delta_t)
+        self.assertEqual(23.44045280157081, teo, 12)
+        self.assertAlmostEqual(23.440452542689854, teo, 6)
+
+        teo1 = solar.true_ecliptic_obliquity(self.dt_list, 0)
+        self.assertEqual(23.44045279982922, teo1, 12)
+        self.assertAlmostEqual(23.44045254086425, teo1, 6)
+
+        teo2 = solar.true_ecliptic_obliquity(self.dt_list)
+        self.assertEqual(23.44045279982922, teo1, 12)
+        self.assertAlmostEqual(23.440452542622815, teo2, 6)
 
 class TestGeocentricSolar(unittest.TestCase):
     """
@@ -503,24 +444,6 @@ class TestGeocentricSolar(unittest.TestCase):
         asl2 = solar.apparent_solar_longitude(self.dt_list)
         self.assertEqual(204.00852421368864, asl2, 12)
         self.assertAlmostEqual(204.0084989745065, asl2, 4)
-
-    def test_true_ecliptic_obliquity(self):
-        """
-        67      23.440452542689854
-        0       23.44045254086425
-        64.5415 23.440452542622815
-        """
-        teo = solar.true_ecliptic_obliquity(self.dt_list, self.delta_t)
-        self.assertEqual(23.44045280157081, teo, 12)
-        self.assertAlmostEqual(23.440452542689854, teo, 6)
-
-        teo1 = solar.true_ecliptic_obliquity(self.dt_list, 0)
-        self.assertEqual(23.44045279982922, teo1, 12)
-        self.assertAlmostEqual(23.44045254086425, teo1, 6)
-
-        teo2 = solar.true_ecliptic_obliquity(self.dt_list)
-        self.assertEqual(23.44045279982922, teo1, 12)
-        self.assertAlmostEqual(23.440452542622815, teo2, 6)
 
     def test_geo_rad_dec(self):
         """
