@@ -216,10 +216,10 @@ def julian_ephemeris_century(julian):
     """ Convert jdn to fracional ephemeris century """
     return (julian - DJ00) / 36525.0
 
-def julian_ephemeris_millennium(dt_list, default=None):
+def julian_ephemeris_millennium(julian):
     """ Convert date/time list to fractional millennium """
-    jed = julian_ephemeris_day(dt_list, default)
-    return (jed - DJ00) / 365250.0
+    jec = julian_ephemeris_century(julian)
+    return jec / 10
 
 
  # seconds to add to TAI to get TT
