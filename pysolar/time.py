@@ -207,18 +207,13 @@ def julian_ephemeris_day(dt_list, default=None):
     return julian_day(dt_list, default)
 #end get_julian_ephemeris_day
 
-def julian_century(dt_list, default=None):
-    """ Convert date/time list to fractional century """
-    jsd = julian_day(dt_list, default)
-    return (jsd - DJ00) / 36525.0
-
-def julian_ephemeris_century(julian):
-    """ Convert jdn to fracional ephemeris century """
+def julian_century(julian):
+    """ Convert julian to fractional century """
     return (julian - DJ00) / 36525.0
 
 def julian_ephemeris_millennium(julian):
-    """ Convert date/time list to fractional millennium """
-    jec = julian_ephemeris_century(julian)
+    """ Convert julian to fractional millennium """
+    jec = julian_century(julian)
     return jec / 10
 
 
