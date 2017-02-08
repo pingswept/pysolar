@@ -1,0 +1,289 @@
+
+<!-- saved from url=(0040)http://www.nrel.gov/midc/solpos/spa.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <meta name="description" content="Compute the solar position from time and place using NREL&#39;s SPA.">
+    <title>MIDC: Solar Position Algorithm (SPA) Calculator</title>
+    <script async="" src="./MIDC_ Solar Position Algorithm (SPA) Calculator_files/analytics.js.download"></script><script type="text/javascript" async="" src="./MIDC_ Solar Position Algorithm (SPA) Calculator_files/nrel.js.download"></script><script type="text/javascript">
+    <!--
+	(function() {
+		var so = document.createElement('script'); so.type = 'text/javascript'; so.async = true;
+		so.src = '//www.nrel.gov/includes/ga/nrel.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(so, s);
+	})();
+    //-->
+    </script>
+<!--<base target="_top">--><base href="." target="_top"></head>
+
+
+<body bgcolor="#F2E7D2" onunload="document.formName.submit.disabled=false" onblur="document.formName.submit.disabled=false">
+<center>
+
+<h2>MIDC SPA Calculator</h2>
+
+<form name="formName" method="GET" action="http://www.nrel.gov/midc/apps/spa.pl" onsubmit="document.formName.submit.disabled=true" onreset="document.formName.submit.disabled=false">
+
+
+<b>Compute the solar position from universal time<br>
+and location using NREL's <a href="http://www.nrel.gov/midc/spa/">Solar Position Algorithm (SPA)</a>.</b>
+
+<table border="" cellpadding="15">
+
+
+
+<tbody><tr><td>
+    <b>Required input values:</b><br><br>
+    <table align="center" border="0">
+
+    <tbody><tr><td>
+        <table align="center" border="0">
+        <tbody><tr>
+        <td nowrap=""><fieldset>
+        	<legend>Enter start date:</legend>
+            <label for="syr">Year:</label> <input type="text" size="3" maxlength="5" id="syr" name="syear" value="2005">
+            <label for="smo">Month:</label> <select id="smo" name="smonth">
+            <option value="1" selected="">January
+            </option><option value="2">February
+            </option><option value="3">March
+            </option><option value="4">April
+            </option><option value="5">May
+            </option><option value="6">June
+            </option><option value="7">July
+            </option><option value="8">August
+            </option><option value="9">September
+            </option><option value="10">October
+            </option><option value="11">November
+            </option><option value="12">December
+            </option></select>
+            <label for="sdy">Day:</label> <select id="sdy" name="sday">
+            <option value="1" selected="">1
+            </option><option value="2">2
+            </option><option value="3">3
+            </option><option value="4">4
+            </option><option value="5">5
+            </option><option value="6">6
+            </option><option value="7">7
+            </option><option value="8">8
+            </option><option value="9">9
+            </option><option value="10">10
+            </option><option value="11">11
+            </option><option value="12">12
+            </option><option value="13">13
+            </option><option value="14">14
+            </option><option value="15">15
+            </option><option value="16">16
+            </option><option value="17">17
+            </option><option value="18">18
+            </option><option value="19">19
+            </option><option value="20">20
+            </option><option value="21">21
+            </option><option value="22">22
+            </option><option value="23">23
+            </option><option value="24">24
+            </option><option value="25">25
+            </option><option value="26">26
+            </option><option value="27">27
+            </option><option value="28">28
+            </option><option value="29">29
+            </option><option value="30">30
+            </option><option value="31">31
+            </option></select>
+            </fieldset>
+        	<fieldset><legend>Enter end date:</legend>
+            <label for="eyr">Year:</label> <input type="text" size="3" maxlength="5" id="eyr" name="eyear" value="2005">
+            <label for="emo">Month:</label> <select id="emo" name="emonth">
+            <option value="1" selected="">January
+            </option><option value="2">February
+            </option><option value="3">March
+            </option><option value="4">April
+            </option><option value="5">May
+            </option><option value="6">June
+            </option><option value="7">July
+            </option><option value="8">August
+            </option><option value="9">September
+            </option><option value="10">October
+            </option><option value="11">November
+            </option><option value="12">December
+            </option></select>
+            <label for="edy">Day:</label> <select id="edy" name="eday">
+            <option value="1" selected="">1
+            </option><option value="2">2
+            </option><option value="3">3
+            </option><option value="4">4
+            </option><option value="5">5
+            </option><option value="6">6
+            </option><option value="7">7
+            </option><option value="8">8
+            </option><option value="9">9
+            </option><option value="10">10
+            </option><option value="11">11
+            </option><option value="12">12
+            </option><option value="13">13
+            </option><option value="14">14
+            </option><option value="15">15
+            </option><option value="16">16
+            </option><option value="17">17
+            </option><option value="18">18
+            </option><option value="19">19
+            </option><option value="20">20
+            </option><option value="21">21
+            </option><option value="22">22
+            </option><option value="23">23
+            </option><option value="24">24
+            </option><option value="25">25
+            </option><option value="26">26
+            </option><option value="27">27
+            </option><option value="28">28
+            </option><option value="29">29
+            </option><option value="30">30
+            </option><option value="31">31
+            </option></select>
+            </fieldset>
+        	<fieldset><legend>Enter output time interval:</legend>
+        	<label for="int">Interval:</label>
+            <select id="int" name="step">
+            <option value="1">1
+            </option><option value="2">2
+            </option><option value="5">5
+            </option><option value="10" selected="">10
+            </option><option value="15">15
+            </option><option value="30">30
+            </option><option value="60">60
+            </option></select>
+            Units:
+            <input type="radio" id="sec" name="stepunit" value="0"><label for="sec">Second</label>
+            <input type="radio" id="min" name="stepunit" value="1" checked=""><label for="min">Minute</label>
+            </fieldset>
+        </td></tr>
+        </tbody></table>
+    </td></tr>
+
+    <tr><td nowrap="">
+    <br>
+    <fieldset><legend><b>Enter site location information:</b></legend>
+    <input type="text" size="6" id="lat" name="latitude" value="39.743"><label for="lat">Observer latitude (negative south of equator) [degrees]</label><br>
+    <input type="text" size="6" id="lon" name="longitude" value="-105.178"><label for="lon">Observer longitude (negative west of Greenwich) [degrees]</label><br>
+    <input type="text" size="6" id="zon" name="timezone" value="-7.0"><label for="zon">Observer time zone (negative west of Greenwich) [hours]</label><br>
+    <input type="text" size="6" id="elv" name="elev" value="1829"><label for="elv">Observer elevation [meters]</label><br>
+    <input type="text" size="6" id="prs" name="press" value="835"><label for="prs">Annual average local pressure [millibars]</label><br>
+    <input type="text" size="6" id="tmp" name="temp" value="10"><label for="tmp">Annual average local temperature [degrees Celsius]</label><br>
+    </fieldset>
+
+    </td></tr><tr><td nowrap="">
+    <br>
+    <input type="text" size="6" id="dut" name="dut1" value="0.0"><label for="dut"><a target="_self" href="http://www.nrel.gov/midc/srrl_bms/instruments.html#DELT">&#916;UT1</a> = Universal Time (UT) - Coordinated Universal Time (UTC) [seconds]</label><br>
+    <input type="text" size="6" id="del" name="deltat" value="64.797"><label for="del"><a target="_self" href="http://www.nrel.gov/midc/srrl_bms/instruments.html#DELT">&#916;T</a> = Terrestrial Time (TT) - Universal Time (UT) [seconds]</label>
+    </td></tr>
+
+
+    </tbody></table>
+</td></tr>
+
+
+<tr><td align="center">
+	<table border="0"><tbody><tr><td nowrap="">
+	<fieldset>
+    <legend><b>Optional input values:</b></legend><br>
+    <input type="text" size="5" id="azm" name="azmrot" value="180"><label for="azm">Surface azimuth rotation (measured from south to projection<br>of surface normal on horizontal plane, negative east) [degrees]</label><br>
+    <input type="text" size="5" id="slp" name="slope" value="0"><label for="slp">Surface slope (measured from the horizontal plane) [degrees]</label><br>
+    <input type="text" size="5" id="ref" name="refract" value="0.5667"><label for="ref">Atmospheric refraction at sunrise and sunset [degrees]</label><br>
+    </fieldset>
+	</td></tr></tbody></table>
+</td></tr>
+
+
+
+<tr><td align="center">
+	<table border="0"><tbody><tr><td nowrap="">
+	<fieldset>
+    <legend><b>Check desired final output values:</b></legend><br>
+    <input type="checkbox" id="o0" name="field" value="0"><label for="o0">Topocentric zenith angle [degrees]</label><br>
+    <input type="checkbox" id="o1" name="field" value="1"><label for="o1">Topocentric azimuth angle (eastward from north) [   0 to 360 degrees]</label><br>
+    <input type="checkbox" id="o2" name="field" value="2"><label for="o2">Topocentric azimuth angle (westward from south) [-180 to 180 degrees]</label><br>
+    <input type="checkbox" id="o3" name="field" value="3"><label for="o3">Surface incidence angle [degrees]</label><br>
+    <input type="checkbox" id="o4" name="field" value="4"><label for="o4">Local sunrise time (+/- 30 seconds) [fractional hour]</label><br>
+    <input type="checkbox" id="o5" name="field" value="5"><label for="o5">Local sun transit time (or solar noon) [fractional hour] </label><br>
+    <input type="checkbox" id="o6" name="field" value="6"><label for="o6">Local sunset time (+/- 30 seconds) [fractional hour]</label><br>
+    </fieldset>
+ 	</td></tr></tbody></table>
+</td></tr>
+
+<tr><td align="center">
+	<table border="0"><tbody><tr><td nowrap="">
+	<fieldset>
+    <legend><b>Check desired intermediate output values:</b></legend><br>
+    <input type="checkbox" id="o7" name="field" value="7"><label for="o7">Julian day </label><br>
+    <input type="checkbox" id="o8" name="field" value="8"><label for="o8">Julian century</label><br>
+    <input type="checkbox" id="o9" name="field" value="9"><label for="o9">Julian ephemeris day</label><br>
+    <input type="checkbox" id="o10" name="field" value="10"><label for="o10">Julian ephemeris century</label><br>
+    <input type="checkbox" id="o11" name="field" value="11"><label for="o11">Julian ephemeris millennium</label><br>
+    <input type="checkbox" id="o12" name="field" value="12"><label for="o12">Earth heliocentric longitude [degrees]</label><br>
+    <input type="checkbox" id="o13" name="field" value="13"><label for="o13">Earth heliocentric latitude [degrees]</label><br>
+    <input type="checkbox" id="o14" name="field" value="14"><label for="o14">Earth radius vector [Astronomical Units, AU]</label><br>
+    <input type="checkbox" id="o15" name="field" value="15"><label for="o15">Geocentric longitude [degrees]</label><br>
+    <input type="checkbox" id="o16" name="field" value="16"><label for="o16">Geocentric latitude [degrees]</label><br>
+    <input type="checkbox" id="o17" name="field" value="17"><label for="o17">Mean elongation (moon-sun) [degrees]</label><br>
+    <input type="checkbox" id="o18" name="field" value="18"><label for="o18">Mean anomaly (sun) [degrees]</label><br>
+    <input type="checkbox" id="o19" name="field" value="19"><label for="o19">Mean anomaly (moon) [degrees]</label><br>
+    <input type="checkbox" id="o20" name="field" value="20"><label for="o20">Argument latitude (moon) [degrees]</label><br>
+    <input type="checkbox" id="o21" name="field" value="21"><label for="o21">Ascending longitude (moon) [degrees]</label><br>
+    <input type="checkbox" id="o22" name="field" value="22"><label for="o22">Nutation longitude [degrees]</label><br>
+    <input type="checkbox" id="o23" name="field" value="23"><label for="o23">Nutation obliquity [degrees]</label><br>
+    <input type="checkbox" id="o24" name="field" value="24"><label for="o24">Ecliptic mean obliquity [arc seconds]</label><br>
+    <input type="checkbox" id="o25" name="field" value="25"><label for="o25">Ecliptic true obliquity  [degrees]</label><br>
+    <input type="checkbox" id="o26" name="field" value="26"><label for="o26">Aberration correction [degrees]</label><br>
+    <input type="checkbox" id="o27" name="field" value="27"><label for="o27">Apparent sun longitude [degrees]</label><br>
+    <input type="checkbox" id="o28" name="field" value="28"><label for="o28">Greenwich mean sidereal time [degrees]   </label><br>
+    <input type="checkbox" id="o29" name="field" value="29"><label for="o29">Greenwich sidereal time [degrees]</label><br>
+    <input type="checkbox" id="o30" name="field" value="30"><label for="o30">Geocentric sun right ascension [degrees] </label><br>
+    <input type="checkbox" id="o31" name="field" value="31"><label for="o31">Geocentric sun declination [degrees]</label><br>
+    <input type="checkbox" id="o32" name="field" value="32"><label for="o32">Observer hour angle [degrees]</label><br>
+    <input type="checkbox" id="o33" name="field" value="33"><label for="o33">Sun equatorial horizontal parallax [degrees]</label><br>
+    <input type="checkbox" id="o34" name="field" value="34"><label for="o34">Sun right ascension parallax [degrees]</label><br>
+    <input type="checkbox" id="o35" name="field" value="35"><label for="o35">Topocentric sun declination [degrees]</label><br>
+    <input type="checkbox" id="o36" name="field" value="36"><label for="o36">Topocentric sun right ascension [degrees]</label><br>
+    <input type="checkbox" id="o37" name="field" value="37"><label for="o37">Topocentric local hour angle [degrees]</label><br>
+    <input type="checkbox" id="o38" name="field" value="38"><label for="o38">Topocentric elevation angle (uncorrected) [degrees]</label><br>
+    <input type="checkbox" id="o39" name="field" value="39"><label for="o39">Atmospheric refraction correction [degrees]</label><br>
+    <input type="checkbox" id="o40" name="field" value="40"><label for="o40">Topocentric elevation angle (corrected) [degrees]  </label><br>
+    <input type="checkbox" id="o41" name="field" value="41"><label for="o41">Equation of time [minutes]</label><br>
+    <input type="checkbox" id="o42" name="field" value="42"><label for="o42">Sunrise hour angle [degrees]</label><br>
+    <input type="checkbox" id="o43" name="field" value="43"><label for="o43">Sunset hour angle [degrees]</label><br>
+    <input type="checkbox" id="o44" name="field" value="44"><label for="o44">Sun transit altitude [degrees]</label><br>
+    </fieldset>
+    </td></tr></tbody></table>
+</td></tr>
+
+
+
+
+<tr><td align="center">
+    <table border="0"><tbody><tr><td nowrap="">
+	<fieldset>
+    <legend><b>Data output type:</b></legend>
+    <input type="radio" id="txt" name="zip" value="0" checked=""><label for="txt">ASCII Text</label><br>
+    <input type="radio" id="cmp" name="zip" value="1"><label for="cmp">ZIP Compressed</label><br>
+    </fieldset>
+    </td>
+    <td>&nbsp; &nbsp; &nbsp;</td>
+    <td valign="bottom"><input type="submit" name="submit" value="Submit"><input type="reset" value="Reset"></td>
+	</tr></tbody></table>
+</td></tr>
+
+
+</tbody></table>
+
+</form>
+Please read the <a href="http://www.nrel.gov/disclaimer.html">disclaimer</a> and <a href="http://www.nrel.gov/midc/spa/#license">copyright notice</a> before using this product.<br>
+For more more information about <a href="http://www.nrel.gov/midc/spa/">SPA and the C source code</a>
+
+<br><br><br>
+<i>For questions about the solar position algorithm contact: <a href="mailto:ibrahim.reda@nrel.gov">Ibrahim Reda</a></i><br>
+<i>For questions about this website or calculator contact: <a href="mailto:afshin.andreas@nrel.gov">Afshin Andreas</a></i>
+<hr width="66%">
+
+
+<font size="-1">[<a href="http://www.nrel.gov/">NREL</a>] [<a href="http://www.nrel.gov/midc/">MID<i>C</i></a>] [<a target="_self" href="http://www.nrel.gov/midc/solpos/">Solar Calculators</a>]</font>
+</center>
+
+
+</body></html>

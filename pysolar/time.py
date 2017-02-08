@@ -72,6 +72,45 @@ def ajd(dt_list, default=None):
     return jdd + day_fraction - 0.5 + del_t / 86400.0
 # end ajd
 
+def cal(julian):
+    """
+    given julian day number
+    calculate gregorian calendar date
+    note: only needed to find delta_t so far
+    """
+    if julian == 0.0:
+        mon = 12
+        day = 31.5
+        year = 1899
+        return [year, mon, day]
+    julian -= 2415020.0
+    dla = julian + 0.5
+    inc = math.floor(dla)
+    fix = dla - inc
+    if fix == 1:
+        fix = 0
+        inc += 1
+
+    if inc > -115860.0:
+        adj = math.floor((inc / 36524.25) + 0.99835726) + 14
+        inc += 1 + adj - math.floor(adj / 4.0)
+
+    bac = math.floor((inc / 365.25) + 0.802601)
+    ced = inc - math.floor((365.25 * bac) + 0.750001) + 416
+    ghi = math.floor(ced / 30.6001)
+    mon = int(ghi - 1)
+    day = ced - math.floor(30.6001  *ghi) + fix
+    year = int(bac + 1899)
+
+    if ghi > 13.5:
+        mon = int(ghi - 13)
+    if mon < 2.5:
+        year = int(bac + 1900)
+    if year < 1:
+        year -= 1
+    return [year, mon, day]
+
+
 # add to datetime.datetime.toordinal() to get Julian day number
 # math.floor(JD − 1721424.5)
 JULIAN_DAY_OFFSET = 1721425 - 0.5
@@ -85,10 +124,11 @@ GREGORIAN_DAY_OFFSET = 719163
 UNIX_EPOCH_IN_CJD = 2440587.5
 EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
-def delta_t(dt_list, default=None):
+def delta_t(jd0, default=None):
     """
     Given a date/time list returns a suitable value for delta_t
     """
+    dt_list = cal(jd0)
     # now = now.utctimetuple()
     year, month = dt_list[0], dt_list[1]
     if default != None:
@@ -170,10 +210,9 @@ def julian_century(dt_list, default=None):
     jsd = julian_day(dt_list, default)
     return (jsd - DJ00) / 36525.0
 
-def julian_ephemeris_century(dt_list, default=None):
-    """ Convert date/time list to fracional ephemeris century """
-    jed = julian_ephemeris_day(dt_list, default)
-    return (jed - DJ00) / 36525.0
+def julian_ephemeris_century(julian):
+    """ Convert jdn to fracional ephemeris century """
+    return (julian - DJ00) / 36525.0
 
 def julian_ephemeris_millennium(dt_list, default=None):
     """ Convert date/time list to fractional millennium """
