@@ -66,7 +66,7 @@ def apparent_solar_longitude(dt_list, default=None):
     aberration = aberration_correction(dt_list, default)
     return tgl + dpsi + aberration
 
-def astronomical_units(dt_list, default=None):
+def astronomical_units(jd0, jd1):
     """
     Given date/time list and optional delta T
     calculates
@@ -74,20 +74,20 @@ def astronomical_units(dt_list, default=None):
     # 3.2.8. Calculate the Earth radius vector, R (in Astronomical Units, AU),
     #  by repeating step 3.2.7 and by replacing all Ls by Rs in all equations.
     #  Note that there is no R5, consequently, replace it by zero in steps 3.2.3 and 3.2.4.
-    jem = time.julian_ephemeris_millennium(dt_list, default)
-    rvc = coefficients(dt_list, constants.AU_DISTANCE_COEFFS, default)
+    jem = time.julian_ephemeris_millennium(jd0 + jd1)
+    rvc = coefficients(jd0, jd1, constants.AU_DISTANCE_COEFFS)
     return (
         rvc[0] + jem * (
             rvc[1] + jem * (
                 rvc[2] + jem * (
                     rvc[3] + jem * rvc[4]))))  / 1e16
 
-def coefficients(dt_list, coeffs, default=None):
+def coefficients(jd0, jd1, coeffs):
     """
     computes a polynomial with time-varying coefficients from the given constant
     coefficients array and the current Julian millennium.
     """
-    jem = time.julian_ephemeris_millennium(dt_list, default)
+    jem = time.julian_ephemeris_millennium(jd0 + jd1)
     # jem = (2452930.312847 - 2451545.0) / 365250.0
     result = []
 
@@ -303,7 +303,7 @@ def greenwich_hour_angle(dt_list, default=None):
     gra = geocentric_right_ascension(dt_list, default)
     return (gaa - gra) % 360
 
-def heliocentric_latitude(dt_list, default=None):
+def heliocentric_latitude(jd0, jd1):
     """
     Given date/time list and optional delta T
     calculates Heliocentric Latitude in degrees
@@ -311,14 +311,14 @@ def heliocentric_latitude(dt_list, default=None):
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
-    jem = time.julian_ephemeris_millennium(dt_list, default)
-    hlc = heliocentric_lat_elements(dt_list, default)
+    jem = time.julian_ephemeris_millennium(jd0 + jd1)
+    hlc = heliocentric_lat_elements(jd0, jd1)
     return math.degrees((hlc[0] + jem * (
         hlc[1] + jem * (
             hlc[2] + jem * (
                 hlc[3] + jem * hlc[4])))) / 1e8) % -360.0
 
-def heliocentric_lat_elements(dt_list, default=None):
+def heliocentric_lat_elements(jd0, jd1):
     """
     Given date/time list and optional delta T
     gets Coefficient terms for Heliocentric Latitude in radians
@@ -326,10 +326,10 @@ def heliocentric_lat_elements(dt_list, default=None):
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
-    hlc = coefficients(dt_list, constants.HELIOCENTRIC_LATITUDE_COEFFS, default)
+    hlc = coefficients(jd0, jd1, constants.HELIOCENTRIC_LATITUDE_COEFFS)
     return hlc
 
-def heliocentric_longitude(dt_list, default=None):
+def heliocentric_longitude(jd0, jd1):
     """
     Given date/time list and optional delta T
     calculates Heliocentric Longitude in degrees
@@ -338,9 +338,9 @@ def heliocentric_longitude(dt_list, default=None):
     """
     # return math.degrees(
     #     coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360
-    jem = time.julian_ephemeris_millennium(dt_list, default)
+    jem = time.julian_ephemeris_millennium(jd0 + jd1)
     # jem = (2452930.312847 - 2451545.0) / 365250.0
-    hlc = heliocentric_lon_elements(dt_list, default)
+    hlc = heliocentric_lon_elements(jd0, jd1)
     return math.degrees(
         (hlc[0] + jem * (
             hlc[1] + jem * (
@@ -348,7 +348,7 @@ def heliocentric_longitude(dt_list, default=None):
                     hlc[3] + jem * (
                         hlc[4] + jem * hlc[5]))))) / 1e8) % 360.0
 
-def heliocentric_lon_elements(dt_list, default=None):
+def heliocentric_lon_elements(jd0, jd1):
     """
     Given date/time list and optional delta T
     gets Coefficient terms for Heliocentric Longitude in radians
@@ -356,7 +356,7 @@ def heliocentric_lon_elements(dt_list, default=None):
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
-    hlc = coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default)
+    hlc = coefficients(jd0, jd1, constants.HELIOCENTRIC_LONGITUDE_COEFFS)
     return hlc
 
 def incidence_angle(dt_list, params_list, default=None):
