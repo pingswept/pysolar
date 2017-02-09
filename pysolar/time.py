@@ -59,12 +59,13 @@ def ajd(dt_list, default=None):
     Day is from midnight 00:00:00+00:00 with day fractional
     value added.
     """
+    jdd = jdn(dt_list)
     if default is None:
-        del_t = delta_t(dt_list, default)
+        del_t = delta_t(jdd, default)
     else:
         del_t = default
     # day_decimal = day + (hour - tz + (minute + (second + dut1)/60.0)/60.0)/24.0
-    jdd = jdn(dt_list)
+
     day_fraction = (
         dt_list[3] - dt_list[8] + (
             dt_list[4]  + (

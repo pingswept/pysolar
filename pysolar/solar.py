@@ -34,8 +34,8 @@ This module contains the most important functions for calculation of the positio
 
 """
 import datetime
-from decimal import *
-getcontext().prec = 16
+# from decimal import *
+# getcontext().prec = 16
 import math
 
 from . import constants
@@ -44,32 +44,32 @@ from . import radiation
 
 def aberration_correction(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     a correction for abbereation
     """
     # 3.6. Calculate the aberration correction, Δτ (in degrees):
     sed = astronomical_units(jd0, jd1)
     # sun-earth distance is in astronomical units
-
-    # return -20.4898 / (3600.0 * sed)
-    return -0.005691611 / sed
+    return -20.4898 / (3600.0 * sed)
+    # return -0.005691611 / sed
 
 def apparent_solar_longitude(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     Apparent Solar Longitude in degrees
     """
-    tgl = geocentric_longitude(jd0, jd1)
-    dpsi = nutation(jd0, jd1)['longitude']
+    lon = geocentric_longitude(jd0, jd1)
+    d_psi = delta_psi(jd0, jd1)
     aberration = aberration_correction(jd0, jd1)
-    return tgl + dpsi + aberration
+    return lon + d_psi + aberration
 
 def astronomical_units(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
+    sun earth distance in astronomical units
     """
     # 3.2.8. Calculate the Earth radius vector, R (in Astronomical Units, AU),
     #  by repeating step 3.2.7 and by replacing all Ls by Rs in all equations.
@@ -84,11 +84,12 @@ def astronomical_units(jd0, jd1):
 
 def coefficients(jd0, jd1, coeffs):
     """
-    computes a polynomial with time-varying coefficients from the given constant
-    coefficients array and the current Julian millennium.
+    Given Given UT1 as a 2-part Julian Date and the constant name for
+    the coefficient set to use
+    sums the time-varying coefficients sub arrays and returns an array
+    with each.
     """
     jem = time.julian_ephemeris_millennium(jd0 + jd1)
-    # jem = (2452930.312847 - 2451545.0) / 365250.0
     result = []
 
     for group in coeffs:
@@ -103,16 +104,32 @@ def coefficients(jd0, jd1, coeffs):
     return result
 #end coefficients
 
+def delta_epsilon(jd0, jd1):
+    """
+    Given UT1 as a 2-part Julian Date
+    calculates
+    delta obliquity in degrees
+    """
+    return nutation(jd0, jd1)['obliquity']
+
+def delta_psi(jd0, jd1):
+    """
+    Given UT1 as a 2-part Julian Date
+    calculates
+    delta longitude in degrees
+    """
+    return nutation(jd0, jd1)['longitude']
+
 def equation_of_equinox(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given UT1 as a 2-part Julian Date
     calculates
     Equation of Equinox in degrees
     """
-    delta_psi = nutation(jd0, jd1)['longitude']
+    d_psi = delta_psi(jd0, jd1)
     epsilon = true_ecliptic_obliquity(jd0, jd1)
     cos_eps = math.cos(math.radians(epsilon))
-    return delta_psi * cos_eps
+    return d_psi * cos_eps
 
 def flattened_latitude(latitude):
     """
@@ -214,49 +231,11 @@ def gmst(jd0, jd1):
     mean_st = gma + days + hours + coeff
     return mean_st % 24.0
 
-def lasa(jd0, jd1):
-    """
-    Given UT1 as a 2-part Julian Date
-    calculates
-    Loacal Apparent Sidereal Angle in degrees
-    """
-
-    return gasa(jd0, jd1)
-
-def last(jd0, jd1):
-    """
-    Given UT1 as a 2-part Julian Date
-    calculates
-    Loacal Apparent Sidereal Time in hours
-    """
-    laa = lasa(jd0, jd1)
-    return laa / 15.0
-
-def lmsa(jd0, jd1):
-    """
-    Given UT1 as a 2-part Julian Date
-    calculates
-    Loacal Mean Sidereal Angle in degrees
-    by adding a longitude offset on to the jd1
-    hence this is defined only for convinience
-    of naming functions otherwise it is the same
-    as gmsa(jd0, jd1)
-    """
-    return gmsa(jd0, jd1)
-
-def lmst(jd0, jd1):
-    """
-    Given UT1 as a 2-part Julian Date
-    calculates
-    Loacal Mean Sidereal Time in hours
-    """
-    return gmst(jd0, jd1)
-
 # Geocentric functions calculate angles relative to the center of the earth.
 
 def geocentric_declination(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     Geocentric declination of the Sun in degress
     """
@@ -274,7 +253,7 @@ def geocentric_declination(jd0, jd1):
 
 def geocentric_latitude(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     Geocentric Latitude of the Sun in degress
     """
@@ -282,7 +261,7 @@ def geocentric_latitude(jd0, jd1):
 
 def geocentric_longitude(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     true Geocentric Longitude of the Sun in degress
     """
@@ -290,34 +269,35 @@ def geocentric_longitude(jd0, jd1):
 
 def geocentric_right_ascension(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates Geocentric Right Ascension in degrees
     """
     asl = apparent_solar_longitude(jd0, jd1)
     teo = true_ecliptic_obliquity(jd0, jd1)
-    glat = geocentric_latitude(jd0, jd1)
+    lat = geocentric_latitude(jd0, jd1)
 
     sin_asl = math.sin(math.radians(asl))
     cos_asl = math.cos(math.radians(asl))
     sin_teo = math.sin(math.radians(teo))
     cos_teo = math.cos(math.radians(teo))
-    tan_glat = math.tan(math.radians(glat))
+    tan_lat = math.tan(math.radians(lat))
 
-    return math.degrees(math.atan2((sin_asl * cos_teo - tan_glat * sin_teo), cos_asl)) % 360
+    return math.degrees(math.atan2((sin_asl * cos_teo - tan_lat * sin_teo), cos_asl)) % 360
 
 def greenwich_hour_angle(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Hour Angle in degrees
     """
-    gaa = gasa(jd0, jd1)
+    ghaa = gast(jd0, jd1) * 15.0
+    # ghaa = true_gha_aries(jd0, jd1)
     gra = geocentric_right_ascension(jd0, jd1)
-    return (gaa - gra) % 360
+    return (ghaa - gra) % 360.0
 
 def heliocentric_latitude(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates Heliocentric Latitude in degrees
 
     That based on the Sun as a center.
@@ -332,7 +312,7 @@ def heliocentric_latitude(jd0, jd1):
 
 def heliocentric_lat_elements(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     gets Coefficient terms for Heliocentric Latitude in radians
 
     That based on the Sun as a center.
@@ -343,7 +323,7 @@ def heliocentric_lat_elements(jd0, jd1):
 
 def heliocentric_longitude(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates Heliocentric Longitude in degrees
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
@@ -394,20 +374,58 @@ def incidence_angle(jd0, jd1, params_list):
         math.acos(
             cos_tza * cos_slope + sin_slope * sin_tza * math.cos(taa_rad + math.pi - so_rad)))
 
+def lasa(jd0, jd1):
+    """
+    Given UT1 as a 2-part Julian Date
+    calculates
+    Loacal Apparent Sidereal Angle in degrees
+    """
+    return gasa(jd0, jd1)
+
+def last(jd0, jd1):
+    """
+    Given UT1 as a 2-part Julian Date
+    calculates
+    Loacal Apparent Sidereal Time in hours
+    """
+    laa = lasa(jd0, jd1)
+    return laa / 15.0
+
+def lmsa(jd0, jd1):
+    """
+    Given UT1 as a 2-part Julian Date
+    calculates
+    Loacal Mean Sidereal Angle in degrees
+    by adding a longitude offset on to the jd1
+    hence this is defined only for convinience
+    of naming functions otherwise it is the same
+    as gmsa(jd0, jd1)
+    """
+    return gmsa(jd0, jd1)
+
+def lmst(jd0, jd1):
+    """
+    Given UT1 as a 2-part Julian Date
+    calculates
+    Loacal Mean Sidereal Time in hours
+    """
+    return gmst(jd0, jd1)
+
 def local_hour_angle(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date
+    parameter list
     calculates
     Local Hour Angle
     """
-    gaa = gasa(jd0, jd1)
+    gha = greenwich_hour_angle(jd0, jd1)
     longitude = params_list[2]
-    sra = geocentric_right_ascension(jd0, jd1)
-    return gaa + longitude - sra
+    # sra = geocentric_right_ascension(jd0, jd1)
+    return gha # + longitude
 
 def max_horizontal_parallax(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     """
     sed = astronomical_units(jd0, jd1)
@@ -415,7 +433,7 @@ def max_horizontal_parallax(jd0, jd1):
 
 def mean_ecliptic_obliquity(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     Mean Ecliptic Obliquity in degrees
     """
@@ -427,9 +445,21 @@ def mean_ecliptic_obliquity(jd0, jd1):
                 0.00200340 + jec * (
                     -0.000000576 + jec * -0.0000000434))))) / 3600
 
+def mean_gha_aries(jd0, jd1):
+    """
+    Given Given UT1 as a 2-part Julian Date
+    calculates
+    mean longitude of the first point of aries
+    """
+    jct = time.julian_century(jd0 + jd1)
+    mla = 280.46061837 + 360.98564736629 * (
+        (
+            jd0 + jd1) - 2451545) + jct * (jct * 0.000387933  + jct * (jct * -1 / 38710000))
+    return mla
+
 def mean_solar_longitude(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     Mean Geocentric Longitude in degrees
     """
@@ -444,7 +474,7 @@ def mean_solar_longitude(jd0, jd1):
 
 def nutation(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     Delta Epsilon and Delta Psi in degrees
     """
@@ -513,7 +543,8 @@ def projected_radial_distance(params_list):
 
 def refraction_correction(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date and parameter list with
+    pressure and temperature
     calculates
     a correction or offset of view caused by refraction of Earth
     atmosphere and view angle.
@@ -544,7 +575,8 @@ def refraction_correction(jd0, jd1, params_list):
 
 def right_ascension_parallax(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date and parameter list
+    to pass
     calculates
     A delta of Right Ascension caused by parallax in degrees
     """
@@ -566,7 +598,8 @@ def right_ascension_parallax(jd0, jd1, params_list):
 
 def topocentric_azimuth_angle(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date and parameter list
+    to pass and with latitude,
     calculates
     Topocentric Azimuth Angle in degrees
     Measured eastward from north
@@ -588,7 +621,8 @@ def topocentric_azimuth_angle(jd0, jd1, params_list):
 
 def topocentric_elevation_angle(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date and parameter list
+    to pass and with latitude
     calculates
     Topocentric Elevation Angle in degrees
     """
@@ -608,7 +642,8 @@ def topocentric_elevation_angle(jd0, jd1, params_list):
 
 def topocentric_lha(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date and
+    parameter list to pass
     calculates
     Topocentric Local Hour Angle in degrees
     """
@@ -618,7 +653,8 @@ def topocentric_lha(jd0, jd1, params_list):
 
 def topocentric_solar_declination(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date and
+    parameter list to pass
     calculates
     Topocentric Solar Declination in degerees
     """
@@ -640,7 +676,8 @@ def topocentric_solar_declination(jd0, jd1, params_list):
 
 def topocentric_right_ascension(jd0, jd1, params_list):
     """
-    Given date/time list parameter list and optional delta T
+    Given Given UT1 as a 2-part Julian Date and
+    parameter list to pass
     calculates
     Topocentric Right Ascension in degrees
     """
@@ -650,37 +687,48 @@ def topocentric_right_ascension(jd0, jd1, params_list):
 
 def topocentric_zenith_angle(jd0, jd1, params_list):
     """
-    Given date/time list, parameter list, and optional delta T
+    Given Given UT1 as a 2-part Julian Date and
+    parameter list to pass
     calculates
     Topocentric Zenith Angle in degrees
     """
     # 3.14.3. Calculate the topocentric elevation angle, e (in degrees),
     tea = topocentric_elevation_angle(
-        jd0, jd1, params_list) + refraction_correction(
-            jd0, jd1, params_list)
+        jd0, jd1, params_list) + (
+            refraction_correction(
+                jd0, jd1, params_list))
     # 3.14.4. Calculate the topocentric zenith angle, 2 (in degrees),
     return 90 - tea
 
 def true_ecliptic_obliquity(jd0, jd1):
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     True Ecliptic Oblquity in degrees
     """
     mean_eps = mean_ecliptic_obliquity(jd0, jd1)
-    delta_eps = nutation(jd0, jd1)['obliquity']
+    delta_eps = delta_epsilon(jd0, jd1)
 
     return mean_eps + delta_eps
+
+def true_gha_aries(jd0, jd1):
+    """
+    Given Given UT1 as a 2-part Julian Date
+    calculates
+    apparent longitude of the first point of aries
+    """
+    mla = mean_gha_aries(jd0, jd1)
+    return mla + equation_of_equinox(jd0, jd1)
 
 def true_solar_longitude(jd0, jd1):
 
     """
-    Given date/time list and optional delta T
+    Given Given UT1 as a 2-part Julian Date
     calculates
     True Solar Longitude in degrees
     """
     # just for now to keep green squiglies out
-    return mean_solar_longitude(jd0, jd1)
+    return mean_solar_longitude(jd0, jd1) + delta_psi(jd0, jd1)
 
 def altitude(when, params_list):
     """

@@ -11,3 +11,5 @@
 * [https://hg.python.org/cpython/file/3.5/Lib/datetime.py](https://hg.python.org/cpython/file/3.5/Lib/datetime.py)
 
 * [https://docs.kde.org/trunk5/en/kdeedu/kstars/index.html](https://docs.kde.org/trunk5/en/kdeedu/kstars/index.html)
+
+* [http://www.polaris.iastate.edu/NorthStar/Unit1/unit1_intro.htm](http://www.polaris.iastate.edu/NorthStar/Unit1/unit1_intro.htm)
