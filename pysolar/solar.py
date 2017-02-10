@@ -425,12 +425,12 @@ def local_hour_angle(jd0, jd1, longitude):
     calculates
     Local Hour Angle
     """
-    # jd1 = jd1 + longitude / 360
-    print(jd0)
-    print(jd1)
-    print(jd0 + jd1)
+    # note: longitude is included in the longitude offset
+    # subtracted from the julian day number for this
+    # function. Otherwise it is just the same as using
+    # greenwich hour angle
     gha = greenwich_hour_angle(jd0, jd1)
-    return gha  + longitude
+    return gha#   + longitude
 
 def mean_ecliptic_obliquity(jd0, jd1):
     """

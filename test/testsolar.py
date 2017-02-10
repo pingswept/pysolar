@@ -556,8 +556,9 @@ class TestSolar(unittest.TestCase):
         self.jd1 = time.jdn(self.dt_list) - 0.5
         self.jd2 = self.hours + self.minutes + self.seconds
         self.jd3 = 0.5 + self.minutes + self.seconds
-        self.jd4 = self.jd3 - self.longitude_offset
-        print(self.jd3)
+        # need to take the timezone offset out because all
+        # whole julian day numbers begin at noon.
+        self.jd4 = self.jd3 - self.longitude_offset - 7 / 24.0
 
     def test_aberration_correction(self):
         """
@@ -624,22 +625,22 @@ class TestSolar(unittest.TestCase):
         testing Observer hour angle
 
         0       11.448972808852602
-        64.5415 11.539308774930333
-        67      11.549553930897702
+        64.5415 11.717934223859459
+        67      11.728179379790333
         """
         # print(self.test_local_hour_angle.__doc__)
         # print('testing solar.py Local Hour Angle method')
-        lha0 = solar.local_hour_angle(self.jd1, self.jd3, self.param_list[2])
-        self.assertEqual(11.270321708900212, lha0, 12)
-        self.assertAlmostEqual(11.270347359044564, lha0, 10)
+        lha0 = solar.local_hour_angle(self.jd1, self.jd4, self.param_list[2])
+        self.assertEqual(11.448947158715015, lha0, 12)
+        self.assertAlmostEqual(11.448972808852602, lha0, 4)
 
-        lha1 = solar.local_hour_angle(self.jd1, self.default + self.jd3, self.param_list)
-        self.assertEqual(11.539282957106366, lha1, 12)
-        self.assertAlmostEqual(11.539308774930333, lha1, 4)
+        lha1 = solar.local_hour_angle(self.jd1, self.default + self.jd4, self.param_list)
+        self.assertEqual(11.717908573645815, lha1, 12)
+        self.assertAlmostEqual(11.717934223859459, lha1, 4)
 
-        lha2 = solar.local_hour_angle(self.jd1, self.delta_t + self.jd3, self.param_list)
-        self.assertEqual(11.549528280718278, lha2, 12)
-        self.assertAlmostEqual(11.549553930897702, lha2, 4)
+        lha2 = solar.local_hour_angle(self.jd1, self.delta_t + self.jd4, self.param_list)
+        self.assertEqual(11.728153729559693, lha2, 12)
+        self.assertAlmostEqual(11.728179379790333, lha2, 4)
 
     def max_horizontal_parallax(self):
         """
