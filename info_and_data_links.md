@@ -13,3 +13,11 @@
 * [https://docs.kde.org/trunk5/en/kdeedu/kstars/index.html](https://docs.kde.org/trunk5/en/kdeedu/kstars/index.html)
 
 * [http://www.polaris.iastate.edu/NorthStar/Unit1/unit1_intro.htm](http://www.polaris.iastate.edu/NorthStar/Unit1/unit1_intro.htm)
+
+* [http://oxfordindex.oup.com/view/10.1093/acref/9780199609055.001.0001](http://oxfordindex.oup.com/view/10.1093/acref/9780199609055.001.0001)
+
+* [http://star-www.st-and.ac.uk/~fv/webnotes/chapter7.htm](http://star-www.st-and.ac.uk/~fv/webnotes/chapter7.htm)
+
+* [Similarity (geometry)](https://en.wikipedia.org/wiki/Similarity_(geometry))
+
+* [Rosey](https://en.wikipedia.org/wiki/Rose_(mathematics))
