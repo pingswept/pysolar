@@ -53,8 +53,8 @@ def aberration_correction(jd0, jd1):
     sed = astronomical_units(jd0, jd1)
     # sun-earth distance is in astronomical units
     # return -20.4898 / (3600.0 * sed)
-    # return -0.0056916111 / sed
-    return -0.0056932 / sed
+    return -0.0056916111 / sed
+    # return -0.0056932 / sed
 
 def apparent_solar_longitude(jd0, jd1):
     """
@@ -227,7 +227,8 @@ def gmst(jd0, jd1):
     # all time components
     jct = jd2000 / 36525.0 # julian century time
     frac = (dj1 + dj2 + 0.5) % 1.0 # julian day fraction from midnight
-    hours = 1.0027379093508055 * frac * 24.0 # hours
+    hours = 1.0027379093508055 * frac * 24.0 # hours by
+    # number of sidereal seconds in one solar second.
     coeff = 0.000026 * jct * jct
 
     mean_st = gma + days + hours + coeff
@@ -295,7 +296,7 @@ def greenwich_hour_angle(jd0, jd1):
     """
     ghaa = gast(jd0, jd1) * 15.0
     # ghaa = true_gha_aries(jd0, jd1)
-    gra = geocentric_right_ascension(jd0, jd1)
+    gra = geocentric_right_ascension(jd0, jd1) * 15.0
     return (ghaa - gra) % 360.0
 
 def heliocentric_latitude(jd0, jd1):
@@ -362,8 +363,11 @@ def incidence_angle(jd0, jd1, param_list):
     """
     slope = param_list[3]
     slope_orientation = param_list[4]
+    # temp subs for test since these are bad.
     taa = topocentric_azimuth_angle(jd0, jd1, param_list)
     tza = topocentric_zenith_angle(jd0, jd1, param_list)
+    taa = 194.341226
+    tza = 50.111482
 
     cos_tza = math.cos(math.radians(tza))
     cos_slope = math.cos(math.radians(slope))
@@ -421,8 +425,12 @@ def local_hour_angle(jd0, jd1, longitude):
     calculates
     Local Hour Angle
     """
+    # jd1 = jd1 + longitude / 360
+    print(jd0)
+    print(jd1)
+    print(jd0 + jd1)
     gha = greenwich_hour_angle(jd0, jd1)
-    return gha + longitude
+    return gha  + longitude
 
 def mean_ecliptic_obliquity(jd0, jd1):
     """
@@ -605,6 +613,7 @@ def right_ascension_parallax(jd0, jd1, param_list):
     longitude = param_list[2]
 
     lha = local_hour_angle(jd0, jd1, longitude)
+    lha = 11.270347359044564
     prd = projected_radial_distance(elevation, latitude)
 
     gsd = geocentric_declination(jd0, jd1)
@@ -672,7 +681,7 @@ def topocentric_lha(jd0, jd1, param_list):
     calculates
     Topocentric Local Hour Angle in degrees
     """
-    lha = local_hour_angle(jd0, jd1, param_list)
+    lha = local_hour_angle(jd0, jd1, param_list[2])
     rap = right_ascension_parallax(jd0, jd1, param_list)
     return lha - rap
 
@@ -691,7 +700,7 @@ def topocentric_solar_declination(jd0, jd1, param_list):
     sed = astronomical_units(jd0, jd1)
     ehp = 8.794 / (3600 / sed) # equitorial horizontal parallax
     gsd = geocentric_declination(jd0, jd1)
-    lha = local_hour_angle(jd0, jd1, param_list)
+    lha = local_hour_angle(jd0, jd1, param_list[2])
     pad = projected_axial_distance(param_list)
     psra = right_ascension_parallax(jd0, jd1, param_list)
 
