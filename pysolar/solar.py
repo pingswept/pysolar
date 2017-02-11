@@ -355,32 +355,6 @@ def heliocentric_lon_elements(jd0, jd1):
     hlc = coefficients(jd0, jd1, constants.HELIOCENTRIC_LONGITUDE_COEFFS)
     return hlc
 
-def incidence_angle(jd0, jd1, param_list):
-    """
-    Given date/time list, parameter list, and optional delta T
-    calculates
-    Angle of Incedence in degrees
-    """
-    slope = param_list[3]
-    slope_orientation = param_list[4]
-    # temp subs for test since these are bad.
-    taa = topocentric_azimuth_angle(jd0, jd1, param_list)
-    tza = topocentric_zenith_angle(jd0, jd1, param_list)
-    taa = 194.341226
-    tza = 50.111482
-
-    cos_tza = math.cos(math.radians(tza))
-    cos_slope = math.cos(math.radians(slope))
-    sin_slope = math.sin(math.radians(slope))
-    sin_tza = math.sin(math.radians(tza))
-
-    taa_rad = (math.radians(taa))
-    so_rad = math.radians(slope_orientation)
-
-    return math.degrees(
-        math.acos(
-            cos_tza * cos_slope + sin_slope * sin_tza * math.cos(taa_rad + math.pi - so_rad)))
-
 def lasa(jd0, jd1):
     """
     Given UT1 as a 2-part Julian Date
@@ -446,6 +420,17 @@ def mean_ecliptic_obliquity(jd0, jd1):
                 0.00200340 + jec * (
                     -0.000000576 + jec * -0.0000000434))))) / 3600
 
+def true_ecliptic_obliquity(jd0, jd1):
+    """
+    Given Given UT1 as a 2-part Julian Date
+    calculates
+    True Ecliptic Oblquity in degrees
+    """
+    mean_eps = mean_ecliptic_obliquity(jd0, jd1)
+    delta_eps = delta_epsilon(jd0, jd1)
+
+    return mean_eps + delta_eps
+
 def mean_gha_aries(jd0, jd1):
     """
     Given Given UT1 as a 2-part Julian Date
@@ -457,6 +442,15 @@ def mean_gha_aries(jd0, jd1):
         (
             jd0 + jd1) - 2451545) + jct * (jct * 0.000387933  + jct * (jct * -1 / 38710000))
     return mla
+
+def true_gha_aries(jd0, jd1):
+    """
+    Given Given UT1 as a 2-part Julian Date
+    calculates
+    apparent longitude of the first point of aries
+    """
+    mla = mean_gha_aries(jd0, jd1)
+    return mla + equation_of_equinox(jd0, jd1)
 
 def mean_solar_longitude(jd0, jd1):
     """
@@ -472,6 +466,16 @@ def mean_solar_longitude(jd0, jd1):
                 1.0 / 49931.0 + jct * (
                     1.0 / -15299.0 + jct * (1.0 / -1988000.0)))))
     return mgl % 360.0
+
+def true_solar_longitude(jd0, jd1):
+
+    """
+    Given Given UT1 as a 2-part Julian Date
+    calculates
+    True Solar Longitude in degrees
+    """
+    # just for now to keep green squiglies out
+    return mean_solar_longitude(jd0, jd1) + delta_psi(jd0, jd1)
 
 def nutation(jd0, jd1):
     """
@@ -613,7 +617,7 @@ def right_ascension_parallax(jd0, jd1, param_list):
     longitude = param_list[2]
 
     lha = local_hour_angle(jd0, jd1, longitude)
-    lha = 11.270347359044564
+    # lha = 11.270347359044564
     prd = projected_radial_distance(elevation, latitude)
 
     gsd = geocentric_declination(jd0, jd1)
@@ -653,27 +657,6 @@ def topocentric_azimuth_angle(jd0, jd1, param_list):
     bxt = cos_tlha * sin_lat - tan_tdec * cos_lat
     return 180.0 + math.degrees(math.atan2(ayt, bxt)) % 360
 
-def topocentric_elevation_angle(jd0, jd1, param_list):
-    """
-    Given Given UT1 as a 2-part Julian Date and parameter list
-    to pass and with latitude
-    calculates
-    Topocentric Elevation Angle in degrees
-    """
-    phi = param_list[1]
-    delta = topocentric_solar_declination(jd0, jd1, param_list)
-    tlha = topocentric_lha(jd0, jd1, param_list)
-
-    sin_phi = math.sin(math.radians(phi))
-    sin_delta = math.sin(math.radians(delta))
-    cos_phi = math.cos(math.radians(phi))
-    cos_delta = math.sin(math.radians(delta))
-    cos_h = math.cos(math.radians(tlha))
-
-    return math.degrees(
-        math.asin(
-            (sin_phi * sin_delta) + cos_phi * cos_delta * cos_h))
-
 def topocentric_lha(jd0, jd1, param_list):
     """
     Given Given UT1 as a 2-part Julian Date and
@@ -681,9 +664,68 @@ def topocentric_lha(jd0, jd1, param_list):
     calculates
     Topocentric Local Hour Angle in degrees
     """
+
     lha = local_hour_angle(jd0, jd1, param_list[2])
     rap = right_ascension_parallax(jd0, jd1, param_list)
     return lha - rap
+
+def incidence_angle(jd0, jd1, param_list):
+    """
+    Given date/time list, parameter list, and optional delta T
+    calculates
+    Angle of Incedence in degrees
+    """
+    slope = param_list[3]
+    slope_orientation = param_list[4]
+    # temp subs for test since these are bad.
+    taa = topocentric_azimuth_angle(jd0, jd1, param_list)
+    tza = topocentric_zenith_angle(jd0, jd1, param_list)
+    # taa = 194.341226
+    # tza = 50.111482
+
+    cos_tza = math.cos(math.radians(tza))
+    cos_slope = math.cos(math.radians(slope))
+    sin_slope = math.sin(math.radians(slope))
+    sin_tza = math.sin(math.radians(tza))
+
+    taa_rad = (math.radians(taa))
+    so_rad = math.radians(slope_orientation)
+
+    return math.degrees(
+        math.acos(
+            cos_tza * cos_slope + sin_slope * sin_tza * math.cos(taa_rad + math.pi - so_rad)))
+
+def angle_of_incidence(jd0, jd1, param_list):
+    """
+    from web page at http://article.sapub.org/10.5923.j.ep.20160602.01.html
+    """
+    gsd = topocentric_solar_declination(jd0, jd1, param_list)
+    gsd_cos = math.cos(math.radians(gsd))
+    gsd_sin = math.sin(math.radians(gsd))
+
+    latitude = param_list[1]
+    lat_cos = math.cos(math.radians(latitude))
+    lat_sin = math.sin(math.radians(latitude))
+
+    slope = param_list[3]
+    slope_cos = math.cos(math.radians(slope))
+    slope_sin = math.sin(math.radians(slope))
+
+    slope_az = param_list[4]
+    saz_cos = math.cos(math.radians(slope_az))
+    saz_sin = math.sin(math.radians(slope_az))
+
+    lha = topocentric_lha(jd0, jd1, param_list)
+    lha_cos = math.cos(math.radians(lha))
+    lha_sin = math.sin(math.radians(lha))
+
+    term_1 = gsd_sin * lat_sin * slope_sin
+    term_2 = gsd_sin * lat_cos * slope_sin * saz_sin
+    term_3 = gsd_cos * lat_cos * slope_cos * lha_cos
+    term_4 = gsd_cos * lat_sin * slope_sin * saz_cos * lha_cos
+    term_5 = gsd_cos * slope_sin * saz_sin * lha_sin
+
+    return math.degrees(math.acos(term_1 - term_2 + term_3 + term_4 + term_5))
 
 def topocentric_solar_declination(jd0, jd1, param_list):
     """
@@ -733,42 +775,50 @@ def topocentric_zenith_angle(jd0, jd1, param_list):
     Topocentric Zenith Angle in degrees
     """
     # 3.14.3. Calculate the topocentric elevation angle, e (in degrees),
-    tea = topocentric_elevation_angle(
-        jd0, jd1, param_list) + (
-            refraction_correction(
-                jd0, jd1, param_list))
+    tea = topocentric_elevation_angle(jd0, jd1, param_list)
+    rc1 = refraction_correction(jd0, jd1, param_list)
+    return 90 - tea + rc1
+
     # 3.14.4. Calculate the topocentric zenith angle, 2 (in degrees),
-    return 90 - tea
+    # return 90 - tea
+    tsd = topocentric_solar_declination(jd0, jd1, param_list)
+    tsd_cos = math.cos(math.radians(tsd))
+    tsd_sin = math.sin(math.radians(tsd))
 
-def true_ecliptic_obliquity(jd0, jd1):
+    latitude = param_list[1]
+    lat_cos = math.cos(math.radians(latitude))
+    lat_sin = math.sin(math.radians(latitude))
+
+    lha = topocentric_lha(jd0, jd1, param_list)
+    lha_cos = math.cos(math.radians(lha))
+
+    term_1 = tsd_cos * lat_cos * lha_cos
+    term_2 = tsd_sin * lat_sin
+
+    # return math.degrees(math.acos(term_1 + term_2))
+
+def topocentric_elevation_angle(jd0, jd1, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given Given UT1 as a 2-part Julian Date and parameter list
+    to pass and with latitude
     calculates
-    True Ecliptic Oblquity in degrees
+    Topocentric Elevation Angle in degrees
     """
-    mean_eps = mean_ecliptic_obliquity(jd0, jd1)
-    delta_eps = delta_epsilon(jd0, jd1)
+    phi = param_list[1]
+    phi_cos = math.cos(math.radians(phi))
+    phi_sin = math.sin(math.radians(phi))
 
-    return mean_eps + delta_eps
+    lha = topocentric_lha(jd0, jd1, param_list)
+    lha_cos = math.cos(math.radians(lha))
 
-def true_gha_aries(jd0, jd1):
-    """
-    Given Given UT1 as a 2-part Julian Date
-    calculates
-    apparent longitude of the first point of aries
-    """
-    mla = mean_gha_aries(jd0, jd1)
-    return mla + equation_of_equinox(jd0, jd1)
+    tsd = topocentric_solar_declination(jd0, jd1, param_list)
+    tsd_cos = math.cos(math.radians(tsd))
+    tsd_sin = math.sin(math.radians(tsd))
 
-def true_solar_longitude(jd0, jd1):
-
-    """
-    Given Given UT1 as a 2-part Julian Date
-    calculates
-    True Solar Longitude in degrees
-    """
-    # just for now to keep green squiglies out
-    return mean_solar_longitude(jd0, jd1) + delta_psi(jd0, jd1)
+    term_1 = phi_cos * tsd_cos * lha_cos
+    term_2 = phi_sin * tsd_sin
+    # just the opposite of zenith angle
+    return math.degrees(math.asin(term_1 + term_2))
 
 def altitude(when, param_list):
     """
@@ -777,11 +827,11 @@ def altitude(when, param_list):
     dt_list = [when.year, when.month, when.day,
                when.hour, when.minute, when.second,
                when.microsecond, 0, 0]
-    jd0 = time.julian_day(dt_list)
+    jd0 = time.julian_day(dt_list) - param_list[2] / 360
     jd1 = time.delta_t(jd0)
     tea = topocentric_elevation_angle(jd0, jd1, param_list)
     rca = refraction_correction(jd0, jd1, param_list)
-    return tea + rca
+    return 90 - tea + rca
 
 def altitude_fast(when, param_list):
     """
@@ -806,9 +856,9 @@ def azimuth(when, param_list):
     dt_list = [when.year, when.month, when.day,
                when.hour, when.minute, when.second,
                when.microsecond, 0, 0]
-    jd0 = time.julian_day(dt_list)
+    jd0 = time.julian_day(dt_list) - param_list[2] / 360
     jd1 = time.delta_t(jd0)
-    return 180 - topocentric_azimuth_angle(jd0, jd1, param_list)
+    return 180 - topocentric_azimuth_angle(jd0, jd1, param_list) % 360
 
 def azimuth_fast(when, param_list):
     """

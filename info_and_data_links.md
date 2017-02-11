@@ -1,5 +1,7 @@
 # My searches and familiar places for Astronomical Algorithms various languages of programs and data.
 
+* [NOAA Solar Calculator with map](https://www.esrl.noaa.gov/gmd/grad/solcalc/)
+
 * [Astronomy Answers: Position of the Sun](http://aa.quae.nl/en/reken/zonpositie.html)
 
 * [/ftp/cats/VI/81](http://cdsarc.u-strasbg.fr/viz-bin/ftp-index?VI/81)
