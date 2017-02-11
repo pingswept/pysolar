@@ -103,3 +103,5 @@
 * [Eclipses](http://www.wpcsd.org/Downloads/Classwork%20on%20Eclipses%201.pdf)
 
 * [General Polynomial for Optimizing the Tilt Angle of Flat Solar Energy Harvesters Based on ASHRAE Clear Sky Model in Mid and High Latitudes](http://article.sapub.org/10.5923.j.ep.20160602.01.html)
+
+* [The Sun As A Source Of Energy Part 3: Calculating Solar Angles](http://www.itacanet.org/the-sun-as-a-source-of-energy/part-3-calculating-solar-angles/)
