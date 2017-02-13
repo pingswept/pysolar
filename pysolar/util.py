@@ -47,7 +47,7 @@ ELEVATION_DEFAULT = 0.0      # Default elevation is 0.0
 def sunrise_sunset(when, params_list):
     """This function calculates the astronomical sunrise and sunset times in local time.
 
-    Parameters
+    Parameters[lat, lon]
     ----------
     latitude_deg : float
         latitude in decimal degree. A geographical term denoting
@@ -55,6 +55,7 @@ def sunrise_sunset(when, params_list):
     longitude_deg : float
         longitude in decimal degree. Longitude shows your location
         in an east-west direction,relative to the Greenwich meridian.
+
     when : datetime.datetime
         date and time in any valid timezone, answers will be for same day in same timezone.
 
@@ -72,15 +73,23 @@ def sunrise_sunset(when, params_list):
            manuals/7.1415.01.121_cm121_bed-anleitung_engl.pdf
     .. [2] http://pysolar.org/
 
-    Examples
+    Example
     --------
-    >>> lat = 50.111512
-    >>> lon = 8.680506
-    >>> timezone_local = pytz.timezone('Europe/Berlin')
-    >>> now = datetime.now(timezone_local)
-    >>> sr, ss = sb.get_sunrise_sunset(lat, lon, now)
-    >>> print('sunrise: ', sr)
-    >>> print('sunset:', ss)
+
+from datetime import \
+     datetime, \
+     timedelta
+import pytz
+import pysolar
+LAT = 50.111512
+LON = 8.680506
+LOCAL_TZ = pytz.timezone('Europe/Berlin')
+NOW = datetime.now(LOCAL_TZ)
+PARAMS = [LAT, LON]
+SRISE, SSET = pysolar.util.sunrise_sunset(NOW, PARAMS)
+print('sunrise: ', SRISE)
+print('sunset:', SSET)
+
     """
 
     utc_offset = when.utcoffset()
@@ -90,7 +99,7 @@ def sunrise_sunset(when, params_list):
         utc_offset = 0
     #end if
     day = when.utctimetuple().tm_yday # Day of the year
-    sha = utc_offset / 3600 * 15.0 - params_list[2] # Solar hour angle
+    sha = utc_offset / 3600 * 15.0 - params_list[1] # Solar hour angle
     tta = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
     time_adst = \
         (
@@ -122,7 +131,7 @@ def sunrise_sunset(when, params_list):
                 -
                 math.radians(constants.EARTH_AXIS_INCLINATION)
                 *
-                math.tan(math.radians(params_list[1]))
+                math.tan(math.radians(params_list[0]))
                 *
                 math.cos(2 * math.pi * day / 365.25)
             )
@@ -276,8 +285,7 @@ def solar_elevation_func_clear(when, params_list):
 
     """
 
-    default = None
-    altitude = solar.altitude(when, params_list, default)
+    altitude = solar.altitude(when, params_list)
     return (
         0.038175 + (
             1.5458 * (math.sin(altitude))) + ((-0.59980) * (0.5 * (1 - math.cos(2 * (altitude))))))

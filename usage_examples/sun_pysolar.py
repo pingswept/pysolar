@@ -1,7 +1,10 @@
-
+"""
+doc string here
+"""
 
 
 import datetime
+import time as _time
 import pytz
 from pysolar import util
 
@@ -9,38 +12,35 @@ LAT = 51.477811 # approximate Greenwich Maritime Museum
 LON = -0.001475 # new prime merridian :D
 
 UTC = datetime.datetime.utcnow()
-UTC = pytz.utc.localize(UTC)
-SUNRISE, SUNSET = util.get_sunrise_sunset(LAT, LON, UTC)
+LTZ = pytz.utc.localize(UTC)
+PARAMS = [LAT, LON]
+SUNRISE, SUNSET = util.sunrise_sunset(LTZ, PARAMS)
 
-# print('system time now UTC:', UTC)
-print(datetime.date(UTC.year, UTC.month, UTC.day))
+print('system time now UTC:', UTC)
+print(datetime.date(LTZ.year, LTZ.month, LTZ.day))
 print('sunrise: ', SUNRISE.strftime('%H:%M:%S'))
 print('sunset:  ', SUNSET.strftime('%H:%M:%S'))
 
-
-
 DTO = datetime.datetime.toordinal(UTC)
-print(DTO)
-
+print('dto:', DTO)
 CST = datetime.datetime.now()
-# UTCOFFSET = datetime.datetime.utcoffset(DTO)
-print(CST)
+print('cst', CST)
+UTCOFFSET = datetime.datetime.utcoffset(CST) # was DTO but int error
+print('utc offset', UTCOFFSET)
 
 POSIXEPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc).toordinal()
-print(POSIXEPOCH)
+print('posix epoch:', POSIXEPOCH)
 
-print(CST.toordinal() - POSIXEPOCH)
+print('cst something?', CST.toordinal() - POSIXEPOCH)
 
 # OFFSET = tzinfo.utcoffset(CST)
 ZERO = datetime.timedelta(0)
 HOUR = datetime.timedelta(hours=1)
 SECOND = datetime.timedelta(seconds=1)
 
-import time as _time
-
-STDOFFSET = datetime.timedelta(seconds = -_time.timezone)
+STDOFFSET = datetime.timedelta(seconds=-_time.timezone)
 if _time.daylight:
-    DSTOFFSET = datetime.timedelta(seconds = -_time.altzone)
+    DSTOFFSET = datetime.timedelta(seconds=-_time.altzone)
 else:
     DSTOFFSET = STDOFFSET
 
@@ -48,49 +48,55 @@ DSTDIFF = DSTOFFSET - STDOFFSET
 
 class LocalTimezone(datetime.tzinfo):
     """ docs """
-    def fromutc(self, dt):
-        assert dt.tzinfo is self
-        stamp = (dt - datetime.datetime(1970, 1, 1, tzinfo=self)) // SECOND
+    def fromutc(self, dti):
+        assert dti.tzinfo is self
+        stamp = (dti - datetime.datetime(1970, 1, 1, tzinfo=self)) // SECOND
         args = _time.localtime(stamp)[:6]
         dst_diff = DSTDIFF // SECOND
         # Detect fold
         fold = (args == _time.localtime(stamp - dst_diff))
-        return datetime.datetime(*args, microsecond=dt.microsecond,
+        return datetime.datetime(*args, microsecond=dti.microsecond,
                                  tzinfo=self, fold=fold)
 
-    def utcoffset(self, dt):
-        if self._isdst(dt):
+    def utcoffset(self, dti):
+        if self.dst(dti):
             return DSTOFFSET
         else:
             return STDOFFSET
 
-    def dst(self, dt):
-        if self._isdst(dt):
+    def dst(self, dti):
+        if self.dst(dti):
             return DSTDIFF
         else:
             return ZERO
 
-    def tzname(self, dt):
-        return _time.tzname[self._isdst(dt)]
+    def tzname(self, dti):
+        return _time.tzname[self.dst(dti)]
 
-    def _isdst(self, dt):
-        tt = (dt.year, dt.month, dt.day,
-              dt.hour, dt.minute, dt.second,
-              dt.weekday(), 0, 0)
-        stamp = _time.mktime(tt)
-        tt = _time.localtime(stamp)
-        return tt.tm_isdst > 0
+    def dayst(self, dti):
+        """
+        doc_header()
+        """
+        tto = (dti.year, dti.month, dti.day,
+               dti.hour, dti.minute, dti.second,
+               dti.weekday(), 0, 0)
+        stamp = _time.mktime(tto)
+        tto = _time.localtime(stamp)
+        return tto.tm_isdst > 0
 
-Local = LocalTimezone()
+LOCAL = LocalTimezone()
 
 
 # A complete implementation of current DST rules for major US time zones.
 
-def first_sunday_on_or_after(dt):
-    days_to_go = 6 - dt.weekday()
+def first_sunday_on_or_after(dti):
+    """
+    func doc string
+    """
+    days_to_go = 6 - dti.weekday()
     if days_to_go:
-        dt += datetime.timedelta(days_to_go)
-    return dt
+        dti += datetime.timedelta(days_to_go)
+    return dti
 
 
 # US DST Rules
@@ -119,9 +125,12 @@ DSTSTART_1967_1986 = datetime.datetime(1, 4, 24, 2)
 DSTEND_1967_1986 = DSTEND_1987_2006
 
 def us_dst_range(year):
-    # Find start and end times for US DST. For years before 1967, return
-    # start = end for no DST.
-    if 2006 < year:
+    """
+    Find start and end times for US DST. For years before 1967,
+    return
+    start = end for no DST.
+    """
+    if year > 2006:
         dststart, dstend = DSTSTART_2007, DSTEND_2007
     elif 1986 < year < 2007:
         dststart, dstend = DSTSTART_1987_2006, DSTEND_1987_2006
@@ -197,20 +206,19 @@ class USTimeZone(datetime.tzinfo):
             return dst_time
 
 
-Eastern  = USTimeZone(-5, "Eastern",  "EST", "EDT")
-Central  = USTimeZone(-6, "Central",  "CST", "CDT")
-Mountain = USTimeZone(-7, "Mountain", "MST", "MDT")
-Pacific  = USTimeZone(-8, "Pacific",  "PST", "PDT")
+EASTERN = USTimeZone(-5, "Eastern", "EST", "EDT")
+CENTRAL = USTimeZone(-6, "Central", "CST", "CDT")
+MOUNTAIN = USTimeZone(-7, "Mountain", "MST", "MDT")
+PACIFIC = USTimeZone(-8, "Pacific", "PST", "PDT")
 
 U0 = datetime.datetime(2016, 3, 13, 5, tzinfo=datetime.timezone.utc)
 for i in range(4):
     u = U0 + i*HOUR
-    t = u.astimezone(Eastern)
+    t = u.astimezone(EASTERN)
     # print(u.time(), 'UTC =', t.time(), t.tzname())
 
 U1 = datetime.datetime(2016, 11, 6, 4, tzinfo=datetime.timezone.utc)
 for i in range(4):
     u = U1 + i*HOUR
-    t = u.astimezone(Eastern)
+    t = u.astimezone(EASTERN)
     # print(u.time(), 'UTC =', t.time(), t.tzname(), t.fold)
-

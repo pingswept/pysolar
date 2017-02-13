@@ -122,6 +122,55 @@ def delta_psi(jd0, jd1):
     """
     return nutation(jd0, jd1)['longitude']
 
+def orbital_eccentricity(jct):
+    """
+    earths eliptic orbit
+    """
+    return 0.016708617 + jct * (-0.000042037 + jct * -0.0000001235)
+
+def mean_anomaly(jct):
+    """
+    Mean Anomaly of the Sun
+    """
+    coef = constants.aberration_coeffs()
+    xdx = list \
+      (
+          coef[k](jct)
+          for k in
+          ( # order is important
+              'MeanAnomalyOfMoon',
+              'MeanAnomalyOfSun',
+              'ArgumentOfLatitudeOfMoon',
+              'MeanElongationOfMoon',
+              'LongitudeOfAscendingNode',
+          )
+      )
+    return xdx[1] % 360
+
+def equation_of_center(jct):
+    """
+    equation of center
+    """
+    eoe = orbital_eccentricity(jct)
+    mas = mean_anomaly(jct)
+    sin1 = math.sin(1.0 * mas) * 2.0
+    sin2 = math.sin(2.0 * mas) * 5.0 / 4.0
+    sin3 = math.sin(3.0 * mas)
+    sin4 = math.sin(4.0 * mas)
+    sin5 = math.sin(5.0 * mas) * 1097.0 / 960.0
+    ad3 = sin3 * 13.0 / 12.0 - sin1 / 2.0 * 1.0 / 4.0
+    ad4 = sin4 * 103.0 / 96.0 - sin2 / 5.0 / 4.0  * 11.0 / 24.0
+    ad5 = sin5 + sin1 / 2.0 * 5.0 / 96.0 - sin3 * 43.0 / 64.0
+    return eoe * (sin1 + eoe * (sin2 + eoe * (ad3 + eoe * (ad4 + eoe * ad5))))
+
+def true_anomaly(jct):
+    """
+    True Anomaly of the Sun
+    """
+    mas = mean_anomaly(jct)
+    eoc = equation_of_center(jct)
+    return (mas + eoc) % 360
+
 def equation_of_equinox(jd0, jd1):
     """
     Given UT1 as a 2-part Julian Date
@@ -392,7 +441,7 @@ def lmst(jd0, jd1):
     """
     return gmst(jd0, jd1)
 
-def local_hour_angle(jd0, jd1, longitude):
+def local_hour_angle(jd0, jd1):
     """
     Given Given UT1 as a 2-part Julian Date
     parameter list
@@ -404,7 +453,7 @@ def local_hour_angle(jd0, jd1, longitude):
     # function. Otherwise it is just the same as using
     # greenwich hour angle
     gha = greenwich_hour_angle(jd0, jd1)
-    return gha#   + longitude
+    return gha
 
 def mean_ecliptic_obliquity(jd0, jd1):
     """
@@ -612,17 +661,11 @@ def right_ascension_parallax(jd0, jd1, param_list):
     calculates
     A delta of Right Ascension caused by parallax in degrees
     """
-    elevation = param_list[0]
-    latitude = param_list[1]
-    longitude = param_list[2]
-
-    lha = local_hour_angle(jd0, jd1, longitude)
-    # lha = 11.270347359044564
-    prd = projected_radial_distance(elevation, latitude)
+    prd = projected_radial_distance(param_list[0], param_list[1])
+    lha = local_hour_angle(jd0, jd1)
 
     gsd = geocentric_declination(jd0, jd1)
-    sed = astronomical_units(jd0, jd1)
-    ehp = 8.794 / (3600 / sed)
+    ehp = 8.794 / (3600 / astronomical_units(jd0, jd1))
 
     sin_ehp = math.sin(math.radians(ehp))
     cos_gsd = math.cos(math.radians(gsd))
@@ -665,7 +708,7 @@ def topocentric_lha(jd0, jd1, param_list):
     Topocentric Local Hour Angle in degrees
     """
 
-    lha = local_hour_angle(jd0, jd1, param_list[2])
+    lha = local_hour_angle(jd0, jd1)
     rap = right_ascension_parallax(jd0, jd1, param_list)
     return lha - rap
 
@@ -688,7 +731,7 @@ def incidence_angle(jd0, jd1, param_list):
     sin_slope = math.sin(math.radians(slope))
     sin_tza = math.sin(math.radians(tza))
 
-    taa_rad = (math.radians(taa))
+    taa_rad = math.radians(taa)
     so_rad = math.radians(slope_orientation)
 
     return math.degrees(
@@ -699,33 +742,27 @@ def angle_of_incidence(jd0, jd1, param_list):
     """
     from web page at http://article.sapub.org/10.5923.j.ep.20160602.01.html
     """
-    gsd = topocentric_solar_declination(jd0, jd1, param_list)
-    gsd_cos = math.cos(math.radians(gsd))
-    gsd_sin = math.sin(math.radians(gsd))
+    gsd_cos = math.cos(math.radians(topocentric_solar_declination(jd0, jd1, param_list)))
+    gsd_sin = math.sin(math.radians(topocentric_solar_declination(jd0, jd1, param_list)))
 
-    latitude = param_list[1]
-    lat_cos = math.cos(math.radians(latitude))
-    lat_sin = math.sin(math.radians(latitude))
+    lat_cos = math.cos(math.radians(param_list[1]))
+    lat_sin = math.sin(math.radians(param_list[1]))
 
-    slope = param_list[3]
-    slope_cos = math.cos(math.radians(slope))
-    slope_sin = math.sin(math.radians(slope))
+    slope_cos = math.cos(math.radians(param_list[3]))
+    slope_sin = math.sin(math.radians(param_list[3]))
 
-    slope_az = param_list[4]
-    saz_cos = math.cos(math.radians(slope_az))
-    saz_sin = math.sin(math.radians(slope_az))
+    saz_cos = math.cos(math.radians(param_list[4]))
+    saz_sin = math.sin(math.radians(param_list[4]))
 
-    lha = topocentric_lha(jd0, jd1, param_list)
-    lha_cos = math.cos(math.radians(lha))
-    lha_sin = math.sin(math.radians(lha))
+    lha_cos = math.cos(math.radians(topocentric_lha(jd0, jd1, param_list)))
+    lha_sin = math.sin(math.radians(topocentric_lha(jd0, jd1, param_list)))
 
-    term_1 = gsd_sin * lat_sin * slope_sin
-    term_2 = gsd_sin * lat_cos * slope_sin * saz_sin
-    term_3 = gsd_cos * lat_cos * slope_cos * lha_cos
-    term_4 = gsd_cos * lat_sin * slope_sin * saz_cos * lha_cos
-    term_5 = gsd_cos * slope_sin * saz_sin * lha_sin
-
-    return math.degrees(math.acos(term_1 - term_2 + term_3 + term_4 + term_5))
+    return math.degrees(math.acos(
+        gsd_sin * lat_sin * slope_cos - (
+            gsd_sin * lat_cos * slope_sin * saz_cos) + (
+                gsd_cos * lat_cos * slope_cos * lha_cos) + (
+                    gsd_cos * lat_sin * slope_sin * saz_cos * lha_cos) + (
+                        gsd_cos * slope_sin * saz_sin * lha_sin)))
 
 def topocentric_solar_declination(jd0, jd1, param_list):
     """
@@ -739,10 +776,9 @@ def topocentric_solar_declination(jd0, jd1, param_list):
     projected axial distance,
     right ascension parallax
     """
-    sed = astronomical_units(jd0, jd1)
-    ehp = 8.794 / (3600 / sed) # equitorial horizontal parallax
+    ehp = 8.794 / (3600 / astronomical_units(jd0, jd1)) # equitorial horizontal parallax
     gsd = geocentric_declination(jd0, jd1)
-    lha = local_hour_angle(jd0, jd1, param_list[2])
+    lha = local_hour_angle(jd0, jd1)
     pad = projected_axial_distance(param_list)
     psra = right_ascension_parallax(jd0, jd1, param_list)
 
@@ -777,10 +813,9 @@ def topocentric_zenith_angle(jd0, jd1, param_list):
     # 3.14.3. Calculate the topocentric elevation angle, e (in degrees),
     tea = topocentric_elevation_angle(jd0, jd1, param_list)
     rc1 = refraction_correction(jd0, jd1, param_list)
-    return 90 - tea + rc1
-
     # 3.14.4. Calculate the topocentric zenith angle, 2 (in degrees),
-    # return 90 - tea
+    return 90 - tea + rc1
+    """
     tsd = topocentric_solar_declination(jd0, jd1, param_list)
     tsd_cos = math.cos(math.radians(tsd))
     tsd_sin = math.sin(math.radians(tsd))
@@ -796,6 +831,7 @@ def topocentric_zenith_angle(jd0, jd1, param_list):
     term_2 = tsd_sin * lat_sin
 
     # return math.degrees(math.acos(term_1 + term_2))
+    """
 
 def topocentric_elevation_angle(jd0, jd1, param_list):
     """
