@@ -501,14 +501,12 @@ def true_gha_aries(jd0, jd1):
     mla = mean_gha_aries(jd0, jd1)
     return mla + equation_of_equinox(jd0, jd1)
 
-def mean_solar_longitude(jd0, jd1):
+def mean_solar_longitude(jct):
     """
     Given Given UT1 as a 2-part Julian Date
     calculates
     Mean Geocentric Longitude in degrees
     """
-    jct = time.julian_century(jd0 + jd1)
-
     mgl = 280.4664567 + jct * (
         36000.76982779 + jct * (
             0.0003032028 + jct * (
@@ -516,15 +514,16 @@ def mean_solar_longitude(jd0, jd1):
                     1.0 / -15299.0 + jct * (1.0 / -1988000.0)))))
     return mgl % 360.0
 
-def true_solar_longitude(jd0, jd1):
+def true_solar_longitude(jct):
 
     """
     Given Given UT1 as a 2-part Julian Date
     calculates
     True Solar Longitude in degrees
     """
-    # just for now to keep green squiglies out
-    return mean_solar_longitude(jd0, jd1) + delta_psi(jd0, jd1)
+    msl = mean_solar_longitude(jct)
+    eoc = equation_of_center(jct)
+    return (msl + eoc) % 360
 
 def nutation(jd0, jd1):
     """

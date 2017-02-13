@@ -185,6 +185,20 @@ class TestSolar(unittest.TestCase):
         mas2 = solar.mean_anomaly(self.jct2)
         self.assertEqual(282.60763067943367, mas2, 12)
 
+    def test_mean_solar_longitude(self):
+        """
+        test Mean Geocentric Longitude
+        """
+        # print('testing solar.py Mean Geocentric Longitude')
+        msl0 = solar.mean_solar_longitude(self.jct0)
+        self.assertEqual(205.60941642982948, msl0, 12)
+
+        msl1 = solar.mean_solar_longitude(self.jct1)
+        self.assertEqual(205.61015271653855, msl1, 12)
+
+        msl2 = solar.mean_solar_longitude(self.jct2)
+        self.assertEqual(205.61018076283744, msl2, 12)
+
     def test_orbital_eccentricity(self):
         """
         test earths eliptic orbit
@@ -251,6 +265,35 @@ class TestSolar(unittest.TestCase):
 
         tas2 = solar.true_anomaly(self.jct2)
         self.assertEqual(282.6030146009614, tas2, 12)
+
+    def test_true_solar_longitude(self):
+        """
+        true not apparent solar longitude
+        """
+        tsl0 = solar.true_solar_longitude(self.jct0)
+        self.assertEqual(205.6047745255782, tsl0, 12)
+
+        tsl1 = solar.true_solar_longitude(self.jct1)
+        self.assertEqual(205.60553569036895, tsl1, 12)
+
+        tsl2 = solar.true_solar_longitude(self.jct2)
+        self.assertEqual(205.6055646843652, tsl2, 12)
+
+    def test_eot(self):
+        """
+        A mockup of equation of time
+        """
+        mas = solar.mean_anomaly(self.jct0)
+        tas = solar.true_anomaly(self.jct0)
+        orbital = mas - tas
+        tls = solar.true_solar_longitude(self.jct0)
+        gra = solar.geocentric_right_ascension(self.jd1, self.jd4) * 15
+        oblique = tls - gra
+        eot = orbital + oblique
+        print('eot =', eot, 'degrees')
+        print('eot =', eot / 15, 'hours')
+        print('eot =', eot * 4, 'minutes')
+
 
 if __name__ == "__main__":
 

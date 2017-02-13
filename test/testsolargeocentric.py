@@ -22,7 +22,7 @@
 """ Tests for solar.py """
 
 import unittest
-from pysolar import solar, time, elevation, constants
+from pysolar import solar, time, constants
 
 class TestGeocentricSolar(unittest.TestCase):
     """
@@ -135,20 +135,6 @@ class TestGeocentricSolar(unittest.TestCase):
         gsra2 = solar.geocentric_right_ascension(self.jd1, self.delta_t + self.jd2)
         self.assertEqual(13.481827340007595, gsra2, 12)
         self.assertAlmostEqual(202.2273842747809 / 15, gsra2, 4)
-
-    def test_mean_geocentric_longitude(self):
-        """
-        test Mean Geocentric Longitude
-        """
-        # print('testing solar.py Mean Geocentric Longitude')
-        mgl0 = solar.mean_solar_longitude(self.jd1, self.jd2)
-        self.assertEqual(205.89640791951274, mgl0, 12)
-
-        mgl1 = solar.mean_solar_longitude(self.jd1, self.default + self.jd2)
-        self.assertEqual(205.8971442062218, mgl1, 12)
-
-        mgl2 = solar.mean_solar_longitude(self.jd1, self.delta_t + self.jd2)
-        self.assertEqual(205.89717225252048, mgl2, 12)
 
 if __name__ == "__main__":
 
