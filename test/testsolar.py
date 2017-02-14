@@ -109,6 +109,24 @@ class TestSolar(unittest.TestCase):
         eoc2 = solar.equation_of_center(self.jct2)
         self.assertEqual(-0.0046160784722622675, eoc2, 12)
 
+    def test_equation_of_time(self):
+        """
+        A mockup of equation of time
+        """
+        mas = solar.mean_anomaly(self.jct0)
+        tas = solar.true_anomaly(self.jct0)
+        orbital = mas - tas
+        tls = solar.true_solar_longitude(self.jct0)
+        gra = solar.geocentric_right_ascension(self.jd1, self.jd4) * 15
+        oblique = tls - gra
+        eot = orbital + oblique
+        self.assertEqual(3.6548495920862365, eot, 15)
+        self.assertEqual(0.24365663947241575, eot / 15, 15)
+        self.assertEqual(14.619398368344946, eot * 4, 15)
+        # print('eot =', eot, 'degrees')
+        # print('eot =', eot / 15, 'hours')
+        # print('eot =', eot * 4, 'minutes')
+
     def test_greenwich_hour_angle(self):
         """
         testing Greenwich hour angle
@@ -153,7 +171,7 @@ class TestSolar(unittest.TestCase):
         self.assertEqual(11.728153729559693, lha2, 12)
         self.assertAlmostEqual(11.728179379790333, lha2, 4)
 
-    def max_horizontal_parallax(self):
+    def test_max_horizontal_parallax(self):
         """
         testing equatorial horizontal parallax
         67      0.002451
@@ -279,25 +297,8 @@ class TestSolar(unittest.TestCase):
         tsl2 = solar.true_solar_longitude(self.jct2)
         self.assertEqual(205.6055646843652, tsl2, 12)
 
-    def test_eot(self):
-        """
-        A mockup of equation of time
-        """
-        mas = solar.mean_anomaly(self.jct0)
-        tas = solar.true_anomaly(self.jct0)
-        orbital = mas - tas
-        tls = solar.true_solar_longitude(self.jct0)
-        gra = solar.geocentric_right_ascension(self.jd1, self.jd4) * 15
-        oblique = tls - gra
-        eot = orbital + oblique
-        print('eot =', eot, 'degrees')
-        print('eot =', eot / 15, 'hours')
-        print('eot =', eot * 4, 'minutes')
-
-
 if __name__ == "__main__":
 
     SOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestSolar)
-
     unittest.TextTestRunner(verbosity=2).run(SOLAR)
 #end if

@@ -1,5 +1,7 @@
 # My searches and familiar places for Astronomical Algorithms various languages of programs and data.
 
+* [jdcal 1.3](https://pypi.python.org/pypi/jdcal)
+
 * [NOAA Solar Calculator with map](https://www.esrl.noaa.gov/gmd/grad/solcalc/)
 
 * [Astronomy Answers: Position of the Sun](http://aa.quae.nl/en/reken/zonpositie.html)
