@@ -1,0 +1,143 @@
+body {
+    margin: 0 5px;
+}
+
+th {
+    text-align: center;
+}
+
+a {
+color: #1f64b7;
+}
+
+/*
+.carousel-control.left {
+  background-image: none;
+}
+.carousel-control.right {
+  background-image: none;
+}
+
+.carousel-inner > .active {
+    left: 85px;
+}
+
+.carousel-indicators .active {
+    background-color: #ac3;
+}
+.carousel-indicators li {
+    border: 1px solid #888;
+}
+
+.carousel {
+    margin-bottom: 20px;
+}
+
+.carousel-indicators {
+    bottom: -32px;
+}
+
+.carousel-caption {
+    left: 20%;
+    padding-bottom: 2px;
+    right: 43%;
+}
+.carousel-caption {
+    bottom: 0;
+    color: #fff;
+    left: 0%;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    position: absolute;
+    right: 23.5%;
+background: rgba(0, 0, 0, 0.6) none repeat scroll 0 0;
+}
+*/
+
+.panel-default > .panel-heading {
+    background-image: none;
+    background-color: #f5f5f5;
+    background-repeat: repeat-x;
+}
+
+.panel-heading > a {
+    color: inherit;
+    outline: 0 none;
+}
+
+.dropdown-menu > li > h5 {
+    border-bottom: 1px solid #444444;
+    color: #555555;
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
+
+.input-xs {
+    border-radius: 3px;
+    font-size: 12px;
+    height: 22px;
+    line-height: 1.5;
+    padding: 5px 10px;
+}
+
+.form-inline {
+margin-bottom: 3px;
+}
+
+ol.pageheader {
+    background-color: #fff;
+}
+
+.thumbnail {
+margin-bottom: 0px;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+/*
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+*/
+    background-color: #ffffff;
+    border-color: #0a0 #dddddd transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 2px 1px 1px;
+    color: #555555;
+    cursor: default;
+    margin-top: -1px;
+}
+
+.nav-tabs > li > a {
+    background-color: #f5f5f5;
+    border: 1px solid #dddddd;
+    margin-right: 4px;
+}
+
+.well {
+background-image: none;
+}
+
+.itemlist h4 {
+    color: #cc6633;
+}
+
+.itemlist ul {
+    list-style: outside none none;
+}
+
+.btn-flat {
+background-image: none;
+}
+
+@media (max-width: 767px) {
+.nav-tabs > li {
+        width: 100%;
+}
+
+.nav-tabs > li > a {
+margin-right: 0px;
+}
+
+}

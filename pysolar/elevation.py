@@ -19,18 +19,25 @@
 
 """
 import warnings
-from .constants import \
-    STANDARD_PRESSURE, \
-    STANDARD_TEMPERATURE, \
-    EARTH_TEMPERATURE_LAPSE_RATE, \
-    AIR_GAS_CONSTANT, \
-    EARTH_GRAVITY, \
-    EARTH_ATMOSPHERE_MOLAR_MASS
+import pysolar.constants
 
-def pressure_with_elevation(
-        hgt, psi=STANDARD_PRESSURE, stt=STANDARD_TEMPERATURE,
-        tlr=EARTH_TEMPERATURE_LAPSE_RATE, hbl=0.0, air=AIR_GAS_CONSTANT,
-        gfc=EARTH_GRAVITY, amm=EARTH_ATMOSPHERE_MOLAR_MASS):
+STANDARD_PRESSURE = pysolar.constants.STANDARD_PRESSURE
+STANDARD_TEMPERATURE = pysolar.constants.STANDARD_TEMPERATURE
+EARTH_TEMPERATURE_LAPSE_RATE = pysolar.constants.EARTH_TEMPERATURE_LAPSE_RATE
+AIR_GAS_CONSTANT = pysolar.constants.AIR_GAS_CONSTANT
+EARTH_GRAVITY = pysolar.constants.EARTH_GRAVITY
+EARTH_ATMOSPHERE_MOLAR_MASS = pysolar.constants.EARTH_ATMOSPHERE_MOLAR_MASS
+
+# too many arguments in this method call. Five is recommended maximum
+# perhaps pass in a list or tuple.
+def pressure_with_elevation(hgt,
+                            psi=STANDARD_PRESSURE,
+                            stt=STANDARD_TEMPERATURE,
+                            tlr=EARTH_TEMPERATURE_LAPSE_RATE,
+                            hbl=0.0,
+                            air=AIR_GAS_CONSTANT,
+                            gfc=EARTH_GRAVITY,
+                            amm=EARTH_ATMOSPHERE_MOLAR_MASS):
     """
     This function returns an estimate of the pressure in pascals as a function of
     elevation above sea level.
@@ -61,7 +68,9 @@ def pressure_with_elevation(
         psi * (stt / (stt + tlr * (hgt - hbl))) ** ((gfc * amm) / (air * tlr))
 #end get_pressure_with_elevation
 
-def temperature_with_elevation(hgt, stt=STANDARD_TEMPERATURE, tlr=EARTH_TEMPERATURE_LAPSE_RATE):
+def temperature_with_elevation(hgt,
+                               stt=STANDARD_TEMPERATURE,
+                               tlr=EARTH_TEMPERATURE_LAPSE_RATE):
     """
     This function returns an estimate of temperature as a function above sea level.
     NOTES:
@@ -87,3 +96,6 @@ def elevation_test():
         hgt += 1000
     #end for
 #end elevation_test
+if __name__ == "__main__":
+    elevation_test()
+#end if

@@ -53,7 +53,7 @@ class TestAzAltSolar(unittest.TestCase):
         self.when2 = datetime.datetime(
             2003, 10, 17, 19, 31, 37, tzinfo=datetime.timezone.utc)
 
-    def test_altitude(self):
+    def altitude(self):
         """
         testing Altitude Angle
         """
@@ -68,7 +68,7 @@ class TestAzAltSolar(unittest.TestCase):
         alt2 = solar.altitude(self.when2, self.param_list)
         self.assertEqual(63.76142336675205, alt2, 12)
 
-    def test_azimuth(self):
+    def azimuth(self):
         """
         testing Azimuth
         """

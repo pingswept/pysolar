@@ -1,8 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!-- saved from url=(0033)http://www.celnav.de/longterm.htm -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<!-- my api key oCC1q4SnPu4fd2VNUeDQGUsKEE3OydPYE0qz71nW -->
-<!-- https://developer.nrel.gov/api/alt-fuel-stations/v1.json?fuel_type=E85,ELEC&state=CA&limit=2&api_key=oCC1q4SnPu4fd2VNUeDQGUsKEE3OydPYE0qz71nW&format=JSON -->
+
 
 
 <title>Almanac</title>
@@ -75,8 +74,7 @@ with(Math)
 	if (GHAmin==0) GHAmin="00";
 		else if (GHAmin<10) GHAmin="0"+GHAmin;
 	if (GHAsec<10) GHAsec="0"+GHAsec;
-	// return " "+GHAdeg+"°"+" "+GHAmin+"'"+" "+GHAsec+"''";
-	return x;
+	return " "+GHAdeg+"°"+" "+GHAmin+"'"+" "+GHAsec+"''";
 	}
 }
 
@@ -93,8 +91,7 @@ with(Math)
 	if (ECLmin==0) ECLmin="00";
 		else if (ECLmin<10) ECLmin="0"+ECLmin;
 	if (ECLsec<10) ECLsec="0"+ECLsec;
-	//return " "+ECLdeg+"°"+" "+ECLmin+"'"+" "+ECLsec+"''";
-	return x;
+	return " "+ECLdeg+"°"+" "+ECLmin+"'"+" "+ECLsec+"''";
 	}
 }
 
@@ -112,8 +109,7 @@ with(Math)
 	if (GMSTs-floor(GMSTs)==0) GMSTs+=".000";
 		else if (10*GMSTs-floor(10*GMSTs)==0) GMSTs+="00";
 			else if (100*GMSTs-floor(100*GMSTs)==0) GMSTs+="0";
-	//return " "+GMSTh+"h"+" "+GMSTm+"m"+" "+GMSTs+"s";
-	return x / 15.0;
+	return " "+GMSTh+"h"+" "+GMSTm+"m"+" "+GMSTs+"s";
 	}
 }
 
@@ -136,8 +132,7 @@ with(Math)
 	if (DECmin==0) DECmin="00";
 		else if (DECmin<10) DECmin="0"+DECmin;
 	if (DECsec<10) DECsec="0"+DECsec;
-	//return " "+name+"   "+DECdeg+"°"+" "+DECmin+"'"+" "+DECsec+"''";
-	return x;
+	return " "+name+"   "+DECdeg+"°"+" "+DECmin+"'"+" "+DECsec+"''";
 	}
 }
 
@@ -147,10 +142,9 @@ function OutSDHP(x)
 {
 with(Math)
 	{
-	//x = round(10*x)/10;
-	//if (x-floor(x)== 0) x+=".0";
-	//return " "+x+"''";
-	return x;
+	x = round(10*x)/10;
+	if (x-floor(x)== 0) x+=".0";
+	return " "+x+"''";
 	}
 }
 
@@ -202,7 +196,7 @@ with(Math)
 	var A = floor(year/100);
 	var B = 2-A+floor(A/4);
 	JD0h = floor(365.25*(year+4716))+floor(30.6001*(month+1))+day+B-1524.5;
-	JD = JD0h+dayfraction+deltaT/86400;
+	JD = JD0h+dayfraction;
 
 	//Julian centuries (GMT) since 2000 January 0.5
 	T = (JD-2451545)/36525;
@@ -212,7 +206,7 @@ with(Math)
 	T5 = T*T4;
 
 	//Julian ephemeris day (TDT)
-	JDE = JD
+	JDE = JD+deltaT/86400;
 
 	//Julian centuries (TDT) from 2000 January 0.5
 	TE = (JDE-2451545)/36525;
@@ -241,6 +235,7 @@ function Nutation()
 
   //Mean anomaly of the sun
   var M = 357.527723333+359.05034*TE+norm_360_deg(35640*TE)-0.0001602777778*TE2-TE3/300000;
+  SunMA = norm_360_deg(M);
 
   //Mean distance of the moon from the ascending node
   var F = 93.271910277+82.017538055*TE+norm_360_deg(483120*TE)-0.0036825*TE2+TE3/327272.7273;
@@ -370,13 +365,8 @@ function Nutation()
       fF = eval(nut[x].substring(4,6));
       fD = eval(nut[x].substring(6,8));
       f_omega = eval(nut[x].substring(8,10));
-
-      dp += (eval(
-		  nut[x].substring(10,17))+TE*eval(nut[x].substring(17,23)))*sind(
-			  fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
-      de   += (eval(
-		  nut[x].substring(23,29))+TE*eval(nut[x].substring(29,33)))*cosd(
-			  fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
+      dp += (eval(nut[x].substring(10,17))+TE*eval(nut[x].substring(17,23)))*sind(fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
+      de   += (eval(nut[x].substring(23,29))+TE*eval(nut[x].substring(29,33)))*cosd(fD*D+fM*M+fMm*Mm+fF*F+f_omega*omega);
    }
 
    //Corrections (Herring, 1987)
@@ -406,7 +396,7 @@ function Nutation()
    delta_eps = de/36000000;
 
    //Mean obliquity of the ecliptic
-   eps0 = (84381.406-46.836769*TE-0.0001831*TE2+0.00200340*TE3-0.000000576*TE4-0.0000000434*TE5)/3600;
+   eps0 = (84381.448-46.815*TE-0.00059*TE2+0.001813*TE3)/3600;
 
    //True obliquity of the ecliptic
    eps = eps0+delta_eps;
@@ -418,7 +408,7 @@ function Aries()
 {
 //Mean GHA Aries
 var GHAAmean = norm_360_deg(280.46061837+ 360.98564736629*(JD-2451545)+0.000387933*T2-T3/38710000);
-
+ARIESmean = GHAAmean;
 //GMST
 SidTm = OutSidTime(GHAAmean);
 
@@ -430,9 +420,9 @@ SidTa = OutSidTime(GHAAtrue);
 
 //Equation of the equinoxes
 EoE = 240*delta_psi*cosd(eps);
-//EoEout = Math.round(1000*EoE)/1000;
-//EoEout = " "+EoEout+"s";
-EoEout = EoE/240;
+EoE = delta_psi*cosd(eps);
+EoEout = Math.round(1000*EoE)/1000;
+EoEout = " "+EoEout+"s";
 }
 
 
@@ -444,16 +434,16 @@ with(Math)
 	//Periodic terms for the sun
 
 	//Longitude
-	var L0=175347046*cos(0.0+0.0*Tau);
-	L0+=3341656*cos(4.6692568+6283.07585*Tau);
-	L0+=34894*cos(4.6261+12566.1517*Tau);
+	var L0=175347046;
+	L0+=3341656*cos(4.6692568+6283.0758500*Tau);
+	L0+=34894*cos(4.62610+12566.15170*Tau);
 	L0+=3497*cos(2.7441+5753.3849*Tau);
 	L0+=3418*cos(2.8289+3.5231*Tau);
 	L0+=3136*cos(3.6277+77713.7715*Tau);
 	L0+=2676*cos(4.4181+7860.4194*Tau);
 	L0+=2343*cos(6.1352+3930.2097*Tau);
 	L0+=1324*cos(0.7425+11506.7698*Tau);
-	L0+=1273*cos(2.0371+529.691*Tau);
+	L0+=1273*cos(2.0371+529.6910*Tau);
 
 	L0+=1199*cos(1.1096+1577.3435*Tau);
 	L0+=990*cos(5.233+5884.927*Tau);
@@ -596,9 +586,11 @@ with(Math)
 
 	//Mean longitude of the sun
 	var Lsun_mean = norm_360_deg(280.4664567+360007.6982779*Tau+0.03032028*Tau2+Tau3/49931-Tau4/15299-Tau5/1988000);
+	SunML = Lsun_mean
 
 	//Heliocentric longitude
-	Lhelioc = norm_360_deg((L0+L1*Tau+L2*Tau2+L3*Tau3+L4*Tau4+L5*Tau5)/1e8/dtr);
+	var Lhelioc = norm_360_deg((L0+L1*Tau+L2*Tau2+L3*Tau3+L4*Tau4+L5*Tau5)/1e8/dtr);
+	Hlon = Lhelioc
 
 	//Geocentric longitude
 	Lsun_true = norm_360_deg(Lhelioc+180-0.000025);
@@ -614,10 +606,12 @@ with(Math)
 	B1+=6*cos(1.73+5223.69*Tau);
 
 	//Heliocentric latitude
-	Hlat = (B0+B1*Tau)/1e8/dtr;
+	var B = (B0+B1*Tau)/1e8/dtr;
+	Hlat = B;
 
 	//Geocentric latitude
-	var beta = norm_360_deg(-Hlat);
+	var beta = norm_360_deg(-B);
+	Glat = beta
 
 	//Corrections
 	Lsun_prime = norm_360_deg(Lhelioc+180-1.397*TE-0.00031*TE2);
@@ -626,72 +620,76 @@ with(Math)
 
 
 	//Distance earth-sun
-	var R0=100013989; //
-	R0+=1670700*cos(3.0984635+6283.0758500*Tau); //
-	R0+=13956.0*cos(3.0552500+12566.151700*Tau); //
-	R0+=3084.00*cos(5.1985000+77713.771500*Tau); //
-	R0+=1628.00*cos(1.1739000+5753.3849000*Tau); //
-	R0+=1576.00*cos(2.8469000+7860.4194000*Tau); //
-	R0+=925.000*cos(5.4530000+11506.770000*Tau); //
-	R0+=542.000*cos(4.5640000+3930.2100000*Tau); //
-	R0+=472.000*cos(3.6610000+5884.9270000*Tau); //
-	R0+=346.000*cos(0.9640000+5507.5530000*Tau); //
+	var R0=100013989;
+	R0+=1670700*cos(3.0984635+6283.0758500*Tau);
+	R0+=13956*cos(3.05525+12566.15170*Tau);
+	R0+=3084*cos(5.1985+77713.7715*Tau);
+	R0+=1628*cos(1.1739+5753.3849*Tau);
+	R0+=1576*cos(2.8469+7860.4194*Tau);
+	R0+=925*cos(5.453+11506.770*Tau);
+	R0+=542*cos(4.564+3930.210*Tau);
+	R0+=472*cos(3.661+5884.927*Tau);
+	R0+=346*cos(0.964+5507.553*Tau);
 
-	R0+=329*cos(5.900+5223.6940*Tau); //
-	R0+=307*cos(0.299+5573.1430*Tau); //
-	R0+=243*cos(4.273+11790.629*Tau); //
-	R0+=212*cos(5.847+1577.3440*Tau); //
-	R0+=186*cos(5.022+10977.079*Tau); //
-	R0+=175*cos(3.012+18849.228*Tau); //
-	R0+=110*cos(5.055+5486.7780*Tau); //
-	R0+=98.0*cos(0.89+6069.7800*Tau); //
-	R0+=86.0*cos(5.69+15720.840*Tau); //
-	R0+=86.0*cos(1.27+161000.69*Tau); //
+	R0+=329*cos(5.900+5223.694*Tau);
+	R0+=307*cos(0.299+5573.143*Tau);
+	R0+=243*cos(4.273+11790.629*Tau);
+	R0+=212*cos(5.847+1577.344*Tau);
+	R0+=186*cos(5.022+10977.079*Tau);
+	R0+=175*cos(3.012+18849.228*Tau);
+	R0+=110*cos(5.055+5486.778*Tau);
+	R0+=98*cos(0.89+6069.78*Tau);
+	R0+=86*cos(5.69+15720.84*Tau);
+	R0+=86*cos(1.27+161000.69*Tau);
 
-	R0+=65*cos(0.27+17260.15*Tau); //
-	R0+=63*cos(0.92+529.6900*Tau); //
-	R0+=57*cos(2.01+83996.85*Tau); //
-	R0+=56*cos(5.24+71430.70*Tau); //
-	R0+=49*cos(3.25+2544.310*Tau); //
-	R0+=47*cos(2.58+775.5200*Tau); //
-	R0+=45*cos(5.54+9437.760*Tau); //
-	R0+=43*cos(6.01+6275.960*Tau); //
-	R0+=39*cos(5.36+4694.000*Tau); //
-	R0+=38*cos(2.39+8827.390*Tau); //
+	R0+=65*cos(0.27+17260.15*Tau);
+	R0+=63*cos(0.92+529.69*Tau);
+	R0+=57*cos(2.01+83996.85*Tau);
+	R0+=56*cos(5.24+71430.70*Tau);
+	R0+=49*cos(3.25+2544.31*Tau);
+	R0+=47*cos(2.58+775.52*Tau);
+	R0+=45*cos(5.54+9437.76*Tau);
+	R0+=43*cos(6.01+6275.96*Tau);
+	R0+=39*cos(5.36+4694.00*Tau);
+	R0+=38*cos(2.39+8827.39*Tau);
 
-	R0+=37*cos(0.83+19651.05*Tau); //
-	R0+=37*cos(4.90+12139.55*Tau); //
-	R0+=36*cos(1.67+12036.46*Tau); //
-	R0+=35*cos(1.84+2942.460*Tau); //
-	R0+=33*cos(0.24+7084.900*Tau); //
-	R0+=32*cos(0.18+5088.630*Tau); //
-	R0+=32*cos(1.78+398.1500*Tau); //
-	R0+=28*cos(1.21+6286.600*Tau); //
-	R0+=28*cos(1.90+6279.550*Tau); //
-	R0+=26*cos(4.59+10447.39*Tau); //
+	R0+=37*cos(0.83+19651.05*Tau);
+	R0+=37*cos(4.90+12139.55*Tau);
+	R0+=36*cos(1.67+12036.46*Tau);
+	R0+=35*cos(1.84+2942.46*Tau);
+	R0+=33*cos(0.24+7084.90*Tau);
+	R0+=32*cos(0.18+5088.63*Tau);
+	R0+=32*cos(1.78+398.15*Tau);
+	R0+=28*cos(1.21+6286.60*Tau);
+	R0+=28*cos(1.90+6279.55*Tau);
+	R0+=26*cos(4.59+10447.39*Tau);
 
-	var R1=103019*cos(1.107490+6283.075850*Tau); //
-	R1+=1721*cos(1.0644+12566.1517*Tau); //
-	R1+=702.0*cos(3.142+0.00000000*Tau); //
-	R1+=32.00*cos(1.020+18849.2300*Tau); //
-	R1+=31.00*cos(2.840+5507.55000*Tau); //
-	R1+=25.00*cos(1.320+5223.69000*Tau); //
-	R1+=18.00*cos(1.420+1577.34000*Tau); //
-	R1+=10.00*cos(5.910+10977.0800*Tau); //
-	R1+=9.000*cos(1.420+6275.96000*Tau); //
-	R1+=9.000*cos(0.270+5486.78000*Tau); //
 
-	var R2=4359*cos(5.7846+6283.0758*Tau); //
-	R2+=124*cos(5.579+12566.152*Tau); //
-	R2+=12.0*cos(3.14+0.0000000*Tau); //
-	R2+=9.00*cos(3.63+77713.770*Tau); //
-	R2+=6.00*cos(1.87+5573.1400*Tau); //
-	R2+=3.00*cos(5.47+18849.230*Tau); //
+	var R1=103019*cos(1.107490+6283.075850*Tau);
+	R1+=1721*cos(1.0644+12566.1517*Tau);
+	R1+=702*cos(3.142);
+	R1+=32*cos(1.02+18849.23*Tau);
+	R1+=31*cos(2.84+5507.55*Tau);
+	R1+=25*cos(1.32+5223.69*Tau);
+	R1+=18*cos(1.42+1577.34*Tau);
+	R1+=10*cos(5.91+10977.08*Tau);
+	R1+=9*cos(1.42+6275.96*Tau);
+	R1+=9*cos(0.27+5486.78*Tau);
 
-	var R3=145*cos(4.273+6283.076*Tau); //
-	R3+=7*cos(3.92+12566.15*Tau); //
 
-	var R4 = 4*cos(2.56+6283.08*Tau); //
+	var R2=4359*cos(5.7846+6283.0758*Tau);
+	R2+=124*cos(5.579+12566.152*Tau);
+	R2+=12*cos(3.14);
+	R2+=9*cos(3.63+77713.77*Tau);
+	R2+=6*cos(1.87+5573.14*Tau);
+	R2+=3*cos(5.47+18849.23*Tau);
+
+
+	var R3=145*cos(4.273+6283.076*Tau);
+	R3+=7*cos(3.92+12566.15*Tau);
+
+
+	var R4 = 4*cos(2.56+6283.08*Tau);
 
 	R = (R0+R1*Tau+R2*Tau2+R3*Tau3+R4*Tau4)/1e8;
 
@@ -713,17 +711,16 @@ with(Math)
 	GHAsun = norm_360_deg(GHAAtrue-RAsun);
 
 	//Semidiameter of the sun
-	SDsun = 959.63/R/3600;
+	SDsun = 959.63/R;
 
 	//Horizontal parallax of the sun
-	HPsun = 8.794/R/3600;
+	HPsun = 8.794/R;
 
 	//Equation of time
-	EOT = 4*(Lsun_mean-0.0057183-0.0008-RAsun+delta_psi*cosd(eps));
-	// EOT = 4*GHAsun+720-1440*dayfraction;
-	//EOT = GHAsun/15-1440*dayfraction;
-	if (EOT>20) EOT-=1440;
-	if (EOT<-20) EOT+=1440;
+	//EOT = 4*(Lsun_mean-0.0057183-0.0008-RAsun+delta_psi*cosd(eps));
+	Eot = 4*GHAsun+720-1440*dayfraction;
+	if (Eot>20) Eot-=1440;
+	if (Eot<-20) Eot+=1440;
 	}
 }
 
@@ -955,10 +952,10 @@ with (Math)
 	GHAmoon = norm_360_deg(GHAAtrue-RAmoon);
 
 	//Horizontal parallax of the moon
-	HPmoon = 3600*asin(6378.14/dEM)/dtr/3600;
+	HPmoon = 3600*asin(6378.14/dEM)/dtr;
 
 	//Semidiameter of the moon
-	SDmoon = 3600*asin(1738/dEM)/dtr/3600;
+	SDmoon = 3600*asin(1738/dEM)/dtr;
 
 	//Geocentric angular distance between moon and sun
 	LDist = acos(sind(Dmoon)*sind(Dsun)+cosd(Dmoon)*cosd(Dsun)*cosd(RAmoon-RAsun))/dtr;
@@ -1069,10 +1066,9 @@ function Weekday()
 function Output()
 {
 //Sun
-
-GHAsun = OutHA(lambda);
-SHAsun = OutHA(RAsun);
-DECsun = OutDec(DECsun);
+GHASun = OutHA(GHAsun);
+SHAsun = OutHA(SHAsun);
+DECSun = OutDec(DECsun);
 SDsun = OutSDHP(SDsun);
 HPsun = OutSDHP(HPsun);
 
@@ -1084,11 +1080,11 @@ SDmoon = OutSDHP(SDmoon);
 HPmoon = OutSDHP(HPmoon);
 
 //Aries
-AR = OutHA(Lhelioc);
+AR = OutHA(GHAAtrue);
 
 //Polaris
-GHApolaris = OutHA(GHAAtrue-RAsun);
-SHApolaris = OutHA(Hlat);
+GHApolaris = OutHA(GHApol);
+SHApolaris = OutHA(SHApol);
 DECpolaris = OutDec(DECpol);
 
 //Obliquity of Ecliptic
@@ -1098,16 +1094,15 @@ tOoE = OutECL(eps);
 with(Math)
 	{
 	//Equation of time
-	if (EOT<0) var sign="-";
+	if (Eot<0) var sign="-";
 		else var sign="+";
-	EOT = abs(EOT);
-	//var EOTmin = floor(EOT);
-    var EOTmin = EOT;
-	//var EOTsec = round(600*(EOT-EOTmin))/10;
-	//if (EOTsec-floor(EOTsec)==0) EOTsec+=".0";
-	//if (EOTmin==0) EOT = " "+sign+" "+EOTsec+"s";
-		//else EOT = " "+sign+" "+EOTmin+"m "+EOTsec+"s";
-    EOT = " "+sign+" "+EOTmin+"m ";
+	Eot = abs(Eot);
+	var EOTmin = floor(Eot);
+	var EOTsec = round(600*(Eot-EOTmin))/10;
+	if (EOTsec-floor(EOTsec)==0) EOTsec+=".0";
+	if (EOTmin==0) EOT = " "+sign+" "+EOTsec+"s";
+		else EOT = " "+sign+" "+EOTmin+"m "+EOTsec+"s";
+	Eot = sign+Eot;
 
 	//Illumination
 	var illum=" "+k+"%"+quarter;
@@ -1118,31 +1113,25 @@ with(Math)
 
 with(document)
 	{
-	OutForm.SunGHA.value = GHAsun;
-	OutForm.SunSHA.value = SHAsun;
+	OutForm.SunMA.value = SunMA;
+	OutForm.SunML.value = SunML;
+	OutForm.SunRA.value = RAsun;
 	OutForm.SunDEC.value = DECsun;
-	OutForm.SunSD.value = SDsun;
-	OutForm.SunHP.value = " "+HPsun;
-	OutForm.EOT.value = EOT;
-	OutForm.MoonGHA.value = GHAmoon;
-	OutForm.MoonSHA.value = SHAmoon;
-	OutForm.MoonDEC.value = DECmoon;
-	OutForm.MoonSD.value = SDmoon;
-	OutForm.MoonHP.value = HPmoon;
-	OutForm.Moonillum.value = illum;
-	OutForm.Aries.value = AR;
-	OutForm.PolarisGHA.value = GHApolaris;
-	OutForm.PolarisSHA.value = SHApolaris;
-	OutForm.PolarisDEC.value = DECpolaris;
-	OutForm.SidTmean.value = SidTm;
-	OutForm.SidTapp.value = SidTa;
-	OutForm.EoEquin.value = EoEout;
-	OutForm.dpsi.value = delta_psi;
-	OutForm.deps.value = delta_eps;
-	OutForm.obliq.value = ""+OoE;
-	OutForm.trueobliq.value = ""+tOoE;
-	OutForm.JulianDay.value = " "+Math.round(1000000*JD)/1000000;
-	OutForm.JulianEphemDay.value = " "+Math.round(1000000*JDE)/1000000;
+	OutForm.SunGHA.value = GHAsun;
+	OutForm.HLon.value = Hlon;
+	OutForm.GLon.value = Lsun_true;
+	OutForm.HLat.value = Hlat;
+	OutForm.GLat.value = Glat;
+	OutForm.EOT.value = Eot;
+	OutForm.SidTapp.value = GHAAtrue;
+	OutForm.SidTmean.value = ARIESmean;
+	OutForm.EoEquin.value = EoE;
+	OutForm.dpsi.value = delta_psi;//Math.round(3600000*delta_psi)/1000+"''";
+	OutForm.deps.value = delta_eps;//Math.round(3600000*delta_eps)/1000+"''";
+	OutForm.obliq.value = eps0;
+	OutForm.trueobliq.value = eps;
+	OutForm.JulianDay.value = JD//" "+Math.round(1000000*JD)/1000000;
+	OutForm.JulianEphemDay.value = JDE//" "+Math.round(1000000*JDE)/1000000;
 	OutForm.LunarDist.value = " "+LDist;
 	OutForm.DayOfWeek.value = " "+DoW;
 	}
@@ -1157,31 +1146,35 @@ with(document)
 <font color="#500000" size="3">&nbsp;<i>Copyright © 2001−2016 Henning Umland</i></font></p>
 
 <form name="InForm">
+	<thead>
+		<tr>
+			<th><font color="#000080" size="4"><b>&nbsp;Date:&nbsp;&nbsp;</b></font></th>
+			<td>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;</td>
+			<th><font color="#000080" size="4"><b>Time (UT1):&nbsp;</b></font></th>
+		</tr>
+	</thead>
 <table border="0">
   <tbody>
-  <tr>
-    <td></td>
-    <td align="center">y</td>
-    <td align="center">m</td>
-    <td align="center">d</td>
-    <td colspan="2"></td>
-    <td align="center">h</td>
-    <td align="center">m</td>
-    <td align="center">s</td>
-    <td colspan="2"></td>
-    <td align="center">s</td>
-    <td colspan="3"></td>
-  </tr>
-  <tr>
-    <td><font color="#000080" size="4"><b>&nbsp;Date:&nbsp;</b></font></td>
+	<tr>
+	<th align="center"><font color="#000080" size="4">y</b></font></th>
     <td><input size="4" name="year"></td>
-    <td align="center"><input size="2" name="month"></td>
+	<th align="center">m</th>
+    <td><input size="2" name="month"></td>
+	<th align="center">d</th>
     <td><input size="2" name="day"></td>
     <td>&nbsp; &nbsp; &nbsp;</td>
-    <td><font color="#000080" size="4"><b>Time (UT1):&nbsp;</b></font></td>
+	<th align="center">h</th>
     <td><input size="2" name="hour"></td>
+	<th align="center">m</th>
     <td><input size="2" name="minute"></td>
-    <td><input size="4" name="second"></td>
+	<th align="center"><font color="#000080" size="4">s</b></font></th>
+    <td><input size="8" name="second"></td>
     <td>&nbsp; &nbsp; &nbsp;</td>
     <td><font color="#000080" size="4"><b>&nbsp;ΔT:&nbsp;</b></font></td>
     <td><input size="3" name="delta"></td>
@@ -1189,6 +1182,7 @@ with(document)
     <td><input onclick="Main()" value="Calculate" type="button">&nbsp;</td>
     <td><input value="Clear" type="reset"></td>
   </tr>
+
   <tr>
     <td colspan="15">---------------------------------------------------------------------------------------------------------------------</td>
   </tr>
@@ -1201,76 +1195,69 @@ with(document)
   <tbody>
   <tr>
     <td>&nbsp;</td>
-    <td align="center">Longitude</td>
+    <td align="center">mean anomaly</td>
+    <td></td>
+    <td align="center">mean longitude</td>
     <td></td>
     <td align="center">RA</td>
     <td></td>
-    <td align="center">Dec</td>
+    <td align="center">DEC</td>
     <td></td>
-    <td align="center">SD</td>
+    <td align="center">GHA</td>
     <td></td>
-    <td align="center">HP</td>
+  </tr>
+  <tr>
+    <td><font color="#500000" size="4"><b>Sun </b></font></td>
+    <td><input size="20" name="SunMA"></td>
+    <td></td>
+    <td><input size="20" name="SunML"></td>
+    <td></td>
+    <td><input size="20" name="SunRA"></td>
+    <td></td>
+    <td><input size="20" name="SunDEC"></td>
+    <td></td>
+    <td><input size="20" name="SunGHA"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td colspan="12"></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td align="center">HLon</td>
+    <td></td>
+    <td align="center">GLon</td>
+    <td></td>
+    <td align="center">HLat</td>
+    <td></td>
+    <td align="center">GLat</td>
     <td></td>
     <td align="center">Equation of Time</td>
   </tr>
   <tr>
-    <td><font color="#500000" size="4"><b>Sun </b></font></td>
-    <td><input size="16" name="SunGHA"></td>
     <td></td>
-    <td><input size="16" name="SunSHA"></td>
+    <td><input size="20" name="HLon"></td>
     <td></td>
-    <td><input size="16" name="SunDEC"></td>
+    <td><input size="20" name="GLon"></td>
     <td></td>
-    <td><input size="20" name="SunSD"></td>
+    <td><input size="20" name="HLat"></td>
     <td></td>
-    <td><input size="20" name="SunHP"></td>
+    <td><input size="20" name="GLat"></td>
     <td></td>
     <td><input size="20" name="EOT"></td>
   </tr>
   <tr>
     <td colspan="12"></td>
   </tr>
+
   <tr>
-    <td><font color="#500000" size="4"><b>Moon&nbsp;&nbsp;</b></font></td>
-    <td><input size="16" name="MoonGHA"></td>
-    <td></td>
-    <td><input size="16" name="MoonSHA"></td>
-    <td></td>
-    <td><input size="16" name="MoonDEC"></td>
-    <td></td>
-    <td><input size="20" name="MoonSD"></td>
-    <td></td>
-    <td><input size="20" name="MoonHP"></td>
-    <td></td>
-    <td align="right">Phase&nbsp;<input size="9" name="Moonillum"></td>
+    <td colspan="12"></td>
   </tr>
   <tr>
     <td colspan="12"></td>
   </tr>
   <tr>
-    <td><font color="#500000" size="4"><b>GHA&nbsp;</b></font></td>
-    <td><input size="16" name="PolarisGHA"></td>
-    <td></td>
-    <td><input size="20" name="PolarisSHA"></td>
-    <td></td>
-    <td><input size="20" name="PolarisDEC"></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
     <td colspan="12"></td>
-  </tr>
-  <tr>
-    <td><font color="#500000" size="4"><b>Earth </b></font></td>
-    <td><input size="16" name="Aries"></td>
-    <td colspan="10">&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="12">&nbsp;</td>
   </tr>
   <tr><td></td></tr>
   <tr>
@@ -1289,9 +1276,9 @@ with(document)
   </tr>
   <tr>
     <td><font color="#500000" size="4"><b>Misc.</b></font></td>
-    <td><input size="16" name="SidTapp"></td>
+    <td><input size="20" name="SidTapp"></td>
     <td></td>
-    <td><input size="16" name="SidTmean"></td>
+    <td><input size="20" name="SidTmean"></td>
     <td></td>
     <td><input size="20" name="EoEquin"></td>
     <td></td>
@@ -1299,7 +1286,7 @@ with(document)
     <td></td>
     <td><input size="20" name="deps"></td>
     <td></td>
-    <td><input size="16" name="obliq"></td>
+    <td><input size="20" name="obliq"></td>
   </tr>
   <tr>
     <td colspan="12"></td>
@@ -1321,17 +1308,17 @@ with(document)
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td><input size="16" name="JulianDay"></td>
+    <td><input size="20" name="JulianDay"></td>
     <td></td>
-    <td><input size="16" name="JulianEphemDay"></td>
+    <td><input size="20" name="JulianEphemDay"></td>
     <td></td>
-    <td><input size="16" name="LunarDist"></td>
+    <td><input size="20" name="LunarDist"></td>
     <td></td>
-    <td><input size="7" name="DayOfWeek"></td>
+    <td><input size="20" name="DayOfWeek"></td>
     <td></td>
     <td></td>
     <td></td>
-    <td><input size="16" name="trueobliq"></td>
+    <td><input size="20" name="trueobliq"></td>
   </tr>
   </tbody>
  </table>

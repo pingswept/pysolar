@@ -1,0 +1,82 @@
+
+
+#content {
+	border-left: 4px double #eee;
+	padding-left: 1em;
+	margin-left: 14em;
+	background-image: none; 
+}
+
+.sidebar {
+	margin: 0 0 5px 0;
+	padding-left: 1em;
+}
+
+.sidebar ul {
+	margin: 0 0 0 3px;
+	padding: 3px 0 0.5em;
+/*
+	list-style-image: url(/gmd/images/list_image.png);
+	list-style-image: url(/gmd/images/bg-sidenav.gif);
+*/
+	list-style-type: none;
+	list-style-image: url(/gmd/images/listimg.png);
+	color: #556;
+}
+
+.sidebar ul li {
+	margin-left: 15px;
+	padding: 4px 0;
+font-size: 13px;
+line-height: 1.15;
+}
+
+.sidebar ul li a {
+/*	color: #555; */
+}
+
+.sidebar ul li a:hover {
+	color: #1f74b7;
+}
+
+.sidebar ul ul {
+	font-size: 13px; 
+	font-weight: normal; 
+	margin-left: 0.5em; 
+	margin-bottom: 0em;
+/*	list-style-image: url(/gmd/images/blue-dot-7px.png); */
+/*	list-style-image: url(/gmd/images/breadcrumb-arrow.png); */
+	list-style-image: url(/gmd/images/bg-sidenav.gif);
+	padding: 0;
+}
+
+.sidebar ul ul li {
+
+padding: 4px 0;
+border: none;
+}
+
+.sidebar h4 {
+	text-align: left; 
+	color: #555;
+	font-size: 16px;
+	font-weight: 300;
+	border-bottom: 2px solid #8bb2b0;
+	margin-bottom: 0px;
+}
+
+.sidebar li strong {
+font-size: 15px;
+font-weight: 300;
+border-bottom: 2px solid #8ba;
+margin-bottom: 3px;
+}
+
+
+.sidebar li h4 {
+	text-align: left; 
+	color: #555;
+	font-weight: 300;
+	border-bottom: 2px solid #8ba;
+	margin: 0;
+}

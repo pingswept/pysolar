@@ -53,14 +53,22 @@ class Ephemeris:
         """
         return None
 
-    def __init__(self, timestamp, params, alt, azm):
+    def __init__(self, timestamp, latitude, longitude, elevation, azimuth=0, altitude=0):
         self.timestamp = timestamp
-        params = self.params(params)
-        self.elevation = float(params[0])
-        self.latitude = float(params[1])
-        self.longitude = float(params[2])
-        self.altitude = float(alt)
-        self.azimuth = float(azm)
+        self.latitude = latitude
+        self.longitude = longitude
+        self.elevation = float(elevation)
+        self.azimuth = float(azimuth)
+        self.altitude = float(altitude)
+
+    # def __init__(self, timestamp, params, alt, azm):
+    #     self.timestamp = timestamp
+    #     params = self.params(params)
+    #     self.elevation = float(params[0])
+    #     self.latitude = float(params[1])
+    #     self.longitude = float(params[2])
+    #     self.altitude = float(alt)
+    #     self.azimuth = float(azm)
 
 class EphemerisComparison:
     """

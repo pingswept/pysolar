@@ -1,0 +1,177 @@
+
+
+/*---------------------------------------------------------------
+ * This file contains css for the header
+  ---------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------
+/* the top horizontal section of content, containing the minor and  */
+/* major headers.                                                   */
+.header {
+	height: auto;
+	line-height: 1;
+}
+
+#minor_header {
+	background-color: #006699;
+	color: white;
+	white-space: nowrap;
+	font-size: 90%;
+	font-weight: bold;
+	padding: 0.4em 0.2em 0.3em 0.5em;
+	height: auto;
+	border-bottom: solid 1px #000066; 
+	text-align: left;
+	margin-bottom: 0;
+	border-radius: 0;
+	line-height: 1.1;
+}
+
+#minor_header a {
+	color: white;
+	text-decoration: none;
+}
+
+/* This makes up most of the banner content. Includes the NOAA/ESRL */
+/* logos and search elements.                                       */
+#major_header {
+/*
+	clear: both;
+	height: auto;
+	width: auto;
+	background: #000066 url(/gmd/images/globe2013.png) no-repeat ;
+*/
+
+        line-height: 1;
+        padding: 10px 5px;
+        clear: both;
+        background: #1d3a83;
+        background-image: url(/gmd/images/globe2013.png);
+        background-image: url(/gmd/images/globe2013.png), -webkit-gradient(linear, left top, right top, from(#000066), to(#336699)); /* Saf4+, Chrome */
+        background-image: url(/gmd/images/globe2013.png), -webkit-linear-gradient(left, #336699, #000066); /* Chrome 10+, Saf5.1+ */
+        background-image: url(/gmd/images/globe2013.png), -moz-linear-gradient(left, #336699, #000066); /* FF3.6+ */
+        background-image: url(/gmd/images/globe2013.png), -ms-linear-gradient(left, #336699, #000066); /* IE10 */
+        background-image: url(/gmd/images/globe2013.png), -o-linear-gradient(left, #336699, #000066); /* Opera 11.10+ */
+        background-image: url(/gmd/images/globe2013.png), linear-gradient(left, #336699, #000066); /* W3C */
+        background-repeat: no-repeat;
+        background-position: right;
+        width: auto;
+}
+
+#major_header img {
+	clear: none;
+	float: left;
+	border: none;
+	margin: 5px 15px 5px 8px;
+}
+
+
+/*---------------------------------------------------------------
+ * Major nav, the dropdown css menu that runs horizontally across
+ * at the bottom of the banner.
+ * The css for the actual dropdown menu is in the file 'dropmenu.css'
+ */
+
+#major_nav {
+	background-color: #8bb2b0;
+        clear: both;
+        color: #000066;
+        border-top: solid 1px #759290;
+	border-bottom: solid 1px #759290;
+	background: -moz-linear-gradient(center top , #99c0be 0pt, #7da4a2 100%) repeat scroll 0 0 #8bb2b0;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#99c0be), to(#7da4a2));
+}
+
+
+/* For the division name inside the major nav. */
+#name {
+/*      display: none; */
+	display: inline;
+        float: left;
+        text-align: left;
+        width: 15em;
+        height: 100%;
+        background-color: transparent;
+        margin: 0em;
+        padding: 0em;
+        white-space: nowrap;
+	font-size: 95%;
+}
+
+#name h1 {
+        display: inline;
+        font-size: 1em;
+        font-weight: bold;
+        margin: 0em 0em 0em 0.4em;
+        padding: 0em;
+        position: relative;
+        top: 0.45em;
+        left: 0;
+}
+
+/*---------------------------------------------------------------
+ * The search box inside the banner
+/* fixed FF problem with search box overlapping content div */
+#search {
+        clear: none;
+        float: right;
+	padding:15px 10px 5px 5px;
+        font-weight: normal;
+        font-size: 12px;
+        color: white;
+        white-space: nowrap;
+}
+
+#search a {
+        color: white;
+}
+
+
+#search label {
+	margin-bottom: 2px;
+}
+
+/* The lab name inside the header */
+#lab {
+	padding-top: 12px;
+}
+#lab a {
+	font-size: 24px;
+	font-weight: bold;
+	color: white;
+	text-shadow: 1px 1px 1px #000;
+	text-decoration: none;
+}
+
+/* The division name inside the header */
+#division {
+	padding-top: 5px;
+	padding-bottom: 4px;
+}
+
+#division a {
+	font-size: 18px;
+	font-weight: bold;
+	color: yellow;
+	text-shadow: 1px 1px 1px #000;
+	letter-spacing: 2px;
+	text-decoration: none;
+}
+
+@media (max-width: 980px) {
+        #lab a { font-size: 22px; }
+        #division a { font-size: 16px; }
+}
+
+@media (max-width: 768px) {
+        #lab a { font-size: 22px; }
+        #division a { font-size: 16px; }
+}
+
+@media (max-width: 500px) {
+        #lab a { font-size: 16px; }
+        #division a { font-size: 14px; }
+}
+
+

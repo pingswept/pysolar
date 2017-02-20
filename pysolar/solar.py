@@ -38,60 +38,75 @@ import datetime
 # getcontext().prec = 16
 import math
 
+from . import au_coeffs
 from . import constants
 from . import time
+from . import helio_lat
+from . import helio_lon
 from . import radiation
 
-def aberration_correction(jd0, jd1):
+def aberration_correction(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     a correction for abbereation
     """
     # a possible updated aberration constant 20.49552
     # 3.6. Calculate the aberration correction, Δτ (in degrees):
-    sed = astronomical_units(jd0, jd1)
+    sed = astronomical_units(jct)
     # sun-earth distance is in astronomical units
     # return -20.4898 / (3600.0 * sed)
     return -0.0056916111 / sed
     # return -0.0056932 / sed
 
-def apparent_solar_longitude(jd0, jd1):
+def apparent_solar_longitude(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     Apparent Solar Longitude in degrees
     """
-    lon = geocentric_longitude(jd0, jd1)
-    d_psi = delta_psi(jd0, jd1)
-    aberration = aberration_correction(jd0, jd1)
+    lon = geocentric_longitude(jct)
+    d_psi = delta_psi(jct)
+    aberration = aberration_correction(jct)
     return lon + d_psi + aberration
 
-def astronomical_units(jd0, jd1):
+def radius_vector_list(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
+    calculates
+    sun earth distance in astronomical units
+    into a list data structure
+    """
+    # 3.2.8. Calculate the Earth radius vector, R (in Astronomical Units, AU),
+    #  by repeating step 3.2.7 and by replacing all Ls by Rs in all equations.
+    #  Note that there is no R5, consequently, replace it by zero in steps 3.2.3 and 3.2.4.
+    return coefficients(jct, au_coeffs.AU_DISTANCE_COEFFS)
+
+def astronomical_units(jct):
+    """
+    Given the julian century time
     calculates
     sun earth distance in astronomical units
     """
     # 3.2.8. Calculate the Earth radius vector, R (in Astronomical Units, AU),
     #  by repeating step 3.2.7 and by replacing all Ls by Rs in all equations.
     #  Note that there is no R5, consequently, replace it by zero in steps 3.2.3 and 3.2.4.
-    jem = time.julian_ephemeris_millennium(jd0 + jd1)
-    rvc = coefficients(jd0, jd1, constants.AU_DISTANCE_COEFFS)
+    jem = jct / 10.0
+    rvl = radius_vector_list(jct)
     return (
-        rvc[0] + jem * (
-            rvc[1] + jem * (
-                rvc[2] + jem * (
-                    rvc[3] + jem * rvc[4]))))  / 1e16
+        rvl[0] + jem * (
+            rvl[1] + jem * (
+                rvl[2] + jem * (
+                    rvl[3] + jem * rvl[4]))))  / 1e8
 
-def coefficients(jd0, jd1, coeffs):
+def coefficients(jct, coeffs):
     """
-    Given Given UT1 as a 2-part Julian Date and the constant name for
+    Given the julian century time and the constant name for
     the coefficient set to use
     sums the time-varying coefficients sub arrays and returns an array
     with each.
     """
-    jem = time.julian_ephemeris_millennium(jd0 + jd1)
+    jem = jct / 10.0
     result = []
 
     for group in coeffs:
@@ -106,21 +121,21 @@ def coefficients(jd0, jd1, coeffs):
     return result
 #end coefficients
 
-def delta_epsilon(jd0, jd1):
+def delta_epsilon(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     delta obliquity in degrees
     """
-    return nutation(jd0, jd1)['obliquity']
+    return nutation(jct)['obliquity']
 
-def delta_psi(jd0, jd1):
+def delta_psi(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     delta longitude in degrees
     """
-    return nutation(jd0, jd1)['longitude']
+    return nutation(jct)['longitude']
 
 def orbital_eccentricity(jct):
     """
@@ -171,14 +186,14 @@ def true_anomaly(jct):
     eoc = equation_of_center(jct)
     return (mas + eoc) % 360
 
-def equation_of_equinox(jd0, jd1):
+def equation_of_equinox(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     Equation of Equinox in degrees
     """
-    d_psi = delta_psi(jd0, jd1)
-    epsilon = true_ecliptic_obliquity(jd0, jd1)
+    d_psi = delta_psi(jct)
+    epsilon = true_ecliptic_obliquity(jct)
     cos_eps = math.cos(math.radians(epsilon))
     return d_psi * cos_eps
 
@@ -190,25 +205,25 @@ def flattened_latitude(latitude):
     tan_lat = math.tan(math.radians(latitude))
     return math.degrees(math.atan(0.99664719 * tan_lat))
 
-def gasa(jd0, jd1):
+def gasa(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Apparent Sidereal Angle in degress
     """
-    mean = gmsa(jd0, jd1)
-    eqeq = equation_of_equinox(jd0, jd1)
+    mean = gmsa(jct)
+    eqeq = equation_of_equinox(jct)
     return (mean + eqeq) % 360.0
 
-def gast(jd0, jd1):
+def gast(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Apparent Sidereal Time in hours
     """
-    return gasa(jd0, jd1) / 15
+    return gasa(jct) / 15
 
-def gmsa(jd0, jd1):
+def gmsa(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
@@ -244,148 +259,157 @@ def gmsa(jd0, jd1):
     # print(math.degrees(angle) % 360.0)
     return (math.degrees(s_days) % 360.0 + angle) / 15
     """
-    return gmst(jd0, jd1) * 15
+    return gmst(jct) * 15
 
-def gmst(jd0, jd1):
+def gmst(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     Greenwich Mean Sidereal Time in hours
     see: http://aa.usno.navy.mil/faq/docs/GAST.php
     """
-    # some of this is derived from IAU SOFA
-    # source code and so this statement.
-    # See credit above. Explaining how it is different
-    # will take up too much space so see the source
-    # code itself. We just used the if else branching
-    # here. The other parts are derived form Astronomical
-    # Applications of the USNO docs. see link above.
+    # Let JD be the Julian date of the time of interest.
+    # Let JD0 be the Julian date of the previous midnight (0h) UT
+    # (the value of JD0 will end in .5 exactly),
+    # and let H be the hours of UT elapsed since that time.
+    # Thus we have JD1 = JD0 + Hours / 24.0
+    # For both of these Julian dates, compute the number of days and fraction (+ or -) from
+    # 2000 January 1, 12h UT, Julian date 2451545.0:
+    # D2K = JD1 - 2451545.0 the J2000 Julian value
+    # D02K = JD0 - 2451545.0 the J2000 Julian value
+    # Then the Greenwich mean sidereal time in hours is
+    # GMST = 6.697374558 + 0.06570982441908 D02K + 1.00273790935 Hours + 0.000026 T2
+    # where T = D/36525 is the number of centuries since the year 2000;
+    # thus the last term can be omitted in most applications.
+    # It will be necessary to reduce GMST to the range 0h to 24h.
+    # Setting H = 0 in the above formula yields the Greenwich mean sidereal time at 0h UT,
+    # which is tabulated in The Astronomical Almanac.
 
-    # make sure dj2 has the date component
-    if jd0 > jd1:
-        dj1 = jd0
-        dj2 = jd1
-    else:
-        dj1 = jd1
-        dj2 = jd0
-    jdt = dj1 + dj2 # total all jd
-    jd2000 = jdt - 2451545.0 # total all jd for j2000 days
+    jd1 = jct * 36525.0 + 2451545.0
+    # d2k = jd1 - 2451545.0 not used because we already have jct
+    jd0 = math.floor(jd1 - 0.5) # Midnight
+    d02k = jd0 - 2451545.0
+    d_frac = jd1 % 1.0 + 0.5 # day fraction from midnight on
     gma = 6.697374558
-    days = 0.06570982441908 * (dj1 - 2451545.0) # days
-
-    # all time components
-    jct = jd2000 / 36525.0 # julian century time
-    frac = (dj1 + dj2 + 0.5) % 1.0 # julian day fraction from midnight
-    hours = 1.0027379093508055 * frac * 24.0 # hours by
-    # number of sidereal seconds in one solar second.
+    s_days = 0.06570982441908 * d02k # days
+    # number of sidereal hours in one solar hour
+    s_hours = 1.0027379093508055 * d_frac * 24.0 # hours from midnight on
     coeff = 0.000026 * jct * jct
-
-    mean_st = gma + days + hours + coeff
+    mean_st = gma + s_days + s_hours + coeff
     return mean_st % 24.0
 
 # Geocentric functions calculate angles relative to the center of the earth.
 
-def geocentric_declination(jd0, jd1):
+def geocentric_beta(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
+    calculates
+    Geocentric Beta of the Sun in degress
+    """
+    l_sun_prime = geocentric_prime(jct)
+    cos_lsp = math.cos(math.radians(l_sun_prime))
+    sin_lsp = math.sin(math.radians(l_sun_prime))
+    beta = -1 * helio_lat.heliocentric_latitude(jct)
+    beta = beta + 0.000011 * (cos_lsp - sin_lsp)
+    return beta
+
+def geocentric_declination(jct):
+    """
+    Given the julian century time
     calculates
     Geocentric declination of the Sun in degress
     """
-    asl = apparent_solar_longitude(jd0, jd1)
-    teo = true_ecliptic_obliquity(jd0, jd1)
-    glat = geocentric_latitude(jd0, jd1)
+    slam = geocentric_lambda(jct)
+    eps = true_ecliptic_obliquity(jct)
+    beta = geocentric_beta(jct)
 
-    sin_asl = math.sin(math.radians(asl))
-    sin_teo = math.sin(math.radians(teo))
-    cos_teo = math.cos(math.radians(teo))
-    sin_glat = math.sin(math.radians(glat))
-    cos_glat = math.cos(math.radians(glat))
+    sin_beta = math.sin(math.radians(beta))
+    cos_eps = math.cos(math.radians(eps))
+    cos_beta = math.cos(math.radians(beta))
+    sin_eps = math.sin(math.radians(eps))
+    sin_slam = math.sin(math.radians(slam))
 
-    return math.degrees(math.asin(sin_glat * cos_teo + cos_glat * sin_teo * sin_asl))
+    return math.degrees(math.asin(sin_beta * cos_eps + cos_beta * sin_eps * sin_slam))
 
-def geocentric_latitude(jd0, jd1):
+def geocentric_lambda(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
+    calculates
+    Geocentric Lambda of the Sun in degress
+    """
+    true_sun = true_solar_longitude(jct)
+    dpsi = delta_psi(jct)
+    radius = astronomical_units(jct)
+    sunlambda = (true_sun + dpsi - 0.005691611 / radius) % 360.0
+    return sunlambda
+
+def geocentric_latitude(jct):
+    """
+    Given the julian century time
     calculates
     Geocentric Latitude of the Sun in degress
     """
-    return -1 * heliocentric_latitude(jd0, jd1)
+    return -1 * helio_lat.heliocentric_latitude(jct)
 
-def geocentric_longitude(jd0, jd1):
+def geocentric_longitude(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     true Geocentric Longitude of the Sun in degress
     """
-    return (heliocentric_longitude(jd0, jd1) + 180) % 360
+    return (heliocentric_longitude(jct) + 180) % 360
 
-def geocentric_right_ascension(jd0, jd1):
+def geocentric_prime(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
+    calculates
+    Geocentric Prime of the Sun in degress
+    """
+    hln = heliocentric_longitude(jct)
+    prime = hln + 180 - 1.397 * jct - 0.00031 * jct * jct
+    return prime % 360.0
+
+def geocentric_right_ascension(jct):
+    """
+    Given the julian century time
     calculates Geocentric Right Ascension in degrees
     """
-    asl = apparent_solar_longitude(jd0, jd1)
-    teo = true_ecliptic_obliquity(jd0, jd1)
-    lat = geocentric_latitude(jd0, jd1)
+    slam = geocentric_lambda(jct)
+    eps = true_ecliptic_obliquity(jct)
+    beta = geocentric_beta(jct)
 
-    sin_asl = math.sin(math.radians(asl))
-    cos_asl = math.cos(math.radians(asl))
-    sin_teo = math.sin(math.radians(teo))
-    cos_teo = math.cos(math.radians(teo))
-    tan_lat = math.tan(math.radians(lat))
+    sin_slam = math.sin(math.radians(slam))
+    cos_eps = math.cos(math.radians(eps))
+    tan_beta = math.tan(math.radians(beta))
+    sin_eps = math.sin(math.radians(eps))
+    cos_slam = math.cos(math.radians(slam))
 
     return (math.degrees(
-        math.atan2((sin_asl * cos_teo - tan_lat * sin_teo), cos_asl)) % 360) / 15.0
+        math.atan2((sin_slam * cos_eps - tan_beta * sin_eps), cos_slam)) % 360) / 15.0
 
-def greenwich_hour_angle(jd0, jd1):
+def greenwich_hour_angle(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     Greenwich Hour Angle in degrees
     """
-    ghaa = gast(jd0, jd1) * 15.0
-    # ghaa = true_gha_aries(jd0, jd1)
-    gra = geocentric_right_ascension(jd0, jd1) * 15.0
+    ghaa = true_gha_aries(jct)
+    gra = geocentric_right_ascension(jct) * 15.0
+    # return (gasa(jct) - gra) % 360.0
     return (ghaa - gra) % 360.0
 
-def heliocentric_latitude(jd0, jd1):
+def heliocentric_longitude(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
-    calculates Heliocentric Latitude in degrees
-
-    That based on the Sun as a center.
-    The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
-    """
-    jem = time.julian_ephemeris_millennium(jd0 + jd1)
-    hlc = heliocentric_lat_elements(jd0, jd1)
-    return math.degrees((hlc[0] + jem * (
-        hlc[1] + jem * (
-            hlc[2] + jem * (
-                hlc[3] + jem * hlc[4])))) / 1e8) % -360.0
-
-def heliocentric_lat_elements(jd0, jd1):
-    """
-    Given Given UT1 as a 2-part Julian Date
-    gets Coefficient terms for Heliocentric Latitude in radians
-
-    That based on the Sun as a center.
-    The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
-    """
-    hlc = coefficients(jd0, jd1, constants.HELIOCENTRIC_LATITUDE_COEFFS)
-    return hlc
-
-def heliocentric_longitude(jd0, jd1):
-    """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates Heliocentric Longitude in degrees
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
     # return math.degrees(
     #     coefficients(dt_list, constants.HELIOCENTRIC_LONGITUDE_COEFFS, default) / 1e8) % 360
-    jem = time.julian_ephemeris_millennium(jd0 + jd1)
+    jem = jct / 10.0
     # jem = (2452930.312847 - 2451545.0) / 365250.0
-    hlc = heliocentric_lon_elements(jd0, jd1)
+    hlc = heliocentric_lon_elements(jct)
     return math.degrees(
         (hlc[0] + jem * (
             hlc[1] + jem * (
@@ -393,7 +417,7 @@ def heliocentric_longitude(jd0, jd1):
                     hlc[3] + jem * (
                         hlc[4] + jem * hlc[5]))))) / 1e8) % 360.0
 
-def heliocentric_lon_elements(jd0, jd1):
+def heliocentric_lon_elements(jct):
     """
     Given date/time list and optional delta T
     gets Coefficient terms for Heliocentric Longitude in radians
@@ -401,27 +425,27 @@ def heliocentric_lon_elements(jd0, jd1):
     That based on the Sun as a center.
     The Nautical Almanac gives the Heliocentric positions of all celestial bodies.
     """
-    hlc = coefficients(jd0, jd1, constants.HELIOCENTRIC_LONGITUDE_COEFFS)
+    hlc = coefficients(jct, helio_lon.HELIOCENTRIC_LONGITUDE_COEFFS)
     return hlc
 
-def lasa(jd0, jd1):
+def lasa(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     Loacal Apparent Sidereal Angle in degrees
     """
-    return gasa(jd0, jd1)
+    return gasa(jct)
 
-def last(jd0, jd1):
+def last(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     Loacal Apparent Sidereal Time in hours
     """
-    laa = lasa(jd0, jd1)
+    laa = lasa(jct)
     return laa / 15.0
 
-def lmsa(jd0, jd1):
+def lmsa(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
@@ -429,21 +453,21 @@ def lmsa(jd0, jd1):
     by adding a longitude offset on to the jd1
     hence this is defined only for convinience
     of naming functions otherwise it is the same
-    as gmsa(jd0, jd1)
+    as gmsa(jct)
     """
-    return gmsa(jd0, jd1)
+    return gmsa(jct)
 
-def lmst(jd0, jd1):
+def lmst(jct):
     """
     Given UT1 as a 2-part Julian Date
     calculates
     Loacal Mean Sidereal Time in hours
     """
-    return gmst(jd0, jd1)
+    return gmst(jct)
 
-def local_hour_angle(jd0, jd1):
+def local_hour_angle(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     parameter list
     calculates
     Local Hour Angle
@@ -452,58 +476,55 @@ def local_hour_angle(jd0, jd1):
     # subtracted from the julian day number for this
     # function. Otherwise it is just the same as using
     # greenwich hour angle
-    gha = greenwich_hour_angle(jd0, jd1)
-    return gha
 
-def mean_ecliptic_obliquity(jd0, jd1):
+    return greenwich_hour_angle(jct)
+
+def mean_ecliptic_obliquity(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     Mean Ecliptic Obliquity in degrees
     """
-    # (84381.448 - 46.815 * TE - 0.00059 * TE2 + 0.001813 * TE3) / 3600
-    jec = time.julian_century(jd0 + jd1)
-    return (84381.406 + jec * (
-        -46.836769 + jec * (
-            -0.0001831 + jec * (
-                0.00200340 + jec * (
-                    -0.000000576 + jec * -0.0000000434))))) / 3600
+    return (84381.406 + jct * (
+        -46.836769 + jct * (
+            -0.0001831 + jct * (
+                0.00200340 + jct * (
+                    -0.000000576 + jct * -0.0000000434))))) / 3600
 
-def true_ecliptic_obliquity(jd0, jd1):
+def true_ecliptic_obliquity(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     True Ecliptic Oblquity in degrees
     """
-    mean_eps = mean_ecliptic_obliquity(jd0, jd1)
-    delta_eps = delta_epsilon(jd0, jd1)
+    mean_eps = mean_ecliptic_obliquity(jct)
+    delta_eps = delta_epsilon(jct)
 
     return mean_eps + delta_eps
 
-def mean_gha_aries(jd0, jd1):
+def mean_gha_aries(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     mean longitude of the first point of aries
     """
-    jct = time.julian_century(jd0 + jd1)
-    mla = 280.46061837 + 360.98564736629 * (
-        (
-            jd0 + jd1) - 2451545) + jct * (jct * 0.000387933  + jct * (jct * -1 / 38710000))
-    return mla
+    jd2000 = jct * 36525.0
+    degd = 360.98564736629 * jd2000
+    mla = 280.46061837 + degd + jct * (jct * 0.000387933  + jct * (jct * -1 / 38710000))
+    return mla % 360.0
 
-def true_gha_aries(jd0, jd1):
+def true_gha_aries(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     apparent longitude of the first point of aries
     """
-    mla = mean_gha_aries(jd0, jd1)
-    return mla + equation_of_equinox(jd0, jd1)
+    mla = mean_gha_aries(jct)
+    return mla + equation_of_equinox(jct)
 
 def mean_solar_longitude(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     Mean Geocentric Longitude in degrees
     """
@@ -511,34 +532,31 @@ def mean_solar_longitude(jct):
         36000.76982779 + jct * (
             0.0003032028 + jct * (
                 1.0 / 49931.0 + jct * (
-                    1.0 / -15299.0 + jct * (1.0 / -1988000.0)))))
+                    -1.0 / 15299.0 + jct * (-1.0 / 1988000.0)))))
     return mgl % 360.0
 
 def true_solar_longitude(jct):
 
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     True Solar Longitude in degrees
     """
-    msl = mean_solar_longitude(jct)
-    eoc = equation_of_center(jct)
-    return (msl + eoc) % 360
+    return (heliocentric_longitude(jct) + 180 - 0.000025) % 360.0
 
-def nutation(jd0, jd1):
+def nutation(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     Delta Epsilon and Delta Psi in degrees
     """
-    jec = time.julian_century(jd0 + jd1)
     abcd = constants.NUTATION_COEFFICIENTS
     nutation_long = []
     nutation_oblique = []
     coef = constants.aberration_coeffs()
     xdx = list \
       (
-          coef[k](jec)
+          coef[k](jct)
           for k in
           ( # order is important
               'MeanAnomalyOfMoon',
@@ -555,9 +573,9 @@ def nutation(jd0, jd1):
             sigmaxy += xdx[jdx] * sin_terms[idx][jdx]
         #end for
         nutation_long.append(
-            (abcd[idx][0] + (abcd[idx][1] * jec)) * math.sin(math.radians(sigmaxy)))
+            (abcd[idx][0] + (abcd[idx][1] * jct)) * math.sin(math.radians(sigmaxy)))
         nutation_oblique.append(
-            (abcd[idx][2] + (abcd[idx][3] * jec)) * math.cos(math.radians(sigmaxy)))
+            (abcd[idx][2] + (abcd[idx][3] * jct)) * math.cos(math.radians(sigmaxy)))
 
     # 36000000 scales from 0.0001 arcseconds to degrees
     deltas = {'longitude' : sum(
@@ -572,8 +590,8 @@ def projected_axial_distance(param_list):
     calculates
     a distance correction for
     """
-    elevation = param_list[0]
-    latitude = param_list[1]
+    elevation = param_list[2]
+    latitude = param_list[0]
     flat = flattened_latitude(latitude)
     sin_flat = math.sin(math.radians(flat))
     sin_lat = math.sin(math.radians(latitude))
@@ -592,9 +610,9 @@ def projected_radial_distance(elevation, latitude):
             elevation * math.cos(
                 latitude_rad) / constants.EARTH_RADIUS)
 
-def refraction_correction(jd0, jd1, param_list):
+def refraction_correction(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and parameter list with
+    Given the julian century time and parameter list with
     pressure and temperature
     calculates
     a correction or offset of view caused by refraction of Earth
@@ -606,7 +624,7 @@ def refraction_correction(jd0, jd1, param_list):
     sun_radius = 0.26667
     atmos_refract = 0.5667
     del_e = 0.0
-    tea = topocentric_elevation_angle(jd0, jd1, param_list)
+    tea = topocentric_elevation_angle(jct, param_list)
 
     # Approximation only valid if sun is not well below horizon
     # This approximation could be improved;
@@ -624,9 +642,9 @@ def refraction_correction(jd0, jd1, param_list):
 
     return del_e
 
-def max_horizontal_parallax(jd0, jd1):
+def max_horizontal_parallax(jct):
     """
-    Given Given UT1 as a 2-part Julian Date
+    Given the julian century time
     calculates
     equitorial horizontal parallax
     see: http://star-www.st-and.ac.uk/~fv/webnotes/chapter7.htm
@@ -650,21 +668,21 @@ def max_horizontal_parallax(jd0, jd1):
     We assume we know the observer’s latitude φ and the Local Sidereal Time LST.
     (LST may be obtained, if necessary, from Greenwich Sidereal Time and observer’s longitude.)
     """
-    sed = astronomical_units(jd0, jd1)
+    sed = astronomical_units(jct)
     return 8.794 / (3600 / sed)
 
-def right_ascension_parallax(jd0, jd1, param_list):
+def right_ascension_parallax(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and parameter list
+    Given the julian century time and parameter list
     to pass
     calculates
     A delta of Right Ascension caused by parallax in degrees
     """
     prd = projected_radial_distance(param_list[0], param_list[1])
-    lha = local_hour_angle(jd0, jd1)
+    lha = local_hour_angle(jct)
 
-    gsd = geocentric_declination(jd0, jd1)
-    ehp = 8.794 / (3600 / astronomical_units(jd0, jd1))
+    gsd = geocentric_declination(jct)
+    ehp = 8.794 / (3600 / astronomical_units(jct))
 
     sin_ehp = math.sin(math.radians(ehp))
     cos_gsd = math.cos(math.radians(gsd))
@@ -676,17 +694,17 @@ def right_ascension_parallax(jd0, jd1, param_list):
 
 # Topocentric functions calculate angles relative to a location on the surface of the earth.
 
-def topocentric_azimuth_angle(jd0, jd1, param_list):
+def topocentric_azimuth_angle(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and parameter list
+    Given the julian century time and parameter list
     to pass and with latitude,
     calculates
     Topocentric Azimuth Angle in degrees
     Measured eastward from north
     """
     latitude = param_list[1]
-    tdec = topocentric_solar_declination(jd0, jd1, param_list)
-    tlha = topocentric_lha(jd0, jd1, param_list)
+    tdec = topocentric_solar_declination(jct, param_list)
+    tlha = topocentric_lha(jct, param_list)
 
     cos_tlha = math.cos(math.radians(tlha))
     sin_tlha = math.sin(math.radians(tlha))
@@ -699,19 +717,19 @@ def topocentric_azimuth_angle(jd0, jd1, param_list):
     bxt = cos_tlha * sin_lat - tan_tdec * cos_lat
     return 180.0 + math.degrees(math.atan2(ayt, bxt)) % 360
 
-def topocentric_lha(jd0, jd1, param_list):
+def topocentric_lha(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and
+    Given the julian century time and
     parameter list to pass
     calculates
     Topocentric Local Hour Angle in degrees
     """
 
-    lha = local_hour_angle(jd0, jd1)
-    rap = right_ascension_parallax(jd0, jd1, param_list)
+    lha = local_hour_angle(jct)
+    rap = right_ascension_parallax(jct, param_list)
     return lha - rap
 
-def incidence_angle(jd0, jd1, param_list):
+def incidence_angle(jct, param_list):
     """
     Given date/time list, parameter list, and optional delta T
     calculates
@@ -720,8 +738,8 @@ def incidence_angle(jd0, jd1, param_list):
     slope = param_list[3]
     slope_orientation = param_list[4]
     # temp subs for test since these are bad.
-    taa = topocentric_azimuth_angle(jd0, jd1, param_list)
-    tza = topocentric_zenith_angle(jd0, jd1, param_list)
+    taa = topocentric_azimuth_angle(jct, param_list)
+    tza = topocentric_zenith_angle(jct, param_list)
     # taa = 194.341226
     # tza = 50.111482
 
@@ -737,12 +755,12 @@ def incidence_angle(jd0, jd1, param_list):
         math.acos(
             cos_tza * cos_slope + sin_slope * sin_tza * math.cos(taa_rad + math.pi - so_rad)))
 
-def angle_of_incidence(jd0, jd1, param_list):
+def angle_of_incidence(jct, param_list):
     """
     from web page at http://article.sapub.org/10.5923.j.ep.20160602.01.html
     """
-    gsd_cos = math.cos(math.radians(topocentric_solar_declination(jd0, jd1, param_list)))
-    gsd_sin = math.sin(math.radians(topocentric_solar_declination(jd0, jd1, param_list)))
+    gsd_cos = math.cos(math.radians(topocentric_solar_declination(jct, param_list)))
+    gsd_sin = math.sin(math.radians(topocentric_solar_declination(jct, param_list)))
 
     lat_cos = math.cos(math.radians(param_list[1]))
     lat_sin = math.sin(math.radians(param_list[1]))
@@ -753,8 +771,8 @@ def angle_of_incidence(jd0, jd1, param_list):
     saz_cos = math.cos(math.radians(param_list[4]))
     saz_sin = math.sin(math.radians(param_list[4]))
 
-    lha_cos = math.cos(math.radians(topocentric_lha(jd0, jd1, param_list)))
-    lha_sin = math.sin(math.radians(topocentric_lha(jd0, jd1, param_list)))
+    lha_cos = math.cos(math.radians(topocentric_lha(jct, param_list)))
+    lha_sin = math.sin(math.radians(topocentric_lha(jct, param_list)))
 
     return math.degrees(math.acos(
         gsd_sin * lat_sin * slope_cos - (
@@ -763,9 +781,9 @@ def angle_of_incidence(jd0, jd1, param_list):
                     gsd_cos * lat_sin * slope_sin * saz_cos * lha_cos) + (
                         gsd_cos * slope_sin * saz_sin * lha_sin)))
 
-def topocentric_solar_declination(jd0, jd1, param_list):
+def topocentric_solar_declination(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and
+    Given the julian century time and
     parameter list to pass
     calculates
     Topocentric Solar Declination in degerees
@@ -775,11 +793,11 @@ def topocentric_solar_declination(jd0, jd1, param_list):
     projected axial distance,
     right ascension parallax
     """
-    ehp = 8.794 / (3600 / astronomical_units(jd0, jd1)) # equitorial horizontal parallax
-    gsd = geocentric_declination(jd0, jd1)
-    lha = local_hour_angle(jd0, jd1)
+    ehp = 8.794 / (3600 / astronomical_units(jct)) # equitorial horizontal parallax
+    gsd = geocentric_declination(jct)
+    lha = local_hour_angle(jct)
     pad = projected_axial_distance(param_list)
-    psra = right_ascension_parallax(jd0, jd1, param_list)
+    psra = right_ascension_parallax(jct, param_list)
 
     sin_ehp = math.sin(math.radians(ehp))
     sin_gsd = math.sin(math.radians(gsd))
@@ -791,31 +809,31 @@ def topocentric_solar_declination(jd0, jd1, param_list):
     bxt = cos_gsd - (pad * sin_ehp * cos_lha)
     return math.degrees(math.atan2(ayt, bxt))
 
-def topocentric_right_ascension(jd0, jd1, param_list):
+def topocentric_right_ascension(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and
+    Given the julian century time and
     parameter list to pass
     calculates
     Topocentric Right Ascension in degrees
     """
-    psra = right_ascension_parallax(jd0, jd1, param_list)
-    gsra = geocentric_right_ascension(jd0, jd1) * 15
+    psra = right_ascension_parallax(jct, param_list)
+    gsra = geocentric_right_ascension(jct) * 15
     return psra + gsra
 
-def topocentric_zenith_angle(jd0, jd1, param_list):
+def topocentric_zenith_angle(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and
+    Given the julian century time and
     parameter list to pass
     calculates
     Topocentric Zenith Angle in degrees
     """
     # 3.14.3. Calculate the topocentric elevation angle, e (in degrees),
-    tea = topocentric_elevation_angle(jd0, jd1, param_list)
-    rc1 = refraction_correction(jd0, jd1, param_list)
+    tea = topocentric_elevation_angle(jct, param_list)
+    rc1 = refraction_correction(jct, param_list)
     # 3.14.4. Calculate the topocentric zenith angle, 2 (in degrees),
     return 90 - tea + rc1
     """
-    tsd = topocentric_solar_declination(jd0, jd1, param_list)
+    tsd = topocentric_solar_declination(jct, param_list)
     tsd_cos = math.cos(math.radians(tsd))
     tsd_sin = math.sin(math.radians(tsd))
 
@@ -823,7 +841,7 @@ def topocentric_zenith_angle(jd0, jd1, param_list):
     lat_cos = math.cos(math.radians(latitude))
     lat_sin = math.sin(math.radians(latitude))
 
-    lha = topocentric_lha(jd0, jd1, param_list)
+    lha = topocentric_lha(jct, param_list)
     lha_cos = math.cos(math.radians(lha))
 
     term_1 = tsd_cos * lat_cos * lha_cos
@@ -832,9 +850,9 @@ def topocentric_zenith_angle(jd0, jd1, param_list):
     # return math.degrees(math.acos(term_1 + term_2))
     """
 
-def topocentric_elevation_angle(jd0, jd1, param_list):
+def topocentric_elevation_angle(jct, param_list):
     """
-    Given Given UT1 as a 2-part Julian Date and parameter list
+    Given the julian century time and parameter list
     to pass and with latitude
     calculates
     Topocentric Elevation Angle in degrees
@@ -843,10 +861,10 @@ def topocentric_elevation_angle(jd0, jd1, param_list):
     phi_cos = math.cos(math.radians(phi))
     phi_sin = math.sin(math.radians(phi))
 
-    lha = topocentric_lha(jd0, jd1, param_list)
+    lha = topocentric_lha(jct, param_list)
     lha_cos = math.cos(math.radians(lha))
 
-    tsd = topocentric_solar_declination(jd0, jd1, param_list)
+    tsd = topocentric_solar_declination(jct, param_list)
     tsd_cos = math.cos(math.radians(tsd))
     tsd_sin = math.sin(math.radians(tsd))
 
@@ -862,10 +880,11 @@ def altitude(when, param_list):
     dt_list = [when.year, when.month, when.day,
                when.hour, when.minute, when.second,
                when.microsecond, 0, 0]
-    jd0 = time.julian_day(dt_list) - param_list[2] / 360
-    jd1 = time.delta_t(jd0)
-    tea = topocentric_elevation_angle(jd0, jd1, param_list)
-    rca = refraction_correction(jd0, jd1, param_list)
+    jdt = time.julian_day(dt_list)
+    jct = time.julian_century(jdt - param_list[2] / 360)
+
+    tea = topocentric_elevation_angle(jct, param_list)
+    rca = refraction_correction(jct, param_list)
     return 90 - tea + rca
 
 def altitude_fast(when, param_list):
@@ -891,9 +910,10 @@ def azimuth(when, param_list):
     dt_list = [when.year, when.month, when.day,
                when.hour, when.minute, when.second,
                when.microsecond, 0, 0]
-    jd0 = time.julian_day(dt_list) - param_list[2] / 360
-    jd1 = time.delta_t(jd0)
-    return 180 - topocentric_azimuth_angle(jd0, jd1, param_list) % 360
+    jdt = time.julian_day(dt_list)
+    jct = time.julian_century(jdt - param_list[2] / 360)
+
+    return 180 - topocentric_azimuth_angle(jct, param_list) % 360
 
 def azimuth_fast(when, param_list):
     """

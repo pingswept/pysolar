@@ -23,30 +23,32 @@ tests for util.py
 """
 import datetime
 import unittest
-from pysolar import constants, util
+from pysolar import util
 class TestUtil(unittest.TestCase):
     """
     Tests functions that use when as a time parameter
     """
-    longitude = -105.1786 # -105:
-    lon_offset = longitude / 360.0
-    latitude = 39.742476 # 39:44:32
-    pressure = 820.0 # millibars
-    elevation = 1830.14 # meters
-    temperature = 11.0 + constants.CELSIUS_OFFSET # kelvin
-    surface_slope = 30.0 # Surface slope (measured from the horizontal plane) [degrees]
-    surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
-    # projection of surface normal on horizontal plane, negative east) [degrees]
-    dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
-    delta_t = 67
-    tyn = util.TY_DEFAULT
-    amd = util.AM_DEFAULT
-    ltf = util.TL_DEFAULT
-    spc = util.SC_DEFAULT
-    params_list = [elevation, latitude, longitude, surface_slope,
-                   surface_azimuth_rotation, temperature, pressure,
-                   tyn, amd, ltf, spc]
     when = datetime.datetime(2003, 10, 17, tzinfo=datetime.timezone.utc)
+    param_list = [39.742476, -105.1786]
+    def setUp(self):
+        """
+        set up
+        """
+        return None
+
+    def test_sunrise(self):
+        """
+        testing Local sunrise time
+        10/17/2003, 12:30:30, 6.212002
+        """
+        # print(self.test_sunrise_sunset.__doc__)
+        print('testing util.py Sunrise Time method')
+        usr = util.sunrise_time(self.when, self.param_list)
+        # print(usr)
+        rval = datetime.datetime(
+            2003, 10, 17, 13, 21, 59, 486508, tzinfo=datetime.timezone.utc)
+        self.assertEqual(rval, usr)
+
 
     def test_sunrise_sunset(self):
         """
@@ -58,7 +60,7 @@ class TestUtil(unittest.TestCase):
         """
         # print(self.test_sunrise_sunset.__doc__)
         print('testing util.py Sunrise Sunset method')
-        srs = util.sunrise_sunset(self.when, self.params_list)
+        srs = util.sunrise_sunset(self.when, self.param_list)
         # print(srs)
         rtv = datetime.datetime(
             2003, 10, 17, 13, 21, 59, 486508, tzinfo=datetime.timezone.utc)
@@ -66,21 +68,6 @@ class TestUtil(unittest.TestCase):
             2003, 10, 18, 0, 10, 3, 617537, tzinfo=datetime.timezone.utc)
         self.assertEqual((rtv, stv), srs)
 
-    def test_sunrise(self):
-        """
-        testing
-        Date, Time, Local sunrise time
-        10/17/2003, 12:30:30, 6.212067
-        Date, Time, Local sunset time
-
-        """
-        # print(self.test_sunrise_sunset.__doc__)
-        print('testing util.py Sunrise Time method')
-        usr = util.sunrise_time(self.when, self.params_list)
-        # print(usr)
-        rval = datetime.datetime(
-            2003, 10, 17, 13, 21, 59, 486508, tzinfo=datetime.timezone.utc)
-        self.assertEqual(rval, usr)
 
     def test_sunset(self):
         """
@@ -92,7 +79,7 @@ class TestUtil(unittest.TestCase):
         """
         # print(self.test_sunrise_sunset.__doc__)
         print('testing util.py Sunset Time method')
-        uss = util.sunset_time(self.when, self.params_list)
+        uss = util.sunset_time(self.when, self.param_list)
         # print(uss)
         sval = datetime.datetime(
             2003, 10, 18, 0, 10, 3, 617537, tzinfo=datetime.timezone.utc)

@@ -44,7 +44,7 @@ ELEVATION_DEFAULT = 0.0      # Default elevation is 0.0
 
 # Useful equations for analysis
 
-def sunrise_sunset(when, params_list):
+def sunrise_sunset(when, param_list):
     """This function calculates the astronomical sunrise and sunset times in local time.
 
     Parameters[lat, lon]
@@ -99,7 +99,7 @@ print('sunset:', SSET)
         utc_offset = 0
     #end if
     day = when.utctimetuple().tm_yday # Day of the year
-    sha = utc_offset / 3600 * 15.0 - params_list[1] # Solar hour angle
+    sha = utc_offset / 3600 * 15.0 - param_list[1] # Solar hour angle
     tta = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
     time_adst = \
         (
@@ -131,7 +131,7 @@ print('sunset:', SSET)
                 -
                 math.radians(constants.EARTH_AXIS_INCLINATION)
                 *
-                math.tan(math.radians(params_list[0]))
+                math.tan(math.radians(param_list[0]))
                 *
                 math.cos(2 * math.pi * day / 365.25)
             )
@@ -143,13 +143,13 @@ print('sunset:', SSET)
     sunset = same_day + timedelta(hours=ton + sunn - time_adst)
     return sunrise, sunset
 
-def sunrise_time(when, params_list):
+def sunrise_time(when, param_list):
     "Wrapper for get_sunrise_sunset that returns just the sunrise time."
-    return sunrise_sunset(when, params_list)[0]
+    return sunrise_sunset(when, param_list)[0]
 
-def sunset_time(when, params_list):
+def sunset_time(when, param_list):
     "Wrapper for get_sunrise_sunset that returns just the sunset time."
-    return sunrise_sunset(when, params_list)[1]
+    return sunrise_sunset(when, param_list)[1]
 
 def mean_earth_sun_distance(when):
     """Mean Earth-Sun distance is the arithmetical mean of the maximum and minimum distances
