@@ -49,7 +49,6 @@ class TestSiderealTime(unittest.TestCase):
     seconds = dt_list[5] / 86400.0
     jd0 = time.jdn(dt_list) - 0.5 # julian day midnight
     fd0 = hours + minutes + seconds # fractional day
-    print(jd0 + fd0)
     # need to take the timezone offset out because all
     # whole julian day numbers begin at noon.
     fd2 = hours - 7 / 24.0 # set back to midday hours
@@ -66,7 +65,7 @@ class TestSiderealTime(unittest.TestCase):
     def setUp(self):
         return None
 
-    def gasa(self):
+    def test_gasa(self):
         """
         testing  Greenwich apparent sidereal angle
         0        318.51191008778073
@@ -75,19 +74,19 @@ class TestSiderealTime(unittest.TestCase):
         """
         # print(self.test_gasa.__doc__)
         # print('testing solar.py Greenwich Apparent Sidereal Angle method')
-        gasa = solar.gasa(self.jct3)
+        gasa = solar.gasa(self.jct0)
         self.assertEqual(318.51191024614667, gasa, 12)
         self.assertAlmostEqual(318.51191008778073, gasa, 6)
 
-        gasa1 = solar.gasa(self.jct4)
+        gasa1 = solar.gasa(self.jct1)
         self.assertEqual(318.781569514435, gasa1, 12)
         self.assertAlmostEqual(318.7815693562905, gasa1, 6)
 
-        gasa2 = solar.gasa(self.jct5)
+        gasa2 = solar.gasa(self.jct2)
         self.assertEqual(318.79184125269, gasa2, 12)
         self.assertAlmostEqual(318.79184109456986, gasa2, 6)
 
-    def gast(self):
+    def test_gast(self):
         """
         testing Greenwich Apparent Sidereal Time
         0       21.23412733918538
@@ -108,7 +107,7 @@ class TestSiderealTime(unittest.TestCase):
         self.assertEqual(21.252789416846, gast2, 12)
         self.assertAlmostEqual(21.252789406304657, gast2, 7)
 
-    def gmsa(self):
+    def test_gmsa(self):
         """
         testing Greenwich mean sidereal angle
         0       318.51557827281067
@@ -129,7 +128,7 @@ class TestSiderealTime(unittest.TestCase):
         self.assertEqual(318.7955092647899, gmsa2, 12)
         self.assertAlmostEqual(318.7955092670163, gmsa2, 8)
 
-    def gmst(self):
+    def test_gmst(self):
         """
         testing Greenwich Mean Sideral Time with these delta t's
         0       21.234371884854045

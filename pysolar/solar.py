@@ -267,8 +267,8 @@ def gmst(jct):
     calculates
     Greenwich Mean Sidereal Time in hours
     see: http://aa.usno.navy.mil/faq/docs/GAST.php
-    """
-    # Let JD be the Julian date of the time of interest.
+
+    # Let JD1 be the Julian date of the time of interest.
     # Let JD0 be the Julian date of the previous midnight (0h) UT
     # (the value of JD0 will end in .5 exactly),
     # and let H be the hours of UT elapsed since that time.
@@ -284,10 +284,11 @@ def gmst(jct):
     # It will be necessary to reduce GMST to the range 0h to 24h.
     # Setting H = 0 in the above formula yields the Greenwich mean sidereal time at 0h UT,
     # which is tabulated in The Astronomical Almanac.
+    """
 
     jd1 = jct * 36525.0 + 2451545.0
     # d2k = jd1 - 2451545.0 not used because we already have jct
-    jd0 = math.floor(jd1 - 0.5) # Midnight
+    jd0 = math.floor(jd1) - 0.5 # Midnight
     d02k = jd0 - 2451545.0
     d_frac = jd1 % 1.0 + 0.5 # day fraction from midnight on
     gma = 6.697374558
