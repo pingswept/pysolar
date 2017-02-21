@@ -74,6 +74,9 @@ def aberration_coeffs(nutation_coeffs=None):
 #end get_aberration_coeffs
 
 EARTH_RADIUS = 6378140.0 # meters
+EQITORIAL_RADIUS = 6378137.0  # meters
+POLAR_RADIUS = 6356752.3142 # meters
+EARTHS_FLATTENING = (EQITORIAL_RADIUS - POLAR_RADIUS) / EQITORIAL_RADIUS
 EARTH_AXIS_INCLINATION = 23.45 # degrees
 SECONDS_PER_DAY = 86400
 

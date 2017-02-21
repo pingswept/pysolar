@@ -48,14 +48,14 @@ class TestSolar(unittest.TestCase):
     seconds = dt_list[5] / 86400.0
     jd1 = time.jdn(dt_list) - 0.5 # julian day midnight
     jd2 = hours + minutes + seconds # fractional day
-    print(jd1 + jd2)
+
+    jct0 = time.julian_century(jd1 + jd2)
+    jct1 = time.julian_century(jd1 + default + jd2)
+    jct2 = time.julian_century(jd1 + delta_t + jd2)
     # need to take the timezone offset out because all
     # whole julian day numbers begin at noon.
     jd3 = 0.5 + minutes + seconds - 7 / 24.0
     jd4 = jd3 - longitude_offset
-    jct0 = time.julian_century(jd1 + jd2)
-    jct1 = time.julian_century(jd1 + default + jd2)
-    jct2 = time.julian_century(jd1 + delta_t + jd2)
     jct3 = time.julian_century(jd1 + jd4)
     jct4 = time.julian_century(jd1 + default + jd4)
     jct5 = time.julian_century(jd1 + delta_t + jd4)
@@ -165,26 +165,23 @@ class TestSolar(unittest.TestCase):
     def test_local_hour_angle(self):
         """
         testing Observer hour angle
-        below is from almanac
-        0       11.448972808852602
-        64.5415 11.717934223859459
-        67      11.728179379790333
-        these are MIDC SPA
-        11.106526
+        0       11.106627
+        64.5415 11.105929
+        67      11.105902
         """
         # print(self.test_local_hour_angle.__doc__)
         # print('testing solar.py Local Hour Angle method')
-        lha0 = solar.local_hour_angle(self.jct3)
-        self.assertEqual(11.448914484734274, lha0, 12)
-        self.assertAlmostEqual(11.448972808852602, lha0, 3)
+        lha0 = solar.local_hour_angle(self.jct0, self.longitude)
+        self.assertEqual(11.10659276766215, lha0, 12)
+        self.assertAlmostEqual(11.106627, lha0, 4)
 
-        lha1 = solar.local_hour_angle(self.jct4)
-        self.assertEqual(11.717875900419926, lha1, 12)
-        self.assertAlmostEqual(11.717934223859459, lha1, 3)
+        lha1 = solar.local_hour_angle(self.jct1, self.longitude)
+        self.assertEqual(11.375553630539954, lha1, 12)
+        self.assertAlmostEqual(11.105929, lha1, 0)
 
-        lha2 = solar.local_hour_angle(self.jct5)
-        self.assertEqual(11.728121056433281, lha2, 12)
-        self.assertAlmostEqual(11.728179379790333, lha2, 3)
+        lha2 = solar.local_hour_angle(self.jct2, self.longitude)
+        self.assertEqual(11.385798765441521, lha2, 12)
+        self.assertAlmostEqual(11.105902, lha2, 0)
 
     def test_max_horizontal_parallax(self):
         """
@@ -254,26 +251,6 @@ class TestSolar(unittest.TestCase):
         # print('testing solar.py Pressure with Elevation method')
         pwe = elevation.pressure_with_elevation(1567.7)
         self.assertEqual(83855.90227687225, pwe, 12)
-
-    def test_projected_axial_distance(self):
-        """
-        testing Projected axial distance
-        MIDC SPA is not at 12:30
-        """
-        # print(self.test_projected_axial_distance.__doc__)
-        # print('testing solar.py Projected Axial Distance method')
-        pad = solar.projected_axial_distance(self.param_list)
-        self.assertEqual(0.6361121708785658, pad, 12)
-
-    def test_projected_radial_distance(self):
-        """
-        testing Projected radial distance
-        MIDC SPA is not at 12:30
-        """
-        # print(self.test_projected_radial_distance.__doc__)
-        # print('testing solar.py Projected Radial Distance method')
-        prd = solar.projected_radial_distance(self.elevation, self.latitude)
-        self.assertEqual(0.7702006191191089, prd, 12)
 
     def test_radius_vector_list(self):
         """
