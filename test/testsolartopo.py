@@ -70,21 +70,21 @@ class TestTopocentricSolar(unittest.TestCase):
         """
         ai0 = solar.angle_of_incidence(self.jct3, self.param_list)
         self.assertEqual(23.15231729891296, ai0, 12)
-        hours = (((self.jct3 * 36525.0 + time.DJ00) % 1.0 + 0.5) * 24.0)
-        print(hours)
-        print(15 * (hours - 12.0))
+        # hours = (((self.jct3 * 36525.0 + time.DJ00) % 1.0 + 0.5) * 24.0)
+        # print(hours)
+        # print(15 * (hours - 12.0))
 
         ai1 = solar.angle_of_incidence(self.jct4, self.param_list)
         self.assertEqual(23.301592583019893, ai1, 12)
-        hours = (((self.jct4 * 36525.0 + time.DJ00) % 1.0 + 0.5) * 24.0)
-        print(hours)
-        print(15 * (hours - 12.0))
+        # hours = (((self.jct4 * 36525.0 + time.DJ00) % 1.0 + 0.5) * 24.0)
+        # print(hours)
+        # print(15 * (hours - 12.0))
 
         ai2 = solar.angle_of_incidence(self.jct5, self.param_list)
         self.assertEqual(23.30732056578055, ai2, 12)
-        hours = (((self.jct5 * 36525.0 + time.DJ00) % 1.0 + 0.5) * 24.0)
-        print(hours)
-        print(15 * (hours - 12.0))
+        # hours = (((self.jct5 * 36525.0 + time.DJ00) % 1.0 + 0.5) * 24.0)
+        # print(hours)
+        # print(15 * (hours - 12.0))
 
     def test_incidence_angle(self):
         """
@@ -95,41 +95,42 @@ class TestTopocentricSolar(unittest.TestCase):
         # print(self.test_incidence_angle.__doc__)
         # print('testing solar.py Angle of Incedence method')
         ia0 = solar.incidence_angle(self.jct0, self.param_list)
-        self.assertEqual(25.20520131177765, ia0, 12)
+        self.assertEqual(25.215804224138914, ia0, 12)
         self.assertAlmostEqual(25.187244, ia0, 1)
 
         ia1 = solar.incidence_angle(self.jct1, self.param_list)
-        self.assertEqual(25.37711871797506, ia1, 12)
+        self.assertEqual(25.387719433013384, ia1, 12)
 
         ia2 = solar.incidence_angle(self.jct2, self.param_list)
-        self.assertEqual(25.383700108185433, ia2, 12)
+        self.assertEqual(25.394300756320998, ia2, 12)
         self.assertAlmostEqual(25.187000, ia2, 0)
 
         """
         0
-        10/17/2003,12:31:11,90.322542,2452930.021655
-        10/17/2003,12:31:12,90.318494,2452930.021667
-        10/17/2003,12:31:13,90.314445,2452930.021678
+        a range of values to interpolate result with
+        10/17/2003, 12:31:11, 2452930.021655, 90.322542
+        10/17/2003, 12:31:12, 2452930.021667, 90.318494
+        10/17/2003, 12:31:13, 2452930.021678, 90.314445
         """
-        print(self.jct3 * 36525.0 + time.DJ00)
+        # print(self.jct3 * 36525.0 + time.DJ00)
         ia3 = solar.incidence_angle(self.jct3, self.param_list)
         self.assertEqual(90.31502934323628, ia3, 12)
         self.assertAlmostEqual(90.315, ia3, 3)
         """
         65.5415
-        10/17/2003,12:32:17,90.056113,2452930.022419
-        10/17/2003,12:32:18,90.052066,2452930.022431
+        10/17/2003, 12:32:17, 2452930.022419, 90.056113
+        10/17/2003, 12:32:18, 2452930.022431, 90.052066
         """
-        print(self.jct4 * 36525.0 + time.DJ00)
+        # print(self.jct4 * 36525.0 + time.DJ00)
         ia4 = solar.incidence_angle(self.jct4, self.param_list)
-        self.assertEqual(90.05376749550899, ia4, 12)
+        self.assertEqual(90.05376749550904, ia4, 12)
         self.assertAlmostEqual(90.054, ia4, 3)
         """
         67
-        10/17/2003,12:32:19,90.048018,2452930.022442
-        10/17/2003,12:32:20,90.043970,2452930.022454
+        10/17/2003, 12:32:19, 2452930.022442, 90.048018
+        10/17/2003, 12:32:20, 2452930.022454, 90.043970
         """
-        print(self.jct5 * 36525.0 + time.DJ00)
+        # print(self.jct5 * 36525.0 + time.DJ00)
         ia5 = solar.incidence_angle(self.jct5, self.param_list)
         self.assertEqual(90.04381633115992, ia5, 12)
         self.assertAlmostEqual(90.044, ia5, 3)
@@ -275,14 +276,14 @@ class TestTopocentricSolar(unittest.TestCase):
         # print(self.test_topocentric_zenith_angle.__doc__)
         # print('testing solar.py Topocentric Zenith Angle method')
         tza = solar.topocentric_zenith_angle(self.jct0, self.param_list)
-        self.assertEqual(50.13202226070725, tza, 12)
+        self.assertEqual(50.144137625366255, tza, 12)
         self.assertAlmostEqual(50.111482, tza, 1)
 
         tza1 = solar.topocentric_zenith_angle(self.jct1, self.param_list)
-        self.assertEqual(50.184117861726854, tza1, 12)
+        self.assertEqual(50.19625549068552, tza1, 12)
 
         tza2 = solar.topocentric_zenith_angle(self.jct2, self.param_list)
-        self.assertEqual(50.18612566969781, tza2, 12)
+        self.assertEqual(50.19826415769446, tza2, 12)
         self.assertAlmostEqual(50.111622, tza2, 0)
 
 if __name__ == "__main__":

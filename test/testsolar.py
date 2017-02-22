@@ -49,11 +49,11 @@ class TestSolar(unittest.TestCase):
     jd0 = time.jdn(dt_list) - 0.5 # julian day midnight
     jdfd = hours + minutes + seconds # fractional day
     jdt = jd0 + jdfd
-    print(jdt)
+    # print(jdt)
     jdd = jdt + default
-    print(jdd)
+    # print(jdd)
     jddt = jdt + delta_t
-    print(jddt)
+    # print(jddt)
     jct0 = time.julian_century(jdt)
     jct1 = time.julian_century(jdd)
     jct2 = time.julian_century(jddt)
@@ -165,15 +165,15 @@ class TestSolar(unittest.TestCase):
         # print('testing solar.py Greewich Hour Angle method')
         gha = solar.greenwich_hour_angle(self.jct0)
         self.assertEqual(116.28519276766215, gha, 12)
-        self.assertAlmostEqual(116.28525082273921, gha, 6)
+        self.assertAlmostEqual(116.28525082273921, gha, 3)
 
         gha1 = solar.greenwich_hour_angle(self.jct1)
         self.assertEqual(116.55415363053996, gha1, 12)
-        self.assertAlmostEqual(116.55421349133425, gha1, 6)
+        self.assertAlmostEqual(116.55421349133425, gha1, 3)
 
         gha2 = solar.greenwich_hour_angle(self.jct2)
         self.assertEqual(116.56439876544152, gha2, 12)
-        self.assertAlmostEqual(116.56445862621047, gha2, 6)
+        self.assertAlmostEqual(116.56445862621047, gha2, 3)
 
     def test_local_hour_angle(self):
         """

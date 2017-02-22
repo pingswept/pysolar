@@ -832,7 +832,7 @@ def topocentric_right_ascension(jct, param_list):
     Topocentric Right Ascension in degrees
     """
     rap = right_ascension_parallax(jct, param_list)
-    gra = geocentric_right_ascension(jct) * 15
+    gra = geocentric_right_ascension(jct)
     return gra + rap
 
 def topocentric_zenith_angle(jct, param_list):
