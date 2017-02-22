@@ -1,0 +1,165 @@
+.menuimage {
+	width: 32px;
+	margin-bottom: 2px;
+}
+
+.menu_box {
+        background:#F8F8F8;
+        border:1px solid #bbbbbb;
+        margin:0px 0px 4px 0px;
+        padding:4px 6px 4px 6px;
+
+	width: 300px;
+	min-height: 50px;
+
+        /* Rounded Corners */
+        -moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.menu_box:hover {
+        background:#ffffff;
+        border:1px solid #aaaaaa;
+        padding:4px 6px 4px 6px;
+        margin:0px 0px 4px 0px;
+        color:#029feb;
+}
+
+
+.illustration {
+	float: left;
+	margin: 0.2em 1em 0.2em 0.2em;
+}
+
+.menutext {
+	font-size: 13px;
+	line-height: 1.1;
+}
+
+.navbar {
+/*
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#99c0be), color-stop(60%, #80b0a7), to(#6d9492));
+	background-image: -webkit-linear-gradient(#99c0be, #80b0a7 60%, #6d9492);
+	background-image: -moz-linear-gradient(top, #99c0be, #80b0a7 60%, #6d9492);
+	background-image: linear-gradient(#99c0be, #80b0a7 60%, #6d9492);
+	background-repeat: no-repeat;
+*/
+	padding: 5px;
+	border-radius: 0;
+	margin-bottom: 0;
+	min-height: 28px;
+	position: relative;
+}
+
+.navbar-default {
+	background-color: #8bb2b0;
+	border-color: #5e847f #8bb2b0;
+background-image: none;
+box-shadow: none;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+	border-color: #6f9794;
+}
+
+.navbar-default .navbar-brand {
+	color: #000066;
+}
+
+.navbar-brand {
+	float: left;
+	font-size: 16px;
+	line-height: 20px;
+	padding: 4px 24px 0 12px;
+	height: 28px;
+text-shadow: none;
+}
+
+
+.navbar-default .navbar-nav > li > a {
+	color: #000066;
+text-shadow: none;
+}
+.navbar-nav > li > a {
+	padding-bottom: 4px;
+	padding-top: 4px;
+}
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+	color: #fff;
+	background-color: transparent;
+}
+
+
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+	color: #ffffff;
+	background-color: #749f9a;
+}
+
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+	color: #fff;
+	background-color: transparent;
+}
+
+
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .active > a {
+	background-color: #749f9a;
+	background-image: none;
+}
+
+.dropdown-menu {
+	padding: 5px;
+}
+
+.dropdown-menu > li > a {
+	padding: 3px 8px;
+}
+
+.dropdown-menu > li > a > img {
+	margin-right: 5px;
+}
+
+.dropdown-menu  hr {
+	margin: 3px;
+}
+
+.dropdown-menu > li > h4 {
+	border-bottom: 1px solid #444444;
+	color: #555555;
+	margin-bottom: 3px;
+	margin-top: 3px;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+	background-color: #006699;
+	background-image: none;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.navbar-default .navbar-toggle {
+    border-color: #5f877a;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #fff;
+}
+
+@media (max-width: 767px) {
+
+.navbar-brand {
+    float: left;
+    font-size: 18px;
+    line-height: 20px;
+    padding: 14px 24px 0px 12px;
+}
+}
+

@@ -1,0 +1,112 @@
+From a04dd123cd07614ab7b0d5a83833de57ec473eb6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ren=C3=A9=20Buffat?= <buffat@gmail.com>
+Date: Thu, 13 Aug 2015 12:21:06 +0200
+Subject: [PATCH] fix get_hour_angle() + test
+
+---
+ pysolar/solar.py        |  2 +-
+ test/test_hour_angle.py | 82 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+), 1 deletion(-)
+ create mode 100644 test/test_hour_angle.py
+
+diff --git a/pysolar/solar.py b/pysolar/solar.py
+index 376ef56..b4e80ef 100644
+--- a/pysolar/solar.py
++++ b/pysolar/solar.py
+@@ -212,7 +212,7 @@ def get_heliocentric_longitude(jme):
+ 
+ def get_hour_angle(when, longitude_deg):
+     solar_time = get_solar_time(longitude_deg, when)
+-    return 15 * (12 - solar_time)
++    return 15.0 * (solar_time - 12.0)
+ 
+ def get_incidence_angle(topocentric_zenith_angle, slope, slope_orientation, topocentric_azimuth_angle):
+     tza_rad = math.radians(topocentric_zenith_angle)
+diff --git a/test/test_hour_angle.py b/test/test_hour_angle.py
+new file mode 100644
+index 0000000..d06e046
+--- /dev/null
++++ b/test/test_hour_angle.py
+@@ -0,0 +1,82 @@
++'''
++Created on Aug 13, 2015
++
++@author: rene
++'''
++import unittest
++import datetime
++from pysolar.solar import *
++import pytz
++from pysolar.time import *
++
++
++class Test(unittest.TestCase):
++
++    def setUp(self):
++        pass
++
++    def tearDown(self):
++        pass
++
++    def testHourAngle(self):
++
++        '''
++        Example 1.6.1 from Book "Solar Engineering of Thermal Processes by Duffie and Beckman, fourth edition, Wiley 2013"
++
++        hour angle should be -22.5. (-22.5 % 360.0 = 337.5)
++        '''
++
++        tz = pytz.timezone('US/Central')
++        when = tz.localize(datetime.datetime(
++            2008,
++            2,
++            13,
++            10,
++            42))
++
++        latitude_deg = 43.076342
++        longitude_deg = -89.384448
++
++        '''
++        Hour angle from get_hour_angle
++        '''
++        ha = get_hour_angle(when, longitude_deg)
++
++        '''Hour angle as in pysolar.solar.get_altitude'''
++
++        # time-dependent calculations
++        jd = get_julian_solar_day(when)
++        jde = get_julian_ephemeris_day(when)
++        jce = get_julian_ephemeris_century(jde)
++        jme = get_julian_ephemeris_millennium(jce)
++        geocentric_latitude = get_geocentric_latitude(jme)
++        geocentric_longitude = get_geocentric_longitude(jme)
++        sun_earth_distance = get_sun_earth_distance(jme)
++        aberration_correction = get_aberration_correction(sun_earth_distance)
++        nutation = get_nutation(jce)
++        apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
++        true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
++
++        # calculations dependent on location and time
++        apparent_sun_longitude = get_apparent_sun_longitude(
++            geocentric_longitude,
++            nutation,
++            aberration_correction)
++        geocentric_sun_right_ascension = get_geocentric_sun_right_ascension(
++            apparent_sun_longitude,
++            true_ecliptic_obliquity,
++            geocentric_latitude)
++        local_hour_angle = get_local_hour_angle(
++            apparent_sidereal_time,
++            longitude_deg,
++            geocentric_sun_right_ascension)
++
++        reference_ha = -22.5 % 360.0
++
++        self.assertAlmostEqual(local_hour_angle % 360.0, ha % 360.0, places=0)
++        self.assertAlmostEqual(reference_ha % 360.0, ha % 360.0, places=0)
++
++
++if __name__ == "__main__":
++    #import sys;sys.argv = ['', 'Test.testName']
++    unittest.main()

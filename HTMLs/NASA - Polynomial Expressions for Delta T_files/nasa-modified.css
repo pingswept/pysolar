@@ -1,0 +1,1437 @@
+/* CSS Document - Last updated July 07, 2005 by Sumit Dutta */
+/* CSS Document - Last updated June 26, 2005 by Bryan Stephenson */
+
+/* Common Screen styles */
+
+/* If you want to make changes, please place your changes at the bottom of this stylesheet */
+
+/* Fix a bug in Mozilla when the user resizes window */
+html {
+   min-width:750px;
+   }
+/* END MOZILLA FIX */
+
+body {
+   font-family:Arial, Helvetica, sans-serif;
+   color: #000000;
+   /* background: #006699; */
+   /* background: #9CCEFF; */
+   /* background: #FFFFFF; */
+   background: #000000;
+   margin: 0;
+   margin-bottom: 10px;
+
+}
+/* text-align:center;
+ * font-size:12px;
+ * line-height:130%;
+ *}
+ */
+div {
+   text-align:left;
+}
+/*
+ * ol, ul {
+ *    padding-left:5px;
+ *    margin:5px 15px 15px 30px;
+ *    list-style-position:outside;
+ *    text-align:left;
+ * }
+ * li {
+ *    padding-bottom:5px;
+ * }
+ * dl {
+ *    padding-left:5px;
+ *    margin-top:5px;
+ *    margin-left:30px;
+ *    list-style-type:none;
+ *    text-align:left;
+ * }
+ * a:link, a:visited {
+ *    color:#006699;
+ *    text-decoration:none;
+ * }
+ * 
+ * a:hover {
+ *    text-decoration:underline;
+ * }
+ * p.nasa {
+ *    margin-top:0;
+ *    margin-bottom:15px;
+ * }
+ * 
+ * img.nasa {
+ *    border:0;
+ *    display:block;
+ * }
+ * 
+ * table.nasa, tbody.nasa, tr.nasa, td.nasa, th.nasa {
+ *    margin:0;
+ *    padding:0;
+ *    border:0;
+ *    background:#fff;
+ *    vertical-align:top;
+ * }
+ */
+img#eclipsebanner {
+   border: 0;
+   height: 131px;
+   width: 730px;
+}
+table {
+   margin-top: 10px;
+   margin-bottom: 10px;
+} 
+
+table.datataballcenter {
+   text-align: center;
+}
+
+table.datatab, table.datataballcenter {
+   border: 1px solid #666666;
+   margin-bottom:15px;
+   font-size: 10pt;
+   vertical-align: top;
+}
+
+table.datatab thead tr td, table.datataballcenter thead tr td { 
+   background:#99CCFF;
+   color:#000;
+   font-weight:bold;
+   padding: 3px 8px;
+   border-left: 1px solid #fff;
+   vertical-align: top;
+   text-align: center;
+}
+
+table.datatab thead tr.subhead td, table.datataballcenter thead tr.subhead td { 
+   background:#99CCFF;
+   color:#000;
+   font-weight:normal;
+   padding: 3px 8px;
+   border-left: 1px solid #fff;
+   vertical-align: top;
+   text-align: center;
+}
+
+table.datatab thead tr.theading td, table.datataballcenter thead tr.theading td { 
+   background:#99CCFF;
+   color:#000;
+   font-weight: 700;
+   font-size: 18pt;
+   text-decoration: underline;
+   padding: 3px 8px;
+   border-left: 1px solid #fff;
+   vertical-align: top;
+   text-align: center;
+}
+
+table.datatab tbody tr td, table.datataballcenter tbody tr td {
+   font-size: 10pt;
+   padding: 3px 8px;
+   border-left: 1px solid #D9D9D9;
+   vertical-align: top;
+}
+
+table.datatab tbody tr.odd td, table.datataballcenter tbody tr.odd td {
+   background-color: #edf3fe;
+   vertical-align: top;
+}
+
+div.mapmarker, div.mapmarker table tr td, div.mapmarker div table tr td {
+   font-size: 7pt;
+}
+
+div.mapmarker table thead tr td, div.mapmarker div table thead tr td {
+   font-weight: bold;
+}
+
+td.lighttxt {
+   color: #aaa;
+}
+
+h1.nasa {
+   font-size:20px;
+   font-weight:bold;
+   margin:0;
+   padding:0;
+}
+
+h2.nasa {
+   font-size:16px;
+   font-weight:bold;
+   margin:0;
+   padding:0;
+}
+
+h3.nasa, h4.nasa, h5.nasa, h6.nasa, h7.nasa, h8.nasa, h9.nasa {
+   font-size:12px;
+   font-weight:bold;
+   margin:0;
+   padding:0;
+}
+code {
+   color:#009900;
+   font-weight:bold;
+}
+
+code.cred {
+   color:#CC0000;
+   font-weight:bold;
+}
+
+code.equation {
+   color:#330099;
+   font-weight:bold;
+   font-family:Arial, Helvetica, sans-serif;
+}
+
+.txonly {
+   display: none;
+}
+
+.textonly { 
+   display:inline;
+}
+
+.imagesandtext {
+   display:none;
+}
+
+.hide {
+   display: none;
+}
+
+.hidden {
+   height: 0;
+   width: 0;
+   overflow: hidden;
+   position: absolute;
+   /* for the benefit of IE5 Mac */
+}
+
+.inline {
+   display:inline;
+}
+
+.left {
+   float:left;
+}
+
+.right {
+   float:right;
+}
+
+.linky {
+   padding-left:9px;
+   background:url(../image/nasa-linky-blue.gif) 0px 5px no-repeat;
+   font-size:11px;
+   line-height:13px;
+}
+
+/* Hide from Mac IE5 \*/
+* html .linky {
+   position:relative;
+   background-position:0px 4px;
+   height:1%;
+   border-bottom:1px solid #fff;
+   border-bot\tom:0;
+}
+/* FIX IE5 */
+   
+a:hover.linky {
+   text-decoration:underline;
+}
+
+/* Hide from Mac IE5 \*/
+* html a:hover.linky {
+   height:1%;
+}
+/* FIX IE5 */
+   
+.nolinky { 
+   padding-left:0px; 
+   background:inherit; 
+   font-size:12px; 
+   line-height:14px;
+}
+
+a:hover.nolinky { 
+   border-bottom:0px;
+   text-decoration:underline;
+}
+
+.nolinky a:hover { }
+
+.offsite {
+   padding-right:9px;
+   background:url(../image/nasa-offsite.gif) 0px 5px no-repeat;
+   line-height:13px;
+   background-position:right;
+}
+
+a:hover.offsite {
+   border-bottom:1px solid #006699;
+   /* text-decoration:none; */
+}
+
+div.clear {
+   clear:both;
+   margin:0;
+   border:0;
+   padding:0;
+}
+
+div.clearleft {
+   clear:left;
+   margin:0;
+   border:0;
+   padding:0;
+}
+
+div#paper, div#paperoneon, div#papertwoon, div#paperthreeon, div#paperfouron, div#paperfiveon, div#papersixon, div#papersevenon, div#papereighton {
+   background:#fff;
+   position:relative;
+   margin:10px auto;
+   padding:10px;
+   width:730px;
+}
+
+div#paperw, div#paperwoneon, div#paperwtwoon, div#paperwthreeon, div#paperwfouron, div#paperwfiveon, div#paperwsixon, div#paperwsevenon, div#paperweighton {
+   background:#fff;
+   position:relative;
+   min-width:730px;
+   margin-top: 10px;
+   margin-left: 0px;
+   margin-right: -1500px;
+   margin-bottom: 10px;
+   padding-top: 10px;
+   padding-left: 10px;
+   padding-right: 1500px;
+   padding-bottom: 10px;
+}
+
+* html div#paper, * html div#paperoneon, * html div#papertwoon, * html div#paperthreeon, * html div#paperfouron, * html div#paperfiveon, * html div#papersixon, * html div#papersevenon, * html div#papereighton {
+   width:750px;
+   w\idth:730px;
+   /* Box Model fix for IE5 Win */
+}
+
+/* NASA Header */
+
+#nasahead {
+   position:relative;
+   background:#ccc;
+   width:730px;
+   height:65px;
+   margin:0;
+   padding:0;
+}
+
+#nasahead img {
+   padding:0;
+   vertical-align:middle;
+   display:inline;
+}
+
+#nasaheadlinks {
+   position:absolute;
+   height:45px;
+   left:380px;
+   top:0;
+   color:#666;
+   font-size: 8.5pt;
+   padding:0 0 0 20px;
+   margin:0;
+   margin-top:9px;
+   border-left:1px solid #666;
+   line-height: 9pt;
+}
+
+#nasaheadlinks ul {
+   list-style:none;
+   margin:0;
+   padding:0;
+}
+
+#nasaheadlinks ul li {
+   padding-bottom:0;
+}
+
+#nasaheadlinks ul li a:link, #nasaheadlinks ul li a:visited {
+   text-decoration:none;
+   font-weight:normal;
+   color:#333;
+   font-size: 8.5pt;
+}
+
+#nasaheadlinks ul li a:hover {
+   text-decoration:underline;
+}
+
+#nasaheadlinks ul li#homeone { display:none;}
+
+#nasahead #searchbox {
+   position:absolute;
+   top:0;
+   right:0px;
+   height:65px;
+   width:178px;
+   background-color: #006699;
+}
+
+#nasahead form {
+   margin:0;
+   padding:0;
+}
+
+#nasahead #searchbox h3 {
+   margin:8px 0 2px 20px;
+   color: #FFFFFF;
+   font-size: 10pt;
+   font-weight: normal;
+   letter-spacing: 0px;
+}
+
+#nasahead input {
+   margin:0 0 0 20px;
+}
+
+#nasahead input.submitit {
+   margin:0 0 0 8px;
+   vertical-align:text-bottom;
+   width:38px;
+   height:20px;
+}
+
+/* END NASA HEADER */
+
+/* Main Page Headings */
+
+h1.box, h2.box {
+   border:0;
+   color: #FFFFFF;
+   padding-right: 10px;
+   padding-left: 10px;
+   width:710px; /* 730 - 20 (for the right and left padding) */
+   letter-spacing: 0px;
+   vertical-align: middle;
+}
+
+h1.box {
+   font: 12pt/30px Arial, Helvetica, sans-serif;
+   font-weight: 700; /* bold; 400; normal; */
+   background: #C91F16;
+   height:30px;
+   text-align: center;
+   text-transform: uppercase;
+}
+
+h2.box {
+   font: 10pt/30px Arial, Helvetica, sans-serif;
+   font-weight: 400; /* normal; */
+   letter-spacing: 0px;
+   vertical-align: middle;
+   background: #006699;
+   text-align: center;
+}
+
+/* h1.box ul, h2.box ul {
+ *    border:0;
+ *    height:30px;
+ *    width:730px;
+ *    list-style-type:none;
+ *    clear:left;
+ *    color: #FFFFFF;
+ * }
+ * h1.box ul li span, h2.box ul li span {
+ *    background: transparent url(../image/nasa-largeplus.gif) center left no-repeat;
+ *    text-transform: uppercase;
+ * }
+ * 
+ * h1.box ul li {
+ *    background: #C91F16;
+ *    float:left;
+ *    text-decoration:none;
+ *    color: #FFFFFF;
+ *    height: 30px;
+ *    font: 12pt/30px Arial, Helvetica, sans-serif;
+ *    font-weight: 400; /* normal; *
+ *    letter-spacing: 0px;
+ *    vertical-align: center;
+ * }
+ * 
+ * h2.box {
+ *    background: #006699;
+ *    float:left;
+ *    text-decoration:none;
+ *    color: #FFFFFF;
+ *    height: 30px;
+ *    display: block;
+ *    font: 10pt/30px Arial, Helvetica, sans-serif;
+ *    font-weight: 400; /* normal; *
+ *    letter-spacing: 0px;
+ *    vertical-align: center;
+ * }
+ */
+ 
+/* Main Nav */
+
+#menu, #footmenu {
+   border:0;
+   margin:0;
+   padding:0;
+   height:25px;
+   width:730px;
+   color:#fff;
+   background:#666;
+}
+
+#menu ul, #footmenu ul {
+   border:0;
+   margin:0;
+   padding:0;
+   height:25px;
+   width:730px;
+   list-style-type:none;
+   text-align:center;
+   clear:left;
+   color:#fff;
+}
+
+#menu ul li, #footmenu ul li {
+   display:block;
+   float:left;
+   text-align:center;
+   padding:0;
+   margin:0;
+}
+
+#menu ul li.one a { border-right: 1px solid #FFFFFF; }
+#menu ul li.two a { border-right: 1px solid #FFFFFF; }
+#menu ul li.three a { border-right: 1px solid #FFFFFF; }
+#menu ul li.four a { border-right: 1px solid #FFFFFF; }
+#menu ul li.five a { border-right: 0px solid #FFFFFF; }
+/* #menu ul li.six a { border-right: 0px; } */
+
+#footmenu ul li.one a { border-right: 1px solid #FFFFFF; }
+#footmenu ul li.two a { border-right: 1px solid #FFFFFF; }
+#footmenu ul li.three a { border-right: 1px solid #FFFFFF; }
+#footmenu ul li.four a { border-right: 1px solid #FFFFFF; }
+#footmenu ul li.five a { border-right: 0px; }
+
+#menu ul li a {
+   /* default for all nav buttons */
+   text-decoration:none;
+   color: #FFFFFF;
+   width: 145px;
+   height: 23px;
+   border-top: 2px solid #525252;
+   padding: 0;
+   display: block;
+   text-align: center;
+   line-height: 23px;
+   font: 12px/23px Arial, Helvetica, sans-serif;
+   font-weight: 700;
+   letter-spacing: 0px;
+}
+
+#footmenu ul li a {
+   text-decoration:none;
+   color: #FFFFFF;
+   width: 145px;
+   height: 23px;
+   border-bottom: 4px solid #FFFFFF; /* #525252; */
+   padding: 0;
+   display: block;
+   text-align: center;
+   line-height: 23px;
+   font: 12px/23px Arial, Helvetica, sans-serif;
+   font-weight: normal;
+   letter-spacing: 0px;
+}
+
+#menu ul li a:hover {
+   border-top: 2px solid #005985;
+   background: #006699;
+}
+#footmenu ul li a:hover {
+   border-bottom: 4px solid #FFFFFF; /* #9F1811; */
+   background: #C91F16;
+}
+
+#menu ul li a span {
+   background: transparent url(../image/nasa-largeplus.gif) center left no-repeat;
+   padding:0px 0px 0px 13px;
+   margin:0px;
+}
+#footmenu ul li a span {
+   /* background: transparent url(../image/footgoto.gif) center left no-repeat; */
+   background: transparent url(../image/nasa-largeplus.gif) center left no-repeat;
+   padding:0px 0px 0px 13px;
+   margin:0px;
+}
+
+* html #menu ul li a span, * html #footmenu ul li a span {
+   height:1%;
+   /* FIX IE5 */
+}
+
+/* BODY SWITCHER for ON states for each button. To turn a button on, give the body tag of the html document an ID name from the rules below. You should not need to modify these rules unless you go over 10 nav items */
+
+#paperoneon #menu ul li.one a, #papertwoon #menu ul li.two a, #paperthreeon #menu ul li.three a, #paperfouron #menu ul li.four a, #paperfiveon #menu ul li.five a, #papersixon #menu ul li.six a, #papersevenon #menu ul li.seven a, #papereighton #menu ul li.eight a,
+#paperwoneon #menu ul li.one a, #paperwtwoon #menu ul li.two a, #paperwthreeon #menu ul li.three a, #paperwfouron #menu ul li.four a, #paperwfiveon #menu ul li.five a, #paperwsixon #menu ul li.six a, #paperwsevenon #menu ul li.seven a, #paperweighton #menu ul li.eight a {
+   background: #006699;
+   border-top: 2px solid #005985;
+}
+
+#paperoneon #menu ul li.one a span, #papertwoon #menu ul li.two a span, #paperthreeon #menu ul li.three a span, #paperfouron #menu ul li.four a span, #paperfiveon #menu ul li.five a span, #papersixon #menu ul li.six a span, #papersevenon #menu ul li.seven a span, #papereighton #menu ul li.eight a span,
+#paperwoneon #menu ul li.one a span, #paperwtwoon #menu ul li.two a span, #paperwthreeon #menu ul li.three a span, #paperwfouron #menu ul li.four a span, #paperwfiveon #menu ul li.five a span, #paperwsixon #menu ul li.six a span, #paperwsevenon #menu ul li.seven a span, #paperweighton #menu ul li.eight a span {
+   background: transparent url(../image/nasa-largeminus.gif) center left no-repeat;
+}
+
+/* END Body Switcher for ON states for each section */
+
+/* END Main Nav */
+
+#headimage {
+   clear:both;
+   padding-top:3px;
+}
+
+#headimage img {
+   display:block;
+}
+
+#headimage h1 {
+   display:none;
+}
+
+/* Main Nav 2 */
+
+#menu2 {
+   border:0;
+   margin:0;
+   padding:0;
+   height:25px;
+   width:730px;
+   color:#fff;
+   background:#666;
+}
+
+#menu2 ul {
+   border:0;
+   margin:0;
+   padding:0;
+   height:25px;
+   width:730px;
+   list-style-type:none;
+   text-align:center;
+   clear:left;
+   color:#fff;
+}
+
+#menu2 ul li {
+   display:block;
+   float:left;
+   text-align:center;
+   padding:0;
+   margin:0;
+}
+
+#menu2 ul li a {
+   text-decoration:none;
+   color:#fff;
+   width:181px;
+   height:23px;
+   border-top:2px solid #525252;
+   border-right:1px solid #fff;
+   padding:0;
+   display:block;
+   text-align:center;
+   line-height:23px;
+   font:12px/23px Arial, Helvetica, sans-serif;
+   font-weight:700;
+   letter-spacing:-.0px;
+}
+
+#menu2 ul li a:hover {
+   height:23px;
+   color:#fff;
+   border-top:2px solid #005985;
+   background:#006699;
+}
+
+#menu2 ul li a span {
+   background: transparent url(../image/nasa-largeplus.gif) center left no-repeat;
+   padding:1px 0px 0px 13px;
+   margin:0px;
+}
+
+* html #menu2 ul li a span {
+   height:1%;
+   /* FIX IE5 */
+}
+
+#menu2 ul li#oneb a { width:191px;}
+#menu2 ul li#twob a { width:201px;}
+#menu2 ul li#threeb a { width:152px;}
+#menu2 ul li#fourb a { border-right:0; width:183px;}
+
+/* BODY SWITCHER for ON states for each button. To turn a button on, give the body tag of the html document an ID name from the rules below. You should not need to modify these rules unless you go over 10 nav items */
+
+div.onebon #menu2 ul li#oneb a, div.twobon #menu2 ul li#twob a, div.threebon #menu2 ul li#threeb a, div.fourbon #menu2 ul li#fourb a, div.fivebon #menu2 ul li#fiveb a, div.sixbon #menu2 ul li#sixb a, div.sevenbon #menu2 ul li#sevenb a, div.eightbon #menu2 ul li#eightb a, div.ninebon #menu2 ul li#nineb a, div.tenbon #menu2 ul li#tenb a {
+   background: #006699;
+   border-top:2px solid #005985;
+}
+
+div.onebon #menu2 ul li#oneb a span, div.twobon #menu2 ul li#twob a span, div.threebon #menu2 ul li#threeb a span, div.fourbon #menu2 ul li#fourb a span, div.fivebon #menu2 ul li#five a span, div.sixbon #menu2 ul li#sixb a span, div.sevenbon #menu2 ul li#sevenb a span, div.eightbon #menu2 ul li#eightb a span, div.ninebon #menu2 ul li#nineb a span, div.tenbon #menu2 ul li#tenb a span {
+   background: transparent url(../image/nasa-largeminus.gif) center left no-repeat;
+}
+
+/* END Body Switcher for ON states for each section */
+
+/* END Main Nav */
+
+/* CONTENT LAYOUT A DESCRIPTIONS */
+
+#contentwrapper {
+   position: relative;
+   min-width: 730px;
+   border-top: 5px solid #FFFFFF;
+}
+
+div.oneon #contentwrapper {
+   background: #FFFFFF;
+}
+
+/* Right Content styles */
+
+#rightcontent {
+   position:relative;
+   float:right;
+   text-align:left;
+   width:531px;
+   margin:0px 0px 3px 0px;
+}
+
+#rightcontent p, #rightcontent pre, #singlecolumn p, #singlecolumn pre {
+   margin:0px 15px 15px 0px;
+}
+
+/* #rightcontent p.bigtext, #singlecolumn p.bigtext {
+ *    font-size:16px;
+ *    line-height:20px;
+ *    font-weight:bold;
+ *    margin:15px 40px 15px 0px;
+ *    color:#006699;
+ *    text-align:left;
+ *    letter-spacing:-.2px;
+ * }
+ */
+#rightcontent h2.nasa, #singlecolumn h2.nasa {
+   border-bottom:1px solid #ccc;
+   color:#006699;
+   margin:0 15px 10px 0px;
+   padding-top:10px;
+   font-size: 10pt;
+   font-weight:bold;
+   /* Blue Header with underline in main content */
+}
+
+#rightcontent h3.headertype2, #singlecolumn h3.headertype2 {
+   position:relative;
+   margin:0 0 10px 0px;
+   font-size: 10pt;
+   font-weight:bold;
+   /* Black Header with Date to the right for articles */
+}
+
+/* HIDE FROM MAC IE - All browsers but Mac IE5 will move the date to the right \*/
+#rightcontent h3.headertype2 span, #singlecolumn h3.headertype2 span {
+   position:absolute;
+   right:15px;
+}
+/* */
+
+#rightcontent h1.nasa, #singlecolumn h1.nasa, #rightcontent h3.nasa, #singlecolumn h3.nasa, #rightcontent h4.nasa, #singlecolumn h4.nasa, #rightcontent h5.nasa, #singlecolumn h5.nasa, #rightcontent h6.nasa, #singlecolumn h6.nasa, #rightcontent input.nasa, #singlecolumn input.nasa {
+   margin:0px 15px 0px 0px;
+}
+
+#rightcontent .flush, #singlecolumn .flush {
+   margin:0;
+   padding:0;
+   border:0;
+}
+
+#rightcontent img, #singlecolumn img {
+   margin:0 15px 2px 0px;
+}
+
+#rightcontent table.nasa, #singlecolumn table.nasa {
+   margin-left:0px;
+}
+
+#rightcontent img.left, #singlecolumn img.left {
+   float:left;
+   margin:0 7px 5px 0px;
+}
+
+/* HIDE FROM MAC IE - Adjusts PC Explorer's STRANGE calculations for margins around floated images (trial and error)\*/
+* html #rightcontent img.left, #singlecolumn img.left {
+   margin:0 7px 5px 0px;
+}
+/* */
+
+#rightcontent img.right, #singlecolumn img.right {
+   float:right;
+   margin:0 15px 5px 7px;
+}
+
+/* HIDE FROM MAC IE - Adjusts PC Explorer's STRANGE calculations for margins around floated images (trial and error) \*/
+* html #rightcontent img.right, #singlecolumn img.right {
+   margin:0 8px 5px 7px;
+}
+/* */
+
+#rightcontent div.capleft, #singlecolumn div.capleft {
+   float:left;
+   width:250px;
+   margin:0 7px 5px 0px;
+}
+/* HIDE FROM MAC IE - Adjusts PC Explorer's STRANGE calculations for margins around floated images (trial and error) \*/
+* html #rightcontent div.capleft, * html #singlecolumn div.capleft {
+   margin:0 7px 5px 0px;
+}
+/* */
+
+#rightcontent div.capleft p, #singlecolumn div.capleft p {
+   margin:5px 5px 0px 5px;
+   font-size: 8.5pt;
+   color:#999;
+}
+
+#rightcontent div.capleft img, #singlecolumn div.capleft img {
+   margin:0px;
+   padding:0px;
+}
+
+#rightcontent div.capright, #singlecolumn div.capright {
+   float:right;
+   width:250px;
+   margin:0 15px 5px 7px;
+}
+   
+/* HIDE FROM MAC IE - Adjusts PC Explorer's STRANGE calculations for margins around floated images (trial and error) \*/
+* html #rightcontent div.capright, * html #singlecolumn div.capright {
+   margin:0 8px 5px 7px;
+}
+/* */
+
+#rightcontent div.capright p, #singlecolumn div.capright p {
+   margin:5px 5px 0px 5px;
+   font-size: 8.5pt;
+   color:#999;
+}
+   
+#rightcontent div.capright img,  #singlecolumn div.capright img {
+   margin:0px;
+   padding:0px;
+}
+
+/* HOLLY HACK, TO FIX 3PX IE FLOAT BUG \*/
+* html #rightcontent div.twocol div.urtwo {
+   height:1%;
+   padding-left:15px;
+   margin-left:-15px;
+}
+
+* html #rightcontent div.twocol div.urone {
+margin-right:-2px;
+}
+/* */
+
+#rightcontent div.twocol div.urone h2.nasa {
+   margin:0px 0px 10px 0px;
+}
+
+#rightcontent div.twocol div.urtwo h2.nasa {
+   margin:0px 15px 10px -15px;
+   padding-left:15px;
+}
+
+#rightcontent div.twocol div.clear {
+   height:1px;
+}
+
+#rightcontent div.twocol div.urone table.datatab {
+   width:338px;
+}
+
+/* END Three Column Layout, These divs go WITHIN the RIGHT CONTENT div */
+
+/* END Right Content Styles */
+
+/* LEFT CONTENT STYLES */
+
+#leftcontent {
+   position:relative;
+   padding:0;
+   margin:0;
+   width:184px;
+   float:left;
+}
+
+#leftcontent div.fact {
+   position:relative;
+   width:158px;
+   margin-left:10px;
+   padding:10px 0px 0px 0px;
+   border-bottom:1px solid #ccc;
+}
+
+#leftcontent div.fact h3 {
+   padding:0px 0px 3px 10px;
+   border-bottom:1px solid #ccc;
+   color:#006699;
+   margin:0px 0px 10px 0px;
+   font-size: 12pt;
+   font-weight:bold;
+}
+
+#leftcontent div.fact p {
+   text-align:left;
+   padding:0px 10px 10px 10px;
+   color:#006699;
+   font-size: 12pt;
+   line-height:16px;
+   margin:0;   
+}
+
+#contentwrapper #leftcontent ul.facta li {
+   margin-top:10px;
+}
+#contentwrapper #leftcontent ul.facta li a {
+   color:#006699;
+   font-size: 8.5pt;
+}
+
+#leftcontent h3 {
+   margin:0px 10px 0px 20px;
+}
+
+/* Left NAV Descriptions */
+
+div#leftnav {
+   z-index:10;
+   width:179px;
+   margin:0px 0px 15px 0px;
+}
+
+div#leftnav ul {
+   list-style:none;
+   padding:0;
+   margin:0;
+   border:0;
+}
+
+div#leftnav ul li {
+   text-align:left;
+   margin:0;
+   padding:0;
+   font: 12px/14px Arial, Helvetica, sans-serif;
+   background:#b7b6b6 url(../image/nasa-smallplus.gif) 12px 10px no-repeat;
+   border-bottom:1px solid #fff;
+}
+
+div#leftnav ul li a {
+   display:block;
+   font-weight:bold;
+   padding:5px 5px 5px 24px;
+   text-decoration:none;
+   width:150px;
+   color:#333;
+}
+
+* html div#leftnav ul li a {
+   width:179px;
+   w\idth:150px;
+   /* Box Model fix for IE Win */
+}
+
+div#leftnav ul li a:hover {
+   background:#666 url(../image/nasa-smallplus-over.gif) 12px 10px no-repeat;
+   color:#fff;
+}
+
+div#leftnav ul#subnav {
+   border:3px solid #006699;
+   font:11px/13px Arial, Helvetica, sans-serif;
+}
+div#leftnav ul#subnav li {
+   background-color:#b7b6b6;
+   border:0px;
+   font:11px/13px Arial, Helvetica, sans-serif;
+}
+div#leftnav ul#subnav li a {
+   display:block;
+   font-weight:normal;
+   padding:2px 5px 2px 30px;
+   text-decoration:none;
+   color:#fff;
+   width:138px;
+}
+div#leftnav ul#subnav li a:hover {
+   background:#66ccff;
+   color:#fff;
+}
+
+div#lefttitle {
+   position:relative;
+   height:124px;
+   width:179px;
+   color:#fff;
+   background:#006699;
+   padding:0;
+   margin:0;
+}
+
+div#lefttitle p.homeabs {
+   position:absolute;
+   top:10px;
+   left:22px;
+   color:#fff;
+   text-decoration:none;
+}
+
+div#lefttitle a.homeabs {
+   position:absolute;
+   top:10px;
+   left:22px;
+   color:#fff;
+   text-decoration:none;
+}
+
+div#lefttitle a.homeabs:hover {
+   text-decoration:underline;
+}
+
+div#lefttitle h2.nasa {
+   position:absolute;
+   bottom:0;
+   left:0;
+   margin:0;
+   width:150px;
+   color:#fff;
+   font-weight:bold;
+   font-size: 14pt;
+   padding:0px 5px 10px 24px;
+   border-bottom:1px solid #fff;
+}
+
+* html div#lefttitle h2.nasa {
+   width:179px;
+   w\idth:150px;
+   /* Box Model fix for IE Win */
+}
+
+div#lefttitle h2.nasa a {
+   color:#fff;
+   text-decoration:none;
+}
+
+div#lefttitle h2.nasa a:hover {
+   color:#fff;
+   text-decoration:underline;
+}
+
+/* BODY SWITCHER for ON states for the LEFT NAV.  To turn a button on, give the body tag of the html document a CLASS name from the rules below. */
+
+body.lnoneon div#leftnav li#lnone {
+   background:#006699 url(../image/nasa-smallminus-active.gif) 12px 10px no-repeat;
+   color:#fff;
+}
+
+body.lnoneon div#leftnav li#lnone a {
+   color:#fff;
+}
+
+body.lnoneon div#leftnav li#lnone a:hover {
+   background:#006699 url(../image/nasa-smallminus-active.gif) 12px 10px no-repeat;
+   color:#fff;
+}
+
+body.lnoneon div#lefttitle h2.nasa {
+   margin:0 0 0 24px;
+   color:#fff;
+   font-weight:bold;
+   font-size: 14pt;
+   padding:0px 5px 10px 0px;
+   border-bottom:1px solid #fff;
+}
+
+* html body.lnoneon div#lefttitle h2.nasa {
+   width:155px;
+   w\idth:150px;
+   /* Box Model fix for IE Win */
+}
+
+body.lntwoon div#leftnav li#lntwo, body.lnthreeon div#leftnav li#lnthree, body.lnfouron div#leftnav li#lnfour, body.lnfiveon div#leftnav li#lnfive, body.lnsixon div#leftnav li#lnsix, body.lnsevenon div#leftnav li#lnseven, body.lneighton div#leftnav li#lneight, body.lnnineon div#leftnav li#lnnine, body.lntenon div#leftnav li#lnten, body.lneleveneon div#leftnav li#lneleven, body.lntwelveon div#leftnav li#lntwelve, body.lnthirteenon div#leftnav li#lnthirteen, body.lnfourteenon div#leftnav li#lnfourteen, body.lnfifteenon div#leftnav li#lnfifteen {
+   background:#006699 url(../image/nasa-smallminus-active.gif) 12px 10px no-repeat;
+   color:#fff;
+}
+
+body.lntwoon div#leftnav li#lntwo a, body.lnthreeon div#leftnav li#lnthree a, body.lnfouron div#leftnav li#lnfour a, body.lnfiveon div#leftnav li#lnfive a, body.lnsixon div#leftnav li#lnsix a, body.lnsevenon div#leftnav li#lnseven a, body.lneighton div#leftnav li#lneight a, body.lnnineon div#leftnav li#lnnine a, body.lntenon div#leftnav li#lnten a, body.lneleveneon div#leftnav li#lneleven a, body.lntwelveon div#leftnav li#lntwelve a, body.lnthirteenon div#leftnav li#lnthirteen a, body.lnfourteenon div#leftnav li#lnfourteen a, body.lnfifteenon div#leftnav li#lnfifteen a {
+   color:#fff;
+}
+
+body.lntwoon div#leftnav li#lntwo a:hover, body.lnthreeon div#leftnav li#lnthree a:hover, body.lnfouron div#leftnav li#lnfour a:hover, body.lnfiveon div#leftnav li#lnfive a:hover, body.lnsixon div#leftnav li#lnsix a:hover, body.lnsevenon div#leftnav li#lnseven a:hover, body.lneighton div#leftnav li#lneight a:hover, body.lnnineon div#leftnav li#lnnine a:hover, body.lntenon div#leftnav li#lnten a:hover, body.lneleveneon div#leftnav li#lneleven a:hover, body.lntwelveon div#leftnav li#lntwelve a:hover, body.lnthirteenon div#leftnav li#lnthirteen a:hover, body.lnfourteenon div#leftnav li#lnfourteen a:hover, body.lnfifteenon div#leftnav li#lnfifteen a:hover {
+   background:#006699 url(../image/nasa-smallminus-active.gif) 12px 10px no-repeat;
+}
+
+/* END Body Switcher for ON states for the LEFT NAV. */
+
+/* END left NAV */
+
+#leftcontent p, pre, blockquote {
+   margin:0px 10px 15px 20px;
+}
+
+#leftcontent ul.linklist {
+   margin:0px 10px 15px 18px;
+}
+
+#leftcontent ul.linklist li {
+   margin-bottom:3px;
+}
+   
+#leftcontent ul.linklist li a {
+   color:#000;
+   font-size: 8.5pt;
+   line-height:14px
+}
+   
+#leftcontent h2.nasa {
+   border-bottom:1px solid #ccc;
+   color:#006699;
+   margin:0px 5px 10px 0px;
+   padding:10px 5px 0px 20px;
+   font-size: 10pt;
+   font-weight:bold;
+}
+
+#leftcontent h3 {
+   color:#000;
+   margin:0px 10px 10px 20px;
+   font-size: 10pt;
+   font-weight:bold;
+}
+
+/* END LEFT CONTENT STYLES */
+
+/* END CONTENT LAYOUT A DESCRIPTIONS */
+
+/* CONTENT LISTS. For several different lists and feature sets */
+/* Smaller Image list 64X48, Image floats left with content to the right of it */
+
+#rightcontent div.smfeature {
+   position:relative;
+   margin:0px 0px 0px 0px;
+   padding:0;
+}
+
+#rightcontent div.smfeature div.theimg {
+   float:left;
+   margin:0;
+   padding:0px 0px 15px 0px;
+   width:64px;
+}
+
+#rightcontent div.smfeature div.theimg img {
+   margin:0;
+   padding:0;
+}
+
+#rightcontent div.smfeature dl {
+   padding:0px 0px 15px 0px;
+   margin:0px 15px 0px 74px;
+}
+
+#rightcontent div.smfeature dt {
+   padding:0;
+   margin:0;
+   font-weight:bold;
+}
+
+#rightcontent div.smfeature dd {
+   padding:0;
+   margin:0;
+}
+
+#rightcontent div.smfeature dd a {
+   display:inline;
+}
+
+/* HOLLY HACK, TO FIX 3PX PC IE FLOAT BUG, and HIDE FROM MAC IE \*/
+* html #rightcontent div.smfeature div.theimg {
+   margin-right:7px;
+}
+* html #rightcontent div.smfeature dl {
+   height:1%;
+   margin-left:0;
+}
+/* END HOLLY HACK, STOP HIDING FROM MAC IE */
+
+/* END Smaller Image list 64X48 */
+
+/* Larger Image List 100X75, Image floats left with content to the right of it */
+
+#rightcontent div.lgfeature {
+   position:relative;
+   margin:0;
+   padding:0;
+}
+
+#rightcontent div.lgfeature div.theimg {
+   float:left;
+   margin:0;
+   padding:0px 0px 15px 0px;
+   width:100px;
+}
+
+#rightcontent div.lgfeature div.theimg img {
+   margin:0;
+   padding:0;
+}
+
+#rightcontent div.lgfeature dl {
+   padding:0px 0px 15px 0px;
+   margin:0px 15px 0px 110px;
+}
+
+#rightcontent div.lgfeature dt {
+   padding:0;
+   margin:0;
+   font-weight:bold;
+}
+
+#rightcontent div.lgfeature dd {
+   padding:0;
+   margin:0;
+}
+
+#rightcontent div.lgfeature dd a {
+   display:inline;
+}   
+
+/* HOLLY HACK, TO FIX 3PX PC IE FLOAT BUG, and HIDE FROM MAC IE \*/
+* html #rightcontent div.lgfeature div.theimg {
+   margin-right:7px;
+}
+
+* html #rightcontent div.lgfeature dl {
+   height:1%;
+   margin-left:0;
+}
+/*  END HOLLY HACK, STOP HIDING FROM MAC IE */
+
+/* END Larger Image List 100X75 */
+
+/* All other definition Lists */
+
+#rightcontent dl {
+   position:relative;
+   margin:0px 0px 10px 0px;
+   padding:0;
+}
+
+#rightcontent dl dt a {
+   text-decoration:none;
+   color:#000;
+}
+
+#rightcontent dl dt a:hover {
+   text-decoration:none;
+   color:#000;
+}
+
+#rightcontent dl dt {
+   margin:0px 15px 0px 0px;
+   padding:0;
+   font-weight:bold;
+}
+
+#rightcontent dl dd {
+   margin:0px 15px 0px 0px;
+   padding:0;
+}
+
+.smallfoot {
+   font-size: 8.5pt;
+}
+
+/* BEGIN Link List - Unordered List with the + sign in front of the links */
+ul.nasalinklist {
+   position:relative;
+   margin:0px 0px 10px 0px;
+   list-style-type:none;
+   padding:0;
+}
+   
+ul.nasalinklist li {
+   margin:0px 15px 0px 0px;
+   padding:0;
+}
+
+ul.nasalinklist li a {
+   display:block;
+   padding-left:9px;
+   background:url(../image/nasa-linky-blue.gif) 0px 5px no-repeat;
+   font-size: 8.5pt;
+   line-height:13px;
+}
+/* Hide from IE MAC \*/
+* html ul.nasalinklist li a {
+   background-position:0px 4px;
+   height:1%;
+   border-bottom:1px solid #fff;
+   border-bot\tom:0;
+}
+/* FIX IE5 */
+
+ul.nasalinklist li a:hover {
+   text-decoration:underline;
+}
+
+/* Hide from IE MAC\*/
+* html ul.nasalinklist li a:hover {
+   height:1%;
+}
+/* FIX IE5 */
+
+dd ul.linklist li {
+   margin:0px;
+}
+/* End Link List - Unordered list */
+/* END CONTENT LISTS */
+
+/* EXAMPLES, INDENTS, CODE ECT */
+
+div.example {
+   margin-bottom:15px;
+   margin-left:25px;
+}
+
+div#rightcontent div.example h3 {
+   margin-bottom:5px;
+}
+
+/* END EXAMPLES, INDENTS, CODE ECT */
+
+/* GALLERY */
+div#gallery {
+   margin:15px 0px;
+}
+   
+* html div#gallery { height:1%; }
+
+div#gallery img {
+   margin:0px 15px 5px 0px;
+   float:left;
+   width:100px;
+   height:75px;
+}
+/* Hide from IE MAC */
+div#gallery img {
+   margin:0px 12px 5px 0px;
+}
+/* */
+
+/* END GALLERY */
+
+/* Common Footer */
+
+#pfoot {
+   display: none;
+}
+
+#nasafoot {
+   position:relative;
+   background:#ccc;
+   width:730px;
+   height:65px;
+   clear:both;
+   margin-top:3px;
+}
+
+#nasafoot ul li {
+   margin-left: 9px;
+   text-indent: -9px;
+}
+
+#nasafoot img {
+   display:inline;
+   vertical-align:middle;
+   padding-right:10px;
+}
+
+#nasafootr {
+   position:absolute;
+   left:410px;
+   top:3px;
+}
+
+#nasafootplus {
+   position:absolute;
+   left:130px;
+   top:0;
+   color:#666;
+   font-size: 8.5pt;
+}
+
+#nasafootplus ul {
+   list-style:none;
+}
+
+#nasafootplus ul li {
+   padding-bottom:0;
+}
+
+#nasafootplus ul li a:link, #nasafootplus ul li a:visited {
+   text-decoration:none;
+   font-weight:normal;
+   color:#666;
+   font-size: 8.5pt;
+}
+
+#nasafootplus ul li a:hover {
+   text-decoration:underline;
+}
+
+#nasafootlinks {
+   position:absolute;
+   left:460px;
+   top:0;
+   color:#666;
+   font-size: 8.5pt;
+}
+
+#nasafootlinks ul {
+   list-style:none;
+}
+
+#nasafootlinks ul li {
+   padding-bottom: 0px;
+}
+
+#nasafootlinks ul li a:link, #nasafootlinks ul li a:visited {
+   /* text-decoration:none; */
+   font-weight:normal;
+   color: #666666;
+   font-size: 8.5pt;
+}
+
+#nasafootlinks ul li a:hover {
+   text-decoration:underline;
+   color: #888888;
+}

@@ -15,8 +15,8 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-"""Support functions for horizon calculation
-
+"""
+Support functions for horizon calculation
 """
 import math
 import datetime
@@ -25,18 +25,26 @@ from . import radiation
 from . import solar
 
 def datetime_range(start_datetime, end_datetime, step_minutes):
-    '''yields a sequence of datetimes evenly spaced apart by step_minutes.'''
+    """
+    yields a sequence of datetimes evenly spaced apart by step_minutes.
+    """
     step = step_minutes * 60
     time_list = []
     span = end_datetime - start_datetime
     dt = datetime.timedelta(seconds = step)
-    for n in range((span.days * constants.seconds_per_day + span.seconds) // step) :
+    for n in range((span.days * constants.SECOND_PER_DAY + span.seconds) // step):
         yield start_datetime + dt * n
     #end for
 #end datetime_range
 
-def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature = constants.standard_temperature, pressure = constants.standard_pressure):
-    '''simulates the motion of the sun over a time span and location of your choosing.
+def simulate_span(
+        latitude_deg, longitude_deg, horizon,
+        start_datetime, end_datetime, step_minutes,
+        elevation = 0,
+        temperature = constants.STANDARD_TEMPERATURE,
+        pressure = constants.STANDARD_PRESSURE):
+    '''
+    simulates the motion of the sun over a time span and location of your choosing.
 
     The start and end points are set by datetime objects, which can be created with
     the standard Python datetime module like this:
@@ -44,21 +52,24 @@ def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_date
     start = datetime.datetime(2008, 12, 23, 23, 14, 0)
     '''
     alt_zero = 380
-    for time in datetime_range(start_datetime, end_datetime, step_minutes) :
+    for time in datetime_range(start_datetime, end_datetime, step_minutes):
         alt = solar.get_altitude(latitude_deg, longitude_deg, time, elevation, temperature, pressure)
         azi = solar.get_azimuth(latitude_deg, longitude_deg, time, elevation)
         shade = horizon[round(azi)]
-        if shade < alt_zero - round(alt_zero * math.sin(math.radians(alt))) :
+        if shade < alt_zero - round(alt_zero * math.sin(math.radians(alt))):
             rad = 0
-        else :
-            rad = radiation.get_radiation_direct(time, alt)
+        else:
+            rad = radiation.radiation_direct(time, alt)
         #end if
         yield time, alt, azi, rad, shade
     #end for
 #end simulate_span
 
-#       xs = shade.GetXShade(width, 120, azimuth_deg)
-#       ys = shade.GetYShade(height, 120, altitude_deg)
-#       shaded_area = xs * ys
-#       shaded_percentage = shaded_area/area
-# import simulate, datetime; s = datetime.datetime(2008,1,1); e = datetime.datetime(2008,1,5); simulate.simulate_span(42.0, -70.0, s, e, 30)
+#       xsv = shade.GetXShade(width, 120, azimuth_deg)
+#       ysv = shade.GetYShade(height, 120, altitude_deg)
+#       shaded_area = xsv * ysv
+#       shaded_percentage = shaded_areav / varea
+# import simulate, datetime
+# start = datetime.datetime(2008,1,1)
+# end = datetime.datetime(2008,1,5)
+# simulate.simulate_span(42.0, -70.0, start, end, 30)

@@ -1,0 +1,243 @@
+/*
+ * NASA Standards CSS Importer (now in header.js)
+ * (imports styles from nasa.css)
+ * A note: pick either the original (the first import statement) or the modified (the second)
+ * Another important note: these import statements will not work correctly since they require
+ * the <link> tag's "media" attribute to function with the website properly--hence they
+ * are to be left out unless absolutely necessary (change required)
+ * // @import url(nasa.css);
+ * @import url(nasa-modified.css); // main NASA styles
+ * @import url(nasa-everyone.css); // accessibility mods
+ * @import url(nasa-handheld.css); // in case the user is using a handheld device browser
+ * @import url(nasa-print.css); // display mods for printing
+ */
+
+/* CSS File for NASA Eclipse Website */
+/* A note: the first selector of every indented
+ * block set is the default method for creating
+ * that type of element and displaying that.
+ */
+
+body {
+   background-color: #FFFFFF;
+   color: #000000;
+   text-align: left;
+   text-decoration: none;
+   font-size: 9pt;
+   font-weight: normal;
+}
+
+/* Links */
+
+a:link {
+   color: #C91F16;
+   font-size: 9pt;
+}
+a:visited {
+   color: #BB7900; /* #EEAD00; */
+   font-size: 9pt;
+}
+a:hover, a:active {
+   color: #CC6666;
+   font-size: 9pt;
+}
+/* a.null:link, a.null:visited, a.null:active, a.null:hover { */
+a.null {
+   font-size: 9pt;
+   font-weight: 700;
+   text-decoration: none;
+   color: #000000;
+}
+a.hlink {
+   font-size: 11pt;
+}
+
+/* Text Content */
+
+p {
+   font-size: 9pt;
+}
+p.quote, .indentquote {
+   text-align: left;
+}
+p.footnote {
+   padding-left: 40px;
+   padding-right: 40px;
+}
+
+p.author {
+   text-align: right;
+   font-style: italic;
+}
+p.caption {
+   font-size: 9pt;
+   text-align: center;
+}
+.indent, p.indent {
+   padding-left: 100px;
+}
+pre.indent {
+   padding-left: 50px;
+}
+.indentquote {
+   padding-left: 60px;
+   padding-right: 60px;
+}
+.indentquote:first-letter, blockquote:first-letter, span.inttxt, .emph:first-letter {
+   float: left;
+   font-size: 18pt;
+   /* line-height: 10px; */ /* can be a percent too */
+}
+.quote:first-letter {
+   font-size: 14pt;
+   vertical-align: middle;
+}
+.emph:first-letter {
+   font-size: 14pt;
+   float: none;
+}
+pre {
+   margin-left: 0em;
+   font-size: 9pt;
+}
+span.prehead, .prehead {
+   font-weight: normal;
+   color: #006699;
+}
+i i, .linklist a i { /* apparently doesn't work with older browsers */
+   font-style: normal;
+}
+
+/* Headings */
+
+h1, h2, h3, h4, h5, h6 {
+   font-weight: bold;
+}
+h1 { /* use for titles */
+   font-size: 14pt;
+}
+h2 { /* use for headings */
+   font-size: 12pt;
+}
+h3, h3 a { /* use for links (esp. bottom return links) */
+   font-size: 12pt;
+}
+h4 { /* user for table headings (in reports such as OH) */
+   font-size: 10pt;
+}
+h5 {
+   font-size: 9pt;
+}
+h6 { /* exception: use for big left-aligned non-bolded headings */
+   font-size: 16pt;
+   /* line-height: 10px; */
+   font-weight: normal;
+   display: inline;
+}
+
+table {
+   font-size: 9pt;
+}
+
+/* Images and Horizontal Rules */
+
+img {
+   /* display: inherit; */ /* switch to "none" to disable images */
+   border: 0px;
+}
+hr.blue, hr#blue, hr.bluehead, hr.bluesmall, hr.bluelarge, hr.bluefoot {
+   /* use the ID (#) only if it's the only <hr /> on the page */
+   color: #006699;
+   background-color: #006699;
+   width: 730px;
+   border: 0px;
+   height: 4px;
+   text-align: center;
+   padding: 0pt; /* 10pt or 12pt if not */
+}
+
+/* Lists */
+
+ul, ul ul ul ul {
+   list-style-type: disc;
+   font-size: 9pt;
+}
+ul ul, ul ul ul ul ul {
+   list-style-type: circle;
+}
+ul ul ul, ul ul ul ul ul ul {
+   list-style-type: square;
+}
+.eclipselist, .linklist, .emphlist, .linklistbold, .emphlistbold {
+   list-style-type: none;
+   list-style-position: outside;
+   list-style-image: none;
+   /* list-style-image: ../image/blank.jpg; */
+   font-weight: normal;
+}
+.eclipselist, .linklist, .linklistbold {
+   text-align: center;
+}
+.linklistbold, .emphlistbold, .eclipselist {
+   font-weight: bold;
+}
+.emphlistbold {
+   list-style-type: square;
+   text-align: left;
+}
+ul.emphlist ul {
+   list-style-type: none;
+   /* list-style-type: circle; */
+}
+ul.emphlist ul ul {
+   list-style-type: square;
+}
+ul.emphlist ul ul ul {
+   list-style-type: square;
+}
+.emphlist, ul.emphlist ul, ul.emphlist ul ul, ul.emphlist ul ul ul {
+   display: block;
+   text-align: left;
+}
+.emphsub {
+   list-style-type: none;
+   /* list-style-type: circle; */
+}
+.linklist, h3 a {
+   font-style: italic;
+   font-weight: bold;
+   font-size: 12pt;
+}
+.ref, .ref a {
+   font-size: 8pt;
+   text-indent: 0;
+   margin-left: 0;
+}
+.note, .note a {
+   font-size: 8pt;
+   margin-left: 18px;
+}
+.centerlink {
+   text-align: center;
+}
+/*
+ * dt {
+ *    text-decoration: none;
+ *    font-style: italic;
+ *    text-indent: none;
+ * }
+ * dd {
+ *    text-decoration: none;
+ *    font-style: none;
+ *    text-indent: 1em;
+ * }
+ * ul, ol, dl {
+ *    font-size: 12pt;
+ * }
+ * ul li {
+ *    list-style-type: square;
+ * }
+ * ol li {
+ *    list-style-type: decimal;
+ * }
+ */

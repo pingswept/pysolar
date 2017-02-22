@@ -1,0 +1,141 @@
+/*                                                                */
+/* Cascading Style Sheet for AsA Online Section A Occultations    */
+/*                                                                */
+/* Filename  asao_SecA_occns.css                                  */
+/* Date      2008 April                                           */
+/* Author    CYH                                                  */
+/*                                                                */
+/* -------------------------------------------------------------- */
+/*                                                                */
+#pagesetup {
+            width:        740px;
+            margin-left:  0px;
+            margin-right: 0px;
+           }
+/* --------------------------------------------------------------- */
+/*                                                                 */
+/* Table for the year */
+.asa_occns {
+              width:          840px;
+              margin-right:   auto;
+              margin-left:    auto;
+              margin-bottom:  2em;
+              text-align:     left;
+              vertical-align: top;                
+             }
+/* Headings for table (months_, bold and larger */
+.tcb {
+      text-align:       center;
+      vertical-align:   top;
+      background-color: #ccccff;
+      color:            black;
+      font-size:        80%;
+      font-weight:      bold;
+     }
+/* Row of the table */
+.tcc {
+      text-align:       left;
+      vertical-align:   top;
+      background-color: #e6e6fa;
+      font-size:        80%;
+      }
+/* Planet entry                                     */
+.plan {
+       width:            130px;
+       background-color: white;
+       font-weight:      bold;  
+       color:            blue; 
+       border:           10px solid white;  
+       border-spacing:   10px;    
+      }
+/* Star entry                                       */
+.star { 
+       width:            130px;
+       background-color: white;
+       color:            blue;
+       font-weight:      bold;
+       font-style:       italic;
+       border:           10px solid white; 
+       border-spacing:   10px;    
+      }
+/* Minor Planet                                     */
+.mpln {
+       width:            130px;
+       color:            blue;
+       border:           10px solid white;
+       border-spacing:   10px;    
+      }
+/* An empty cell                                    */
+.empt {
+       width:            130px;
+       background-color: white;
+       border:           10px solid white;
+       border-spacing:   10px;    
+      }
+/*                                                                 */
+/* --------------------------------------------------------------- */
+/* Links                                                           */
+/*                                                                 */
+a:link    {color: Navy;}                  
+a:hover   {color: blue;}                  
+a:visited {color: #999900;}               
+/*                                                                 */
+/* --------------------------------------------------------------- */
+/*                                                                 */
+/* Adjust height of superscripts                                   */
+sup {
+     font-size:      80%;           /* changed from smaller to 80% */
+     vertical-align: baseline;
+     position:       relative;
+     bottom:         0.5em;
+    }
+/*                                                                 */
+/* Occn maps window                                                */
+.occnmap {
+         width:       740px;
+         border:      5px solid #999900;
+         text-align:  justify;
+         font-family: Arial, Helvetica, sans-serif;
+         font-size:   16px;
+         padding:     0px 10px 0px 10px;
+         display:     block;
+        }
+/*                                                                 */
+/* Occn map heading                                                */ 
+.occnmh{
+       width:            720px;
+       font-size:        150%;
+       text-align:       center;
+       background-color: #333366;
+       padding:          6px 0px 6px 0px;
+       color:            white;
+       }
+       
+#occnexplcol {
+             width: 269px;
+}
+/*
+/* --------------------------------------------------------------- */
+/*                                                                 */
+/* Close Windows button */
+
+input.closew {
+              width:               269px;
+              color:               #000000;
+              background-color:    #ccccff;   /* same as menu background */
+              font-size:           100%;
+              font-weight:         normal;
+              padding:             3px;  
+              margin-top:          0px;
+              border:              1px solid;
+              border-top-color:    #666666;   /* same as menu border */
+              border-left-color:   #666666;
+              border-right-color:  #666666;
+              border-bottom-color: #666666;
+              cursor:              pointer;
+             }
+
+/* yuk-green border is #999900 and dark blue surround is #333366        */
+/*                                                                 */
+/* --------------------------------------------------------------- */
+/* --------------------------------------------------------------- */

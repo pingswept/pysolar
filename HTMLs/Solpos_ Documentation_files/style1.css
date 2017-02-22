@@ -1,0 +1,26 @@
+A.hide {text-decoration: none}
+A.visited {color: #000000}
+
+H1 { font-size: 50pt; font-weight: 900 }
+H2 { font-size: 40pt; font-weight: 800 }
+H3 { font-size: 34pt; font-weight: 700 }
+H4 { font-size: 30pt; font-weight: 600 }
+H5 { font-size: 20pt; font-weight: 500 }
+H6 { font-size: 16pt; font-weight: 400 }
+H7 { font-size: 14pt; font-weight: 300 }
+
+.title { color:#000000; font-family: textile, monaco, apple }
+.title2 { font-family: textile, monaco, apple }
+.title3 { color:#B22222; font-family: textile, monaco, apple }
+.link { color: #2F4F4F; font-family: textile, monaco, apple }
+.link2 { color: #2F4F4F }
+.header1 { color:#B22222; font-family: textile, monaco, apple }
+.header2 { color:#000000; font-family: textile, monaco, apple }
+.header3 { color:#3CB371; font-family: textile, monaco, apple }
+.header4 { color:#0000CD; font-family: textile, monaco, apple }
+.header5 { color:#007700; font-family: textile, monaco, apple }
+.header6 { color:#B22222; font-family: techno, monaco, apple }
+.header7 { color:#111111; font-family: techno, monaco, apple }
+.spectra1 { color:#CC4500; font-family: textile, monaco, apple }
+.pvwatts  { color:#00509A;  font-family: textile, monaco, apple }
+.pvwatts2 { color:#003078;  font-family: copperplate, techno, apple }

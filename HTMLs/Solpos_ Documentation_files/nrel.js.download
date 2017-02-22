@@ -1,0 +1,219 @@
+//NREL GA Tracking Code
+//ver 2.1 (2/22/2016)
+'use strict';
+
+(function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
+})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+var GATrackerObject = {
+    profileID : "UA-24106045-1",
+    extraTrackerProfileID : "",
+    cookieDomain : "nrel.gov",
+    onsiteSearchHost : "search2.nrel.gov",
+    trackOnsiteSearch : false,
+    onsiteSearchTerm : "",
+    modPageURI : "",
+    primaryTracker : {},
+    extraTracker : {},
+
+    downloadFileExtensions : ["asf", "asx", "avi", "bkp", "csv", "dat", "dmg", "doc", "docx", "exe", "inp", "jpg", "m3u", "mov", "mp3", "mp4"
+      , "mpg", "pdf", "ppt", "pptx", "rep", "sam", "sum", "swf", "tdb", "tfw", "wax", "wma", "wmv", "wvx", "xls", "xlsm", "xlsx", "zip", "zsam"],
+
+    initGATrackers : function() {
+       window.ga(function(){
+         window.ga('create', GATrackerObject.profileID, {
+           'name': 'nrelGovTracker',
+           'cookieDomain': GATrackerObject.cookieDomain,
+           'cookieName': 'nrelGovGA'
+         });
+       });
+    },
+
+    setGACustomVars : function() {
+       if (window && window.DOE_GA_STATS) {
+          var cvArr = ["_setCustomVar"];
+          for (var j=1; j<DOE_GA_STATS.length; j++) {
+             var pArr = DOE_GA_STATS[j];
+             if (typeof pArr !== "undefined" && pArr.length > 2) {
+               /*
+                var modArr = cvArr.concat([j],pArr);
+                _gaq.push(modArr);
+               */
+               window.ga('set', 'dimension'+j, pArr[1]);
+             }
+          }
+       }
+    },
+
+    //method to track onsite search
+    setOnsiteSearch : function() {
+       var referrerURL = document.referrer;
+       var referrerHost = referrerURL.split("/")[2];
+       if (referrerHost === this.onsiteSearchHost) {
+          var queryString = referrerURL.split("?")[1].split("&");
+          for (var i=0; i<queryString.length; i++) {
+             var keyValue = queryString[i].split("=");
+             if (keyValue[0] === "qt") {
+                this.trackOnsiteSearch = true;
+                this.onsiteSearchTerm = keyValue[1];
+                this.modPageURI = "osk=" + keyValue[1].toLowerCase() + "&osc="+document.location.hostname.toLowerCase();
+                if (document.location.pathname.indexOf("?") > 1) { this.modPageURI = document.location.pathname + "&" + this.modPageURI; }
+                else { this.modPageURI = document.location.pathname + "?" + this.modPageURI; }
+                break;
+             }
+          }
+       }
+    },
+
+    //add our onClick event handler below to all links on the page
+    addEventHandlerToLinks : function() {
+        var pageLinks = document.links;
+        for (var i=0; i<pageLinks.length; i++) {
+        	if (pageLinks[i].addEventListener) {
+        		pageLinks[i].addEventListener('click', function() { GATrackerObject.trackClick(this); }, false);
+    		} else { //ie8
+        		pageLinks[i].attachEvent('onclick', function() { GATrackerObject.trackClick(this); });
+    		}
+        }
+    },
+
+    //this is our event handler that will determine if a link needs special tracking or not
+    trackClick : function(clickedObject) {
+        var category
+          , action
+          , label
+          , nonInteraction;
+
+        //handle file download links first
+        if (clickedObject.href) {
+            var linkURL = clickedObject.href;
+            if (linkURL.indexOf(".html") == -1 && linkURL.indexOf("//") > -1 ) {
+                var linkURLChunks = linkURL.split("//")[1].split("/");
+                var fileName = linkURLChunks[linkURLChunks.length-1].split("?")[0].split("#")[0];
+                if (fileName.length > 0 && fileName.indexOf(".") > 1) {
+                    var fileExtension = fileName.split(".").reverse()[0];
+                    for (var n=0; n<GATrackerObject.downloadFileExtensions.length; n++) {
+                        if (fileExtension === GATrackerObject.downloadFileExtensions[n]) {
+                            GATrackerObject.sendAnalytics(fileExtension, fileName, linkURL);
+                            return; //we are done
+                        }
+                    }
+                }
+            }
+        }
+
+        try {
+            //Default values
+            category = "CustomLink";
+            label = clickedObject.textContent.trim();
+            nonInteraction = false;
+
+            //Let's try to get parents, grandparents, great-grandparents, and first-child.
+            var p = clickedObject.parentElement;
+            var g = p.parentElement;
+            var gg = g.parentElement;
+            var fc = clickedObject.firstElementChild;
+
+            //Capture the "Resourses For" box from the front page which contains several links
+            var resourcesBox = document.getElementById('resources');
+        } catch(e) {
+            //let any exceptions just result in undefined values
+        }
+
+        if (clickedObject.className.indexOf('btn-success') > -1) {
+            category = "CTA";
+            action = clickedObject.textContent.trim();
+            label = linkURL;
+        } else if ((p && p.className.indexOf('feature') > -1) || clickedObject.className.indexOf('link-tile') > -1) {
+            action = "Panel";
+            if (p && p.className.indexOf('feature') > -1) {
+                action = "Featured Panel";
+            }
+            label += ":" + linkURL;
+        } else if (fc && fc.className.indexOf('fa-angle-double-right') > -1) {
+            action = "More Link";
+            label += ":" + linkURL;
+        } else if (gg && gg.id == "news-container") {
+            action = "News Releases";
+            label += ":" + linkURL;
+        } else if (resourcesBox && resourcesBox.contains(clickedObject)) {
+            action = "Resources For";
+            label += ":" + linkURL;
+        } else if ((p && p.dataset.topnav) || clickedObject.className.indexOf('dropdown') > -1) { //we catch topnav buttons that have empty dropdown menus as well
+            //ignore closing dropdowns
+            if (clickedObject.parentNode.className.indexOf('open') !== -1) {
+                return;
+            }
+            nonInteraction = true;
+            action = "dropdown";
+            label += ":" + location.pathname;
+        } else if (clickedObject.className.indexOf('accordion') > -1) {
+            //ignore closing accordions
+            if (clickedObject.className.indexOf('collapsed') == -1) {
+                return;
+            }
+            nonInteraction = true;
+            action = "accordion";
+            label += ":" + location.pathname;
+        } else if (p && p.className.indexOf('carousel') > -1) {
+            nonInteraction = true;
+            action = "carousel";
+            label = clickedObject.alt + ":" + location.pathname;
+        } else {
+        	return; //no special tracking
+        }
+
+        GATrackerObject.sendAnalytics(category, action, label, nonInteraction);
+    },
+
+    sendAnalytics : function (category, action, label, optionalNonInteraction) {
+        if (optionalNonInteraction) {
+            window.ga('nrelGovTracker.send', 'event', category, action, label, {'nonInteraction': 1});
+        } else {
+            window.ga('nrelGovTracker.send', 'event', category, action, label);
+        }
+    },
+
+    // generic method to track downloads
+    trackDownloadCustom : function(fileExtension, fileName, linkURL) {
+       /*_gaq.push(['_trackEvent', fileExtension, fileName, linkURL]);*/
+       window.ga('nrelGovTracker.send', 'event', fileExtension, fileName, linkURL);
+    }
+};
+
+window.ga(function(){
+    GATrackerObject.initGATrackers();
+    GATrackerObject.setOnsiteSearch();
+    GATrackerObject.setGACustomVars();
+    // Call the page load tracking function
+    var pageInfo = (GATrackerObject.trackOnsiteSearch) ? {
+      'page': GATrackerObject.modPageURI
+    } : {};
+    window.ga('nrelGovTracker.send', 'pageview', pageInfo);
+});
+
+//Initialize link tracking. The timing is tricky here, but the window load event seems to happen after the pages
+// dynamic content loads, which is what we need to wait for. Note that the jQuery ready() function will
+// not work, as it fires too soon.
+try {
+    if (window.addEventListener) {
+        window.addEventListener('load', function() {
+            GATrackerObject.addEventHandlerToLinks();
+        });
+    } else { //ie8
+        window.attachEvent('onload', function() {
+            GATrackerObject.addEventHandlerToLinks();
+        });
+    }
+} catch(e) {
+    console.log("ERROR: " + e.message);
+}

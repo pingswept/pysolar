@@ -1,0 +1,1347 @@
+
+<!-- saved from url=(0070)http://rredc.nrel.gov/solar/codesandalgorithms/solpos/aboutsolpos.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Solpos: Documentation</title>
+
+<link rel="STYLESHEET" type="TEXT/CSS" href="./Solpos_ Documentation_files/style1.css"> 
+
+
+<script async="" src="./Solpos_ Documentation_files/analytics.js.download"></script><script type="text/javascript" async="" src="./Solpos_ Documentation_files/nrel.js.download"></script><script type="text/javascript">
+  (function() {
+     var so = document.createElement('script'); so.type = 'text/javascript'; so.async = true;
+     so.src = '//www.nrel.gov/includes/ga/nrel.js';
+     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(so, s);
+   })();
+ </script>
+</head>
+
+<body bgcolor="#ffffFF">
+<hr>
+<table border="0" cellpadding="5" width="725">
+  <tbody><tr><td valign="CENTER"> &nbsp; <!--IMG SRC="/images/sol.gif"--><img src="./Solpos_ Documentation_files/sol_code.jpg"></td>
+    <td align="LEFT"><h4 class="header1"><b>NREL's SOLPOS 2.0: Documentation</b></h4></td>
+ </tr><tr>
+  <td colspan="2"><hr></td>
+ </tr><tr>
+</tr></tbody></table>
+<p></p><p>
+<font size="5">SOLPOS.C</font>
+</p><p>
+Distributed by the National Renewable Energy Laboratory
+<br>
+Center for Renewable Energy Resources
+<br>
+Renewable Resource Data Center
+<br>
+February 2000
+</p><p>
+</p><center>
+
+<table border="0" cellpadding="2" width="500">
+<tbody><tr><td align="CENTER">
+<font size="5">NOTICE</font>
+</td>
+</tr><tr>
+<td valign="TOP">
+This report was prepared as an account of work sponsored by an agency of the 
+United States government. Neither the United States government nor any agency 
+thereof, nor any of their employees, makes any warranty, express or implied, or 
+assumes an legal liability or responsibility for the accuracy, completeness, or 
+usefulness of any information, apparatus, product, or process disclosed, or 
+represents that its use would not infringe privately owned rights.  Reference 
+herein to any specific commercial produce, process or service by trade name, 
+trademark, manufacturer, or otherwise does not necessarily constitute or imply 
+its endorsement, recommendation or favoring by the United States government or 
+any agency thereof.  The view and opinions of authors expressed herein do not 
+necessarily state or reflect those of the United States government or any agency 
+thereof.
+</td>
+</tr><tr>
+</tr></tbody></table>
+</center>
+ 
+<p></p>
+<br>
+<p>
+This C function calculates the apparent solar position and intensity 
+(theoretical maximum solar energy) based on the date, time, and location on 
+Earth.  The software has been tested on a variety of platforms, but as noted 
+above, is not guaranteed to work on yours.  It is provided here as a convenience.
+</p>
+
+<p>This document provides only a general overview of the software functionality.  
+The accompanying sample program <a href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/stest00.c">stest00.c</a> provides 
+additional information by 
+example on how the function is set up and called from an application program.  
+That program serves as the only tutorial for the use of S_solpos.</p>
+
+<p>The module contains three functions:</p>
+<p>
+<table border="0" cellpadding="2">
+<tbody><tr><td valign="TOP"> &nbsp; </td><td valign="TOP">S_solpos</td><td valign="TOP"> &nbsp; &nbsp; &nbsp; </td><td valign="TOP">Performs calculations</td></tr><tr>
+<td valign="TOP"> &nbsp; </td><td valign="TOP">S_init</td><td valign="TOP"> &nbsp; &nbsp; &nbsp; </td><td valign="TOP">Initializes S_solpos</td></tr><tr>
+<td valign="TOP"> &nbsp; </td><td valign="TOP">S_decode</td><td valign="TOP"> &nbsp; &nbsp; &nbsp; </td><td valign="TOP">Decodes the return value from S_solpos</td></tr><tr>
+</tr></tbody></table>
+</p><p>
+To obtain references for the algorithms see the <a href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/aboutsolpos.html#refs">REFERENCES</a> 
+section below.  Comments in the source code specify references for each function.</p>
+
+<p>====================================</p>
+<p>
+<font face="Courier New" size="2">
+S_solpos &nbsp;&nbsp; (computes solar position and intensity from time and place)
+</font></p><dir><font face="Courier New" size="2">
+  <dir>INPUTS: &nbsp;&nbsp; (via posdata struct defined in solpos00.h) 
+       <dir>
+    	  <dir>year, daynum, hour, minute, second, latitude, 
+    				longitude, timezone, interval 
+    	  </dir>
+       </dir>
+	
+       OPTIONAL: &nbsp;(via posdata struct) 
+       <dir>
+    	  <dir>month, day, press, temp, tilt, aspect, function
+    	  </dir>
+       </dir>
+       OUTPUTS: &nbsp; EVERY variable in the struct posdata (defined in solpos00.h)
+  </dir>
+</font></dir><font face="Courier New" size="2">
+
+<p>
+<br>
+S_init  &nbsp; &nbsp; (optional initialization for all input parameters in the posdata struct)
+</p><dir>
+  <dir>INPUTS: &nbsp;&nbsp; struct posdata*</dir>
+  <dir>OUTPUTS: &nbsp; struct posdata*
+         <dir>Initializes the required S_solpos INPUTS above to out-of-bounds 
+         	conditions, forcing the user to supply the parameters; initializes the 
+         	OPTIONAL S_solpos inputs above to nominal values.  See listing below 
+         	for default values provided by S_init.
+         </dir>
+  </dir>
+</dir>
+<p>
+<br>
+S_decode &nbsp;&nbsp; (optional utility for decoding the S_solpos return code)
+</p><dir>
+  <dir>INPUTS: &nbsp;&nbsp; long int S_solpos return value, struct posdata*
+  </dir>
+  <dir>OUTOUTS: &nbsp; Text to stderr
+  </dir>
+</dir>
+
+</font><p>
+<br>
+</p><p>ALPHABETICAL LIST OF COMMON VARIABLES</p>
+<dir>The I/O column contains a letter code:
+  <dir>I:  INPUT variable</dir>
+  <dir>O:  OUTPUT variabl</dir>
+  <dir>T:  TRANSITIONAL variable used in the algorithm, of 
+  			interest only to the solar radiation modelers and 
+  			available to you because you may be one of them.
+  </dir>
+
+
+  <p>
+  The FUNCTION column indicates which sub-function within solpos must be switched 
+  on using the "function" parameter to calculate the target output variable.  All 
+  function codes are defined in the solpos00.h file.  The default S_ALL mask calculates 
+  all output variables. Multiple function masks may be ORed to create a composite 
+  function switch.  For example, (S_TST | S_SBCF) will force the calculation of the 
+  shadow band correction factor as well as all variables required for S_TST (true 
+  solar time). Specifying only the functions necessary for required output variables 
+  might allow solpos to execute more quickly.
+  </p><p>
+  The S_DOY mask works as a toggle 
+  between the input date represented as a day of year number (daynum) and an input 
+  date represented by month and day of month.  To set the switch (to use daynum input), 
+  the mask is ORed with the function variable; to clear the switch (to use month and 
+  day input), the mask is inverted and ANDed.
+  </p><p>
+  For example:
+
+  </p><dir>	<font face="Courier New" size="2">pdat-&gt;function |= S_DOY /* 
+  	(sets daynum input) */</font></dir><font face="Courier New" size="2">
+  <dir>	pdat-&gt;function &amp;= ~S_DOY /* (sets month and day input) */</dir>
+  </font>
+<p>
+ Whichever date form is used, S_solpos will calculate and return the variables(s) 
+ 	of the other form.  See the sample program <a href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/stest00.c">stest00.c</a> 
+ 	for other examples.
+</p></dir>
+
+
+<font face="Courier New" size="2">
+</font><table border="0" cellpadding="2" width="440">
+<tbody><tr><th valign="TOP"><font face="Courier New" size="2">VARIABLE</font>
+  </th><th valign="TOP"><font face="Courier New" size="2">I/O</font>
+    </th><th valign="TOP"><font face="Courier New" size="2">Function</font>
+      </th><th valign="TOP"><font face="Courier New" size="2">Description</font>
+</th></tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">--------------------</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">-------</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">----------------</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">--------------------------------------------------------</font></td>
+</tr><tr>
+<td colspan="2" align="LEFT"><font face="Courier New" size="2">/**** INTEGERS ****/</font></td>
+  <td valign="TOP"> </td>
+    <td valign="TOP"> </td>
+      <td valign="TOP"> </td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   day</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I/O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_DOY </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Day of month (May 27 = 27, etc.)
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">solpos will CALCULATE this by default, 
+            	or will optionally require it as input depending on the setting 
+            	of the S_DOY function switch.
+              </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   daynum</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I/O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_DOY</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Day number (day of year; Feb 1 = 32 )
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">solpos REQUIRES this by default, but will optionally calculate 
+                it from year, month, and day depending on the setting of the 
+                S_DOY function switch.
+              </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   function</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Bit-oriented switch to choose function)
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">for desired output..</font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   hour</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Hour of day, 0 — 24. (Time 24:00:00 is 
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">treated internally as time 
+              00:00:00 of the following day.)</font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   interval</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Interval of a measurement period in seconds.
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">Forces solpos to use the 
+                time and date 
+              	from the interval midpoint. The INPUT time (hour, minute, and 
+              	second) is assumed to be the END of the measurement interval.</font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   minute</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Minute of hour, 0 - 59. </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   month</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I/O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_DOY</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Month number (Jan = 1, Feb = 2, etc.)
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">solpos will CALCULATE this 
+                by default or will optionally 
+               require it as input depending on the setting of the S_DOY 
+               function switch.</font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   second</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I: </font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Second of minute, 0 - 59. </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">int   year</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">4-digit year (2-digit years NOT allowed)</font></td>
+
+</tr><tr>
+<td colspan="2" align="LEFT"><font face="Courier New" size="2">/**** FLOATS ****/</font></td>
+  <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+</tr><tr>
+
+<td valign="TOP"><font face="Courier New" size="2">float amass</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_AMASS</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Relative optical airmass</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float ampress</font></td>
+  <td valign="TOP"><font face="Courier New" size="2"> O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_AMASS</font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Pressure-corrected airmass  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float aspect</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Azimuth of panel surface
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">(direction it faces) N=0, E=90, S=180, W=270, DEFAULT = 180
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float azim</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_SOLAZM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Solar azimuth angle:
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">N=0, E=90, S=180,W=270
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float cosinc</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_TILT</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Cosine of solar incidence angle on panel </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float coszen</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_REFRAC</font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Cosine of refraction corrected solar zenith angle</font></td>
+</tr><tr>
+
+<td valign="TOP"><font face="Courier New" size="2">float dayang</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Day angle (daynum*360/year-length) degrees</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float declin</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Declination--zenith angle of solar noon
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">at equator, degrees NORTH
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float eclong</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Ecliptic longitude, degrees  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float ecobli</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Obliquity of ecliptic  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float ectime</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Time of ecliptic calculations</font></td>  
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float elevetr</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_REFRAC</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Solar elevation, no atmospheric 
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">correction (= ETR)
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float elevref</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_REFRAC</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Solar elevation angle, degrees from 
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">horizon, refracted
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float eqntim</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_TST</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Equation of time (TST - LMT), minutes  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float erv </font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Earth radius vector(multiplied to solar constant)</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float etr</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_ETR</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Extraterrestrial (top-of-atmosphere)
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">W/sq m global horizontal solar irradiance
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float etrn</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_ETR</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Extraterrestrial (top-of-atmosphere)
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">W/sq m direct normal solar irradiance
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float etrtilt</font></td>
+  <td valign="TOP"><font face="Courier New" size="2"> O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_TILT </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Extraterrestrial (top-of-atmosphere)
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">W/sq m global irradiance on a tilted surface
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float gmst</font></td>
+  <td valign="TOP"><font face="Courier New" size="2"> T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Greenwich mean sidereal time, hours  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float hrang</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Hour angle--hour of sun from solar noon
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">degrees WEST 
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float julday</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Julian Day of 1 JAN 2000 minusn
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">2,400,000 days (in order to regain single precision)
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float latitude</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Latitude, degrees north (south negative)</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float longitude</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Longitude, degrees east (west negative)</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float lmst</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Local mean sidereal time, degrees</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float mnanom</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Mean anomaly, degrees</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float mnlong</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Mean longitude, degrees</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float rascen</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Right ascension, degrees</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float press</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Surface pressure, millibars, used for
+        <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">refraction correction and ampress
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float prime</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_PRIME</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Factor that normalizes Kt, Kn, etc.</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float sbcf</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_SBCF</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Shadow-band correction factor  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float sbwid</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Shadow-band width (cm)  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float sbrad</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Shadow-band radius (cm)  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float  sbsky</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Shadow-band sky facto  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float solcon</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Solar constant (NREL uses 1367 W/sq m)</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float ssha</font></td>
+  <td valign="TOP"><font face="Courier New" size="2"> T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2"> S_SRHA</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Sunset(/rise) hour angle, degrees  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float sretr</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_SRSS</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Sunrise time, minutes from midnight,
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">local, WITHOUT refraction
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float ssetr
+  </font></td><td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_SRSS </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Sunset time, minutes from midnight,
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">local, WITHOUT refraction
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float temp</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Ambient dry-bulb temperature, degrees C,
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">used for refraction correction
+              </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+     </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float tilt</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2"> Degrees tilt from horizontal of panel</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float timezone</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">I:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">  </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Time zone, east (west negative).,
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2"></font></td><td valign="TOP"><font face="Courier New" size="2">USA:  Mountain = -7, Central = -6, etc.
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float tst</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_TST </font></td>
+      <td valign="TOP"><font face="Courier New" size="2">True solar time, minutes from midnight</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">floattstfix</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_TST</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">True solar time - local standard time  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float unprime</font></td>
+ <td valign="TOP"><font face="Courier New" size="2">O:</font></td>
+   <td valign="TOP"><font face="Courier New" size="2">S_PRIME</font></td>
+     <td valign="TOP"><font face="Courier New" size="2">Factor that denormalizes Kt', Kn', etc. </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float utime</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_GEOM</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Universal (Greenwich) standard time  </font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float zenetr</font></td>
+  <td valign="TOP"><font face="Courier New" size="2">T:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_ZENETR</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Solar zenith angle, no atmospheric
+          <table border="0" cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">correction (= ETR)
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+<td valign="TOP"><font face="Courier New" size="2">float zenref</font></td>
+  <td valign="TOP"><font face="Courier New" size="2"> O:</font></td>
+    <td valign="TOP"><font face="Courier New" size="2">S_REFRAC</font></td>
+      <td valign="TOP"><font face="Courier New" size="2">Solar zenith angle, deg. from zenith,
+          <table cellpadding="2">
+            <tbody><tr><td align="CENTER"><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+              <td align="LEFT" valign="TOP"><font face="Courier New" size="2">refracted.
+                        </font></td>
+              </tr><tr>
+          </tr></tbody></table>
+
+</font></td>
+</tr><tr>
+
+</tr></tbody></table>
+
+<p>
+<br>
+</p><p>All functions require the input parameters for time, date, latitude, longitude, 
+time zone, and measurement interval.  Some functions may require additional input 
+parameters. The table below indicates with an "X" which, if any, additional 
+input parameters are required for each function. After determining the output 
+variables you require from the above list, make note of the required functions, 
+then determine the required inputs from the table:
+</p><p>
+
+<font face="Courier New" size="2">
+</font><table border="0" cellpadding="2">
+<tbody><tr><th>Function</th>
+  <th> &nbsp; </th>
+    <th colspan="8">-------------------- Required Inputs ------------------</th>
+    </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2"> </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">solcon</font></td>
+      <td align="CENTER"><font face="Courier New" size="2">press</font></td>
+        <td align="CENTER"><font face="Courier New" size="2">sbwid</font></td>
+          <td align="CENTER"><font face="Courier New" size="2">sbrad</font></td>
+            <td align="CENTER"><font face="Courier New" size="2">sbsky</font></td>
+              <td align="CENTER"><font face="Courier New" size="2">temp</font></td>
+                <td align="CENTER"><font face="Courier New" size="2">tilt</font></td>
+                  <td align="CENTER"><font face="Courier New" size="2">aspect</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_AMASS</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">--</font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> X</font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+              <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_DOY</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+              <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2">-- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_ETR</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+              <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_GEOM</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+              <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_REFRAC</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+              <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_PRIME</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_SOLAZM</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">   -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_SRSS</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2">-- </font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_SSHA</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_SBCF</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+        <td align="CENTER"><font face="Courier New" size="2">  X </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+            <td align="CENTER"><font face="Courier New" size="2">  X </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_TILT</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">    X </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2">  X </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> X </font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> X</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_TST</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">   -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+        <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2">  -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  </tr><tr>
+<td align="LEFT"><font face="Courier New" size="2">S_ZENETR</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> </font></td>
+    <td align="CENTER"><font face="Courier New" size="2">   -- </font></td>
+      <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+        <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+          <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+            <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                  <td align="CENTER"><font face="Courier New" size="2"> -- </font></td>
+                    <td align="CENTER"><font face="Courier New" size="2"> --</font></td>
+                    </tr>
+
+</tbody></table>
+</p><p>
+<br>
+
+The S_init function provides nominal values for the above inputs.  
+The values are listed below (note that time and location variables 
+are initialized out of bounds to force the user to provide valid inputs):
+</p><p>
+<br>
+
+<font face="Courier New" size="2">
+</font><table border="0" cellpadding="1">
+<tbody><tr><td><font face="Courier New" size="2">day      </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   -99</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">daynum   </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">  -999</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">hour     </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   -99</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">minute   </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   -99</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">month    </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   -99</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">second   </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   -99</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">year     </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   -99</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">interval </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">     0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* instantaneous */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">aspect   </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2"> 180.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* south */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">latitude </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2"> -99.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">longitude</font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">-999.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">press    </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">1013.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* standard pressure */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">solcon   </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">1367.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* NREL uses this */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">temp     </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">  15.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* Temperature of the standard atmosphere */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">tilt     </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   0.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* horizontal */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">timezone </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2"> -99.0</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* undefined */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">sbwid    </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">   7.6</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* Eppley shadowband */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">sbrad    </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">  31.7</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* Eppley shadowband */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">sbsky    </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2">  0.04</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* Eppley shadowband */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">function </font></td>
+  <td align="CENTER"><font face="Courier New" size="2"> = </font></td>
+    <td align="RIGHT"><font face="Courier New" size="2"> S_ALL</font></td>
+      <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /* calculate ALL output parameters */</font></td>
+</tr><tr>
+
+</tr></tbody></table>
+
+</p><p>
+Certain conditions exist during which some of the output variables 
+are undefined or cannot be calculated.  In these cases, the variables 
+are returned with flag values indicating such.  In other cases, the 
+variables may return a realistic, though invalid, value. These variables 
+and the flag values or invalid conditions are listed below:
+</p><p>
+<br>
+
+<font face="Courier New" size="2">
+</font><table border="0" cellpadding="1">
+<tbody><tr><td><font face="Courier New" size="2">amass</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">-1.0 at zenetr angles greater than 93.0 degrees</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">ampress</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">-1.0 at zenetr angles greater than 93.0 degrees&lt;</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">azim</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">invalid at zenetr angle 0.0 or latitude +/-90.0 or at night</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">elevetr</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">limited to —9 degrees at night</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">etr</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">0.0 at night</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">etrn</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">0.0 at night</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">etrtilt</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">0.0 when cosinc is less than 0</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">prime</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">invalid at zenetr angles greater than 93.0 degrees</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">sretr</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">+/- 2999.0 during periods of 24 hour sunup or sundown</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">ssetr</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">+/- 2999.0 during periods of 24 hour sunup or sundown</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">ssha</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">invalid at the North and South Poles</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">unprime</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">invalid at zenetr angles greater than 93.0 degrees</font></td>
+    </tr><tr>
+<td><font face="Courier New" size="2">zenetr</font></td>
+  <td><font face="Courier New" size="2"> &nbsp; &nbsp; </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">limited to 99.0 degrees at night </font></td>
+    </tr><tr>
+
+</tr></tbody></table>
+
+</p><p>
+<br>
+S_solpos returns a long integer error code.  Each bit position in the long 
+int represents an error in the range of a particular input parameter.  
+The S_decode function in solpos.c examines the return code for errors and can 
+be used as is or as a template for building an application-specific function.
+</p>
+<p>
+The bit positions for each error are defined in solpos00.h, and are listed below. 
+(Bit positions are from least significant to most significant.)
+</p><p>
+<font face="Courier New" size="2">
+</font><table border="0" cellpadding="1">
+<tbody><tr><td align="LEFT"><font face="Courier New" size="2">/*</font></td>
+  <td align="CENTER"><font face="Courier New" size="2">Code</font></td>
+    <td><font face="Courier New" size="2"> </font></td>
+      <td align="CENTER"><font face="Courier New" size="2">Bit</font></td>
+        <td align="CENTER"><font face="Courier New" size="2">Parameter</font></td>
+          <td align="CENTER"><font face="Courier New" size="2">Range</font></td>
+            <td><font face="Courier New" size="2"> </font></td>
+          </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2"> ===============</font></td>
+    <td><font face="Courier New" size="2"> </font></td>
+      <td><font face="Courier New" size="2"> ===</font></td>
+        <td><font face="Courier New" size="2"> ===================</font></td>
+          <td><font face="Courier New" size="2"> ========= </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> */</font></td>
+</tr><tr>
+
+<td><font face="Courier New" size="2">enum</font></td>
+  <td><font face="Courier New" size="2">{S_YEAR_ERROR,  </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">0 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">year </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">1950 -  2050</font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">S_MONTH_ERROR, </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">1 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2"> month </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">1 -    12   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_DAY_ERROR,   </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">2  &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">day-of-month </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">1 -    31   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_DOY_ERROR,   </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">3 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">day-of-year </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">1 -   366   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_HOUR_ERROR,  </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">4 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">hour</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2"> 0 -    24   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_MINUTE_ERROR,</font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">5 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2"> minute </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2"> 0 -    59   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_SECOND_ERROR,</font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">6 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">second </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">0 -    59   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_TZONE_ERROR, </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">7 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">time zone</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">-12 -    12   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_INTRVL_ERROR,</font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">8 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">interval (seconds)</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">0 - 28800   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_LAT_ERROR,   </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">9 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">latitude</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">-90 -    90   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_LON_ERROR,   </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">10 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">longitude </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">-180 -   180   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_TEMP_ERROR,  </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">11 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">temperature (deg. C)</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">-100 -   100   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_PRESS_ERROR, </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">12 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">pressure (millibars)</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2"> 0 -  2000   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_TILT_ERROR,  </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">13 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">tilt </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2"> -90 -    90   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_ASPECT_ERROR,</font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">14 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2">aspect </font></td>
+          <td align="RIGHT"><font face="Courier New" size="2"> -360 -   360   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_SBWID_ERROR, </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">15 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2"> shadow band width (cm)</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2"> 1 -   100   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_SBRAD_ERROR, </font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">16 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2"> shadow band radius (cm)</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">1 -   100   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+            </tr><tr>
+<td><font face="Courier New" size="2"> </font></td>
+  <td><font face="Courier New" size="2">    S_SBSKY_ERROR};</font></td>
+    <td align="LEFT"><font face="Courier New" size="2">  &nbsp; &nbsp; /*  </font></td>
+      <td align="RIGHT"><font face="Courier New" size="2">17 &nbsp; </font></td>
+        <td align="LEFT"><font face="Courier New" size="2"> shadow band sky factor</font></td>
+          <td align="RIGHT"><font face="Courier New" size="2">-1 -     1   </font></td>
+            <td align="RIGHT"><font face="Courier New" size="2"> &nbsp; */</font></td>
+ </tr><tr>
+ 
+</tr></tbody></table>
+</p><p>
+<a name="refs">
+</a></p><hr><a name="refs">
+<p>
+</p><p>R E F E R E N C E S</p>
+</a>
+
+<p>ASTRONOMICAL SOLAR POSITION:</p>
+<p>
+<table border="0" cellpadding="0" width="450">
+  <tbody><tr><td colspan="2">Michalsky, J. 1988. The Astronomical Almanac's algorithm for approximate solar</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>position (1950-2050). Solar Energy 40 (3), 227-235.</td>
+    </tr><tr>
+  <td colspan="2"> Michalsky, J. 1988. ERRATA: The atronomical almanac's algorithm for approximate</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>solar position (1950-2050). Solar Energy 41 (1), 113.</td>
+    </tr><tr>
+</tr></tbody></table>
+
+</p><p>
+
+ DISTANCE FROM SUN TO EARTH</p>
+
+<table border="0" cellpadding="0" width="450">
+  <tbody><tr><td colspan="2">Spencer, J. W. 1971. Fourier series representation of 
+  	the position of the sun. Search 2</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>(5), 172.</td>
+      </tr><tr>
+      <td colspan="2"> &nbsp; </td>
+      </tr><tr>
+   <td> &nbsp; &nbsp; </td>
+    <td>NOTE: This paper gives solar position algorithms as well, but 
+    	the Michalsky/Almanac algorithm above is more accurate.</td>
+    </tr><tr>
+</tr></tbody></table>
+
+<p>
+
+ATMOSPHERIC REFRACTION CORRECTION</p>
+<p>
+<table border="0" cellpadding="1" width="450">
+  <tbody><tr><td colspan="2"> Zimmerman, John C. 1981. Sun-pointing programs and 
+  	their accuracy. SAND81-0761,</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>Experimental Systems Operation Division 4721, Sandia National 
+    	Laboratories, Albuquerque, NM.</td>
+    </tr><tr>
+</tr></tbody></table>
+
+</p><p>
+
+SHADOW BAND CORRECTION FACTOR</p>
+<p>
+<table border="0" cellpadding="1" width="450">
+  <tbody><tr><td colspan="2">Drummond, A. J. 1956. A contribution to absolute pyrheliometry. 
+  	Q. J. R. Meteorol.2</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>Soc. 82, 481-493..</td>
+    </tr><tr>
+</tr></tbody></table>
+
+</p><p>
+
+RELATIVE OPTICAL AIR MASS</p>
+<p>
+
+<table border="0" cellpadding="1" width="450">
+  <tbody><tr><td colspan="2">Kasten, F. and Young, A. 1989. Revised optical air mass 
+  tables and approximation</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>formula. Applied Optics 28 (22), 4735-4738.</td>
+    </tr><tr>
+</tr></tbody></table>
+
+</p><p>
+
+RENORMALIZATION OF KT ("PRIME")</p>
+<p>
+<table border="0" cellpadding="1" width="450">
+  <tbody><tr><td colspan="2"> Perez, R., P. Ineichen, Seals, R., &amp; Zelenka, A. 1990. 
+  Making full use of the clearness</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>index for parameterizing hourly insolation 
+  conditions. Solar Energy 45 (2),</td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>111-114.</td>
+    </tr><tr>
+</tr></tbody></table>
+
+
+</p><p>
+
+SOLAR POSITION RELATIVE TO EARTH</p>
+
+<p>
+<table border="0" cellpadding="1" width="450">
+  <tbody><tr><td colspan="2"> Iqbal, M. 1983. An Introduction to Solar Radiation. Academic Press, NY.</td>
+  </tr><tr>
+  <td colspan="2"> &nbsp; </td>
+  </tr><tr>
+  <td> &nbsp; &nbsp; </td>
+    <td>
+<p>NOTE: The 1983 edition contains typographic errors in coefficients of some 
+equations. Further, many algorithms given in this book are no longer the best. 
+However, this book gives a complete overview of the issues and methods of measuring 
+and modeling solar radiation</p>
+</td>
+    </tr><tr>
+</tr></tbody></table>
+
+</p><p>
+<br>
+
+
+</p><hr>
+
+<a href="http://www.nrel.gov/rredc" class="hide"><img src="./Solpos_ Documentation_files/homepg.gif" align="center"></a>
+<a href="http://www.nrel.gov/rredc" class="hide"><font size="2" face="PAPYRUS">Return to RReDC home page 
+(<em> http://www.nrel.gov/rredc</em>)</font></a>
+
+<hr>
+
+
+
+</body></html>

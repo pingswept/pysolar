@@ -1,0 +1,12 @@
+/*
+Implementations Skeletor v3 - 5/10/2014
+
+oustyles.css
+
+Add styles to overwrite customer CSS, USE WITH CAUTION.
+
+Contributors: Your Name Here
+Last Updated: Enter Date Here
+*/
+#alert { background-color:#eee; border:1px dashed #ccc; margin:0 0 20px 0; text-align:center; padding:.5em;}
+#alert p { padding:0; margin:0;}
