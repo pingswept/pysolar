@@ -38,27 +38,32 @@ class TestSolar(unittest.TestCase):
     surface_azimuth_rotation = -10.0 # Surface azimuth rotation (measured from south to
     # projection of surface normal on horizontal plane, negative east) [degrees]
     dt_list = [2003, 10, 17, 19, 30, 30, 0, 0, 0]
-    delta_t = 67 / 86400
-    default = 64.5415 / 86400
+    delta_t = 67 / 86400.0
+    default = 64.5415 / 86400.0
     param_list = [latitude, longitude, elevation, surface_slope,
                   surface_azimuth_rotation, temperature, pressure]
 
     hours = dt_list[3] / 24.0
     minutes = dt_list[4] / 1440.0
     seconds = dt_list[5] / 86400.0
-    jd1 = time.jdn(dt_list) - 0.5 # julian day midnight
-    jd2 = hours + minutes + seconds # fractional day
-
-    jct0 = time.julian_century(jd1 + jd2)
-    jct1 = time.julian_century(jd1 + default + jd2)
-    jct2 = time.julian_century(jd1 + delta_t + jd2)
+    jd0 = time.jdn(dt_list) - 0.5 # julian day midnight
+    jdfd = hours + minutes + seconds # fractional day
+    jdt = jd0 + jdfd
+    print(jdt)
+    jdd = jdt + default
+    print(jdd)
+    jddt = jdt + delta_t
+    print(jddt)
+    jct0 = time.julian_century(jdt)
+    jct1 = time.julian_century(jdd)
+    jct2 = time.julian_century(jddt)
     # need to take the timezone offset out because all
     # whole julian day numbers begin at noon.
     jd3 = 0.5 + minutes + seconds - 7 / 24.0
     jd4 = jd3 - longitude_offset
-    jct3 = time.julian_century(jd1 + jd4)
-    jct4 = time.julian_century(jd1 + default + jd4)
-    jct5 = time.julian_century(jd1 + delta_t + jd4)
+    jct3 = time.julian_century(jd0 + jd4)
+    jct4 = time.julian_century(jd0 + jd4 + default)
+    jct5 = time.julian_century(jd0 + jd4 + delta_t)
     def setUp(self):
         """
         set up
@@ -128,16 +133,24 @@ class TestSolar(unittest.TestCase):
         self.assertEqual(282.8989597150029, tas, 12)
         orbital = mas - tas
         self.assertEqual(-0.005115550106779665, orbital, 12)
-        slam = solar.geocentric_lambda(self.jct0)
-        self.assertEqual(204.0078134676852, slam, 12)
-        gra = solar.geocentric_right_ascension(self.jct0) * 15
+
+        mls = solar.mean_solar_longitude(self.jct0)
+        self.assertEqual(205.89640791951274, mls, 12)
+        tls = mls + solar.equation_of_center(self.jct0)
+        self.assertEqual(205.90152346961955, tls, 12)
+        # slam = solar.geocentric_lambda(self.jct0)
+        # self.assertEqual(204.0078134676852, slam, 12)
+        gra = solar.geocentric_right_ascension(self.jct0)
         self.assertEqual(202.22671748072085, gra, 12)
-        oblique = slam - gra
-        self.assertEqual(0, oblique, 12)
+
+        # oblique = slam - gra
+        oblique = tls - gra
+        self.assertEqual(3.6748059888986973, oblique, 12)
         eot = orbital + oblique
-        self.assertEqual(3.6547968526688805, eot, 15)
-        # self.assertEqual(0.2436531235112587, eot / 15, 15)
-        # self.assertEqual(14.619187410675522, eot * 4, 15)
+        self.assertEqual(3.6696904387919176, eot, 15)
+        self.assertEqual(0.2446460292527945, eot / 15, 15)
+        self.assertEqual(14.67876175516767, eot * 4, 15)
+        self.assertAlmostEqual(14.641353, eot * 4, 1)
 
 
     def test_greenwich_hour_angle(self):
@@ -145,22 +158,22 @@ class TestSolar(unittest.TestCase):
         testing Greenwich hour angle
 
         0       116.28525082273921
-        default 116.55421168491452
-        67      116.56445681978897
+        64.5415 116.55421349133425
+        67      116.56445862621047
         """
         # print(self.test_local_hour_angle.__doc__)
         # print('testing solar.py Greewich Hour Angle method')
         gha = solar.greenwich_hour_angle(self.jct0)
         self.assertEqual(116.28519276766215, gha, 12)
-        self.assertAlmostEqual(116.28525082273921, gha, 3)
+        self.assertAlmostEqual(116.28525082273921, gha, 6)
 
         gha1 = solar.greenwich_hour_angle(self.jct1)
         self.assertEqual(116.55415363053996, gha1, 12)
-        self.assertAlmostEqual(116.55421168491452, gha1, 3)
+        self.assertAlmostEqual(116.55421349133425, gha1, 6)
 
         gha2 = solar.greenwich_hour_angle(self.jct2)
         self.assertEqual(116.56439876544152, gha2, 12)
-        self.assertAlmostEqual(116.56445681978897, gha2, 3)
+        self.assertAlmostEqual(116.56445862621047, gha2, 6)
 
     def test_local_hour_angle(self):
         """
@@ -214,6 +227,23 @@ class TestSolar(unittest.TestCase):
 
         mas2 = solar.mean_anomaly(self.jct2)
         self.assertEqual(282.8946084613963, mas2, 12)
+
+    def test_mean_gha_aries(self):
+        """
+        testing mean longitude aries
+        0       318.51557827281067
+        64.5415 318.78523752919864
+        67      318.7955092670163
+        """
+        mla0 = solar.mean_gha_aries(self.jct0)
+        self.assertEqual(318.51557827281067, mla0, 12)
+
+        mla1 = solar.mean_gha_aries(self.jct1)
+        self.assertEqual(318.78523752919864, mla1, 12)
+
+        mla2 = solar.mean_gha_aries(self.jct2)
+        self.assertEqual(318.7955092670163, mla2, 12)
+
 
     def test_mean_solar_longitude(self):
         """
@@ -292,6 +322,27 @@ class TestSolar(unittest.TestCase):
 
         tas2 = solar.true_anomaly(self.jct2)
         self.assertEqual(282.89974977855513, tas2, 12)
+
+    def test_true_gha_aries(self):
+        """
+        testing true gha aries
+        0       318.51191008811094
+        64.5415 318.7815693566207
+        67      318.7918410949001
+        """
+        tga0 = solar.true_gha_aries(self.jct0)
+        self.assertEqual(318.511910248383, tga0, 15)
+        self.assertAlmostEqual(318.51191008811094, tga0, 6)
+
+        tga1 = solar.true_gha_aries(self.jct1)
+        self.assertEqual(318.7815695166464, tga1, 15)
+        self.assertAlmostEqual(318.7815693566207, tga1, 6)
+
+        tga2 = solar.true_gha_aries(self.jct2)
+        self.assertEqual(318.7918412549164, tga2, 15)
+        self.assertAlmostEqual(318.7918410949001, tga2, 6)
+
+
 
     def test_true_solar_longitude(self):
         """

@@ -22,7 +22,8 @@
 """ Tests for solar azimuth altitude """
 import datetime
 import unittest
-from pysolar import solar, constants, util
+from pysolar import azelsolar, constants, util
+
 class TestAzAltSolar(unittest.TestCase):
     """
     Tests functions that use when as a time parameter
@@ -42,7 +43,7 @@ class TestAzAltSolar(unittest.TestCase):
     amd = util.AM_DEFAULT
     ltf = util.TL_DEFAULT
     spc = util.SC_DEFAULT
-    param_list = [elevation, latitude, longitude, surface_slope,
+    param_list = [latitude, longitude, elevation, surface_slope,
                   surface_azimuth_rotation, temperature, pressure,
                   tyn, amd, ltf, spc]
     def setUp(self):
@@ -53,41 +54,39 @@ class TestAzAltSolar(unittest.TestCase):
         self.when2 = datetime.datetime(
             2003, 10, 17, 19, 31, 37, tzinfo=datetime.timezone.utc)
 
-    def altitude(self):
+    def test_altitude(self):
         """
         testing Altitude Angle
         """
         # print(self.test_altitude.__doc__)
         # print('testing solar.py Altitude Angle method')
-        alt = solar.altitude(self.when0, self.param_list)
-        self.assertEqual(63.79703840292356, alt, 12)
+        alt = azelsolar.altitude(self.when0, self.param_list)
+        self.assertEqual(39.82844682673359, alt, 12)
 
-        alt1 = solar.altitude(self.when1, self.param_list)
-        self.assertEqual(63.76299277821548, alt1, 12)
+        alt1 = azelsolar.altitude(self.when1, self.param_list)
+        self.assertEqual(39.775639446793036, alt1, 12)
 
-        alt2 = solar.altitude(self.when2, self.param_list)
-        self.assertEqual(63.76142336675205, alt2, 12)
+        alt2 = azelsolar.altitude(self.when2, self.param_list)
+        self.assertEqual(39.7731403675628, alt2, 12)
 
-    def azimuth(self):
+    def test_azimuth(self):
         """
         testing Azimuth
         """
         # print(self.test_azimuth.__doc__)
         # print('testing solar.py Azimuth Angle method')
-        azm = solar.azimuth(self.when0, self.param_list)
-        self.assertEqual(8.555603593622664, azm, 12)
+        azm0 = azelsolar.azimuth(self.when0, self.param_list)
+        self.assertEqual(194.68016811582498, azm0, 12)
 
-        azm1 = solar.azimuth(self.when1, self.param_list)
-        self.assertEqual(8.314833126248914, azm1, 12)
+        azm1 = azelsolar.azimuth(self.when1, self.param_list)
+        self.assertEqual(195.01577219120838, azm1, 12)
 
-        azm2 = solar.azimuth(self.when2, self.param_list)
-        self.assertEqual(8.303565890510981, azm2, 12)
+        azm2 = azelsolar.azimuth(self.when2, self.param_list)
+        self.assertEqual(195.0314600048607, azm2, 12)
 
 if __name__ == "__main__":
 
     AESOLAR = unittest.defaultTestLoader.loadTestsFromTestCase(TestAzAltSolar)
-
     unittest.TextTestRunner(verbosity=2).run(AESOLAR)
-
 
 #end if

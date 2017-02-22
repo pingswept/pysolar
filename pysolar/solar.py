@@ -379,7 +379,7 @@ def geocentric_right_ascension(jct):
     cos_lam = math.cos(math.radians(lam))
 
     return (math.degrees(
-        math.atan2((sin_lam * cos_eps - tan_beta * sin_eps), cos_lam)) % 360) / 15.0
+        math.atan2((sin_lam * cos_eps - tan_beta * sin_eps), cos_lam)) % 360)
 
 def greenwich_hour_angle(jct):
     """
@@ -388,7 +388,7 @@ def greenwich_hour_angle(jct):
     Greenwich Hour Angle in degrees
     """
     ghaa = true_gha_aries(jct)
-    gra = geocentric_right_ascension(jct) * 15.0
+    gra = geocentric_right_ascension(jct)
     # return (gasa(jct) - gra) % 360.0
     return (ghaa - gra) % 360.0
 
@@ -467,7 +467,7 @@ def local_hour_angle(jct, longitude):
     Local Hour Angle
     """
 
-    return greenwich_hour_angle(jct) + longitude
+    return (greenwich_hour_angle(jct) + longitude) % 360.0
 
 def mean_ecliptic_obliquity(jct):
     """
@@ -510,7 +510,7 @@ def true_gha_aries(jct):
     apparent longitude of the first point of aries
     """
     mla = mean_gha_aries(jct)
-    return mla + equation_of_equinox(jct)
+    return (mla + equation_of_equinox(jct)) % 360.0
 
 def mean_solar_longitude(jct):
     """
@@ -629,14 +629,12 @@ def refraction_correction(jct, param_list):
     # see history at https://github.com/pingswept/pysolar/pull/23
     # Better method could come from Auer and Standish [2000]:
     # http://iopscience.iop.org/1538-3881/119/5/2472/pdf/1538-3881_119_5_2472.pdf
-    pressure = param_list[6]
-    temperature = param_list[5]
-    if tea >= -1.0*(sun_radius + atmos_refract):
-        arc = pressure * 2.830 * 1.02
-        brc = 1010.0 * temperature * 60.0 * math.tan(
-            math.radians(
-                tea + (10.3/(tea + 5.11))))
-        del_e = arc / brc
+    pressure = param_list[6] / 1010.0
+    temperature = param_list[5] + 273
+    if tea >= -1.0 * (sun_radius + atmos_refract):
+        arc = pressure * 283 / temperature
+        brc = 1.02 / (60.0 * math.tan(math.radians(tea + (10.3 / (tea + 5.11)))))
+        del_e = arc * brc
 
     return del_e
 
@@ -727,6 +725,18 @@ def topocentric_lha(jct, param_list):
     rap = right_ascension_parallax(jct, param_list)
     return lha - rap
 
+def cosine_omega(surface_slope):
+    """
+    used with the two incidence angle calculations
+    """
+    return math.cos(math.radians(surface_slope))
+
+def sine_omega(surface_slope):
+    """
+    used with the two incidence angle calculations
+    """
+    return math.sin(math.radians(surface_slope))
+
 def incidence_angle(jct, param_list):
     """
     Given date/time list, parameter list, and optional delta T
@@ -736,10 +746,10 @@ def incidence_angle(jct, param_list):
     theta = topocentric_zenith_angle(jct, param_list)
     cos_theta = math.cos(math.radians(theta))
     omega = param_list[3]
-    cos_omega = math.cos(math.radians(omega))
+    cos_omega = cosine_omega(omega)
     term1 = cos_theta * cos_omega
 
-    sin_omega = math.sin(math.radians(omega))
+    sin_omega = sine_omega(omega)
     sin_theta = math.sin(math.radians(theta))
     ugamma = topocentric_azimuth_angle(jct, param_list) - 180
     ugamma_rad = math.radians(ugamma)
@@ -756,11 +766,11 @@ def angle_of_incidence(jct, param_list):
     delta = topocentric_solar_declination(jct, param_list)
     sin_delta = math.sin(math.radians(delta))
     sin_phi = math.sin(math.radians(param_list[0]))
-    cos_omega = math.cos(math.radians(param_list[3]))
+    cos_omega = cosine_omega(param_list[3])
     term1 = sin_delta * sin_phi * cos_omega
 
     cos_phi = math.cos(math.radians(param_list[0]))
-    sin_omega = math.sin(math.radians(param_list[3]))
+    sin_omega = sine_omega(param_list[3])
     cos_lgamma = math.cos(math.radians(param_list[4]))
     term2 = sin_delta * cos_phi * sin_omega * cos_lgamma
 
@@ -877,126 +887,3 @@ def topocentric_elevation_angle(jct, param_list):
 
     # just the opposite of zenith angle
     return math.degrees(math.asin(term_1 + term_2))
-
-def altitude(when, param_list):
-    """
-    See also the faster, but less accurate, altitude_fast()
-    """
-    dt_list = [when.year, when.month, when.day,
-               when.hour, when.minute, when.second,
-               when.microsecond, 0, 0]
-    jdt = time.julian_day(dt_list)
-    jct = time.julian_century(jdt - param_list[2] / 360)
-
-    tea = topocentric_elevation_angle(jct, param_list)
-    rca = refraction_correction(jct, param_list)
-    return 90 - tea + rca
-
-def altitude_fast(when, param_list):
-    """
-    docstring goes here
-    """
-# expect 19 degrees for solar.altitude(
-#     42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
-    day = when.utctimetuple().tm_yday
-    latitude = param_list[1]
-    longitude = param_list[2]
-    cos_ha = math.cos(math.radians(hour_angle(when, longitude)))
-    cos_dec = math.cos(math.radians(declination(day)))
-    sin_dec = math.sin(math.radians(declination(day)))
-    cos_lat = math.cos(math.radians(latitude))
-    sin_lat = math.sin(math.radians(latitude))
-    return math.degrees(math.asin(cos_lat * cos_dec * cos_ha + sin_lat * sin_dec))
-
-def azimuth(when, param_list):
-    """
-    docstring goes here
-    """
-    dt_list = [when.year, when.month, when.day,
-               when.hour, when.minute, when.second,
-               when.microsecond, 0, 0]
-    jdt = time.julian_day(dt_list)
-    jct = time.julian_century(jdt - param_list[2] / 360)
-
-    return 180 - topocentric_azimuth_angle(jct, param_list) % 360
-
-def azimuth_fast(when, param_list):
-    """
-    docstring goes here
-    """
-    # expect -50 degrees for solar.get_azimuth(
-    #     42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
-    latitude = param_list[1]
-    longitude = param_list[2]
-    day = when.utctimetuple().tm_yday
-    declination_rad = math.radians(declination(day))
-    latitude_rad = math.radians(latitude)
-    hour_angle_rad = math.radians(hour_angle(when, longitude))
-    altitude_rad = math.radians(altitude(when, param_list))
-
-    azimuth_rad = math.asin(
-        math.cos(declination_rad) * math.sin(hour_angle_rad) / math.cos(altitude_rad))
-
-    if (
-            math.cos(
-                hour_angle_rad) >= (
-                    math.tan(declination_rad) / math.tan(latitude_rad))):
-        return math.degrees(azimuth_rad)
-    else:
-        return 180 - math.degrees(azimuth_rad)
-
-def declination(day):
-    """
-    The declination of the sun is the angle between
-    Earth's equatorial plane and a line between the Earth and the sun.
-    The declination of the sun varies between 23.45 degrees and -23.45 degrees,
-    hitting zero on the equinoxes and peaking on the solstices.
-    """
-    return constants.EARTH_AXIS_INCLINATION * math.sin((2 * math.pi / 365.0) * (day - 81))
-
-def equation_of_time(day):
-    """
-    returns the number of minutes to add to mean solar time to get actual solar time.
-    """
-    bias = 2 * math.pi / 364.0 * (day - 81)
-    return 9.87 * math.sin(2 * bias) - 7.53 * math.cos(bias) - 1.5 * math.sin(bias)
-
-def hour_angle(when, longitude_deg):
-    """
-    docstring goes here
-    """
-    sun_time = solar_time(when, longitude_deg)
-    return 15 * (12 - sun_time)
-
-def solar_time(when, longitude_deg):
-    """
-    returns solar time in hours for the specified longitude and time,
-    accurate only to the nearest minute.
-    """
-    when = when.utctimetuple()
-    return (
-        (when.tm_hour * 60 + when.tm_min + 4 * longitude_deg + equation_of_time(when.tm_yday))
-        /
-        60
-        )
-
-def solar_test(param_list):
-    """
-    docstring goes here
-    """
-    latitude_deg = 42.364908
-    longitude_deg = -71.112828
-    when = datetime.datetime(
-        2003, 10, 17, 0, 0, 0, tzinfo=None)
-    # when = datetime.datetime.utcnow()
-    thirty_minutes = datetime.timedelta(hours=0.5)
-    param_list[1] = latitude_deg
-    param_list[2] = longitude_deg
-    for _idx in range(48):
-        timestamp = when.ctime()
-        altitude_deg = altitude(when, param_list) - 180
-        azimuth_deg = azimuth(when, param_list)
-        power = radiation.radiation_direct(when, altitude_deg)
-        if altitude_deg > 0:
-            print(timestamp, altitude_deg, azimuth_deg, power)
-        when = when + thirty_minutes

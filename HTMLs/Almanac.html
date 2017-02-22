@@ -407,7 +407,7 @@ function Nutation()
 function Aries()
 {
 //Mean GHA Aries
-var GHAAmean = norm_360_deg(280.46061837+ 360.98564736629*(JD-2451545)+0.000387933*T2-T3/38710000);
+var GHAAmean = norm_360_deg(280.46061837+ 360.98564736629*(JDE-2451545)+0.000387933*TE2-TE3/38710000);
 ARIESmean = GHAAmean;
 //GMST
 SidTm = OutSidTime(GHAAmean);
