@@ -20,31 +20,31 @@
 """
 import math
 
-def get_air_mass_ratio(altitude_deg):
-    # from Masters, p. 412
-    try :
+def air_mass_ratio(altitude_deg):
+    """ from Masters, p. 412 """
+    try:
         result = 1 / math.sin(math.radians(altitude_deg))
-    except ZeroDivisionError :
+    except ZeroDivisionError:
         result = float("inf")
     #end try
     return result
 #end get_air_mass_ratio
 
-def get_apparent_extraterrestrial_flux(day):
-    # from Masters, p. 412
+def apparent_extraterrestrial_flux(day):
+    """ from Masters, p. 412 """
     return 1160 + (75 * math.sin(2 * math.pi / 365 * (day - 275)))
 #end get_apparent_extraterrestrial
 
-def get_optical_depth(day):
-    # from Masters, p. 412
+def optical_depth(day):
+    """ from Masters, p. 412 """
     return 0.174 + (0.035 * math.sin(2 * math.pi / 365 * (day - 100)))
 #end get_optical_depth
 
-def get_radiation_direct(when, altitude_deg):
-    # from Masters, p. 412
+def radiation_direct(when, altitude_deg):
+    """ from Masters, p. 412 """
     day = when.utctimetuple().tm_yday
-    flux = get_apparent_extraterrestrial_flux(day)
-    optical_depth = get_optical_depth(day)
-    air_mass_ratio = get_air_mass_ratio(altitude_deg)
-    return flux * math.exp(-1 * optical_depth * air_mass_ratio)
+    flux = apparent_extraterrestrial_flux(day)
+    optic_depth = optical_depth(day)
+    airmass_ratio = air_mass_ratio(altitude_deg)
+    return flux * math.exp(-1 * optic_depth * airmass_ratio)
 #end get_radiation_direct
