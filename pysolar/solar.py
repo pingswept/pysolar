@@ -212,7 +212,7 @@ def get_heliocentric_longitude(jme):
 
 def get_hour_angle(when, longitude_deg):
     solar_time = get_solar_time(longitude_deg, when)
-    return 15 * (12 - solar_time)
+    return 15.0 * (solar_time - 12.0)
 
 def get_incidence_angle(topocentric_zenith_angle, slope, slope_orientation, topocentric_azimuth_angle):
     tza_rad = math.radians(topocentric_zenith_angle)
