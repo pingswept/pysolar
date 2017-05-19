@@ -42,6 +42,8 @@ def get_optical_depth(day):
 
 def get_radiation_direct(when, altitude_deg):
     # from Masters, p. 412
+    if altitude_deg < 0:
+        return 0.0
     day = when.utctimetuple().tm_yday
     flux = get_apparent_extraterrestrial_flux(day)
     optical_depth = get_optical_depth(day)

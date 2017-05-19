@@ -23,7 +23,7 @@ This module contains the most important functions for calculation of the positio
 import math
 import datetime
 from . import constants
-from . import time
+from . import solartime as time
 from . import radiation
 
 def solar_test():
