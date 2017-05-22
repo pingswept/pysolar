@@ -48,8 +48,9 @@ def equation_of_time(day):
 def get_aberration_correction(sun_earth_distance):     # sun-earth distance is in astronomical units
     return -20.4898/(3600.0 * sun_earth_distance)
 
-def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature = constants.standard_temperature, pressure = constants.standard_pressure):
-    '''See also the faster, but less accurate, get_altitude_fast()'''
+
+def get_topocentric_position(latitude_deg, longitude_deg, when, elevation = 0):
+    '''Common calculations for altitude and azimuth'''
     # location-dependent calculations
     projected_radial_distance = get_projected_radial_distance(elevation, latitude_deg)
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
@@ -76,9 +77,48 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0, temperature =
     parallax_sun_right_ascension = get_parallax_sun_right_ascension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination)
     topocentric_local_hour_angle = get_topocentric_local_hour_angle(local_hour_angle, parallax_sun_right_ascension)
     topocentric_sun_declination = get_topocentric_sun_declination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
+
+    return topocentric_sun_declination, topocentric_local_hour_angle
+
+
+def get_position(latitude_deg, longitude_deg, when, elevation=0,
+                 temperature = constants.standard_temperature,
+                 pressure = constants.standard_pressure):
+    ''' Given location, time and atmospheric conditions
+    returns (azimuth, altitude) of sun in degrees.
+
+    Same as a combination of get_azimuth and get_altitude
+    '''
+
+    topocentric_sun_declination, topocentric_local_hour_angle = \
+        get_topocentric_position(latitude_deg, longitude_deg, when, elevation)
+
+    topocentric_elevation_angle = \
+        get_topocentric_elevation_angle(latitude_deg, topocentric_sun_declination,
+                                        topocentric_local_hour_angle)
+
+    refraction_correction = get_refraction_correction(pressure, temperature,
+                                                      topocentric_elevation_angle)
+
+    altitude_deg =  topocentric_elevation_angle + refraction_correction
+
+    azimuth_deg = (180 -
+        get_topocentric_azimuth_angle(topocentric_local_hour_angle,
+                                      latitude_deg, topocentric_sun_declination))
+
+    return azimuth_deg, altitude_deg
+
+
+def get_altitude(latitude_deg, longitude_deg, when, elevation = 0,
+                 temperature = constants.standard_temperature, pressure = constants.standard_pressure):
+    '''See also the faster, but less accurate, get_altitude_fast()'''
+    topocentric_sun_declination, topocentric_local_hour_angle = \
+        get_topocentric_position(latitude_deg, longitude_deg, when)
+
     topocentric_elevation_angle = get_topocentric_elevation_angle(latitude_deg, topocentric_sun_declination, topocentric_local_hour_angle)
     refraction_correction = get_refraction_correction(pressure, temperature, topocentric_elevation_angle)
     return topocentric_elevation_angle + refraction_correction
+
 
 def get_altitude_fast(latitude_deg, longitude_deg, when):
 # expect 19 degrees for solar.get_altitude(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
@@ -98,33 +138,15 @@ def get_apparent_sun_longitude(geocentric_longitude, nutation, ab_correction):
 
 def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):
 
-    # location-dependent calculations
-    projected_radial_distance = get_projected_radial_distance(elevation, latitude_deg)
-    projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
+    topocentric_sun_declination, topocentric_local_hour_angle = \
+        get_topocentric_position(latitude_deg, longitude_deg, when, elevation)
 
-    # time-dependent calculations
-    jd = time.get_julian_solar_day(when)
-    jde = time.get_julian_ephemeris_day(when)
-    jce = time.get_julian_ephemeris_century(jde)
-    jme = time.get_julian_ephemeris_millennium(jce)
-    geocentric_latitude = get_geocentric_latitude(jme)
-    geocentric_longitude = get_geocentric_longitude(jme)
-    sun_earth_distance = get_sun_earth_distance(jme)
-    aberration_correction = get_aberration_correction(sun_earth_distance)
-    equatorial_horizontal_parallax = get_equatorial_horizontal_parallax(sun_earth_distance)
-    nutation = get_nutation(jce)
-    apparent_sidereal_time = get_apparent_sidereal_time(jd, jme, nutation)
-    true_ecliptic_obliquity = get_true_ecliptic_obliquity(jme, nutation)
+    azimuth = (180 -
+        get_topocentric_azimuth_angle(topocentric_local_hour_angle,
+            latitude_deg, topocentric_sun_declination))
 
-    # calculations dependent on location and time
-    apparent_sun_longitude = get_apparent_sun_longitude(geocentric_longitude, nutation, aberration_correction)
-    geocentric_sun_right_ascension = get_geocentric_sun_right_ascension(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
-    geocentric_sun_declination = get_geocentric_sun_declination(apparent_sun_longitude, true_ecliptic_obliquity, geocentric_latitude)
-    local_hour_angle = get_local_hour_angle(apparent_sidereal_time, longitude_deg, geocentric_sun_right_ascension)
-    parallax_sun_right_ascension = get_parallax_sun_right_ascension(projected_radial_distance, equatorial_horizontal_parallax, local_hour_angle, geocentric_sun_declination)
-    topocentric_local_hour_angle = get_topocentric_local_hour_angle(local_hour_angle, parallax_sun_right_ascension)
-    topocentric_sun_declination = get_topocentric_sun_declination(geocentric_sun_declination, projected_axial_distance, equatorial_horizontal_parallax, parallax_sun_right_ascension, local_hour_angle)
-    return 180 - get_topocentric_azimuth_angle(topocentric_local_hour_angle, latitude_deg, topocentric_sun_declination)
+    return azimuth
+
 
 def get_azimuth_fast(latitude_deg, longitude_deg, when):
 # expect -50 degrees for solar.get_azimuth(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
