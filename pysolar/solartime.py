@@ -735,7 +735,7 @@ def timestamp(when):
     """
     if sys.version[0] == '3':
         _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-        print(when)
+        #print(when)
         "Return POSIX timestamp as float"
         if when.tzinfo is None:
             return time.mktime((when.year, when.month, when.day,
