@@ -62,7 +62,7 @@ Then, use the solar.get_altitude() function to calculate the angle between the s
     >>> get_altitude(42.206, -71.382, d)
     24.39867440096082
     >>> d = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320)
-    >>> get_altitude(42.206, -71.382, d)
+    >>> GetAltitude(42.206, -71.382, d)
     20.374937135509537
 
 You can also calculate the azimuth of the sun, as shown below.::
