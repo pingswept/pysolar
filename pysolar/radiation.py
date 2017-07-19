@@ -40,6 +40,11 @@ def get_optical_depth(day):
     return 0.174 + (0.035 * math.sin(2 * math.pi / 365 * (day - 100)))
 #end get_optical_depth
 
+def get_diffuse_skyfactor(day):
+     # from Masters, p. 416
+     return 0.095 + 0.04 *  math.sin(math.radians((360 / 365) * (day - 100)))
+#end get_diffuse_skyfactor
+
 def get_radiation_direct(when, altitude_deg):
     # from Masters, p. 412
     if altitude_deg < 0:
@@ -50,3 +55,55 @@ def get_radiation_direct(when, altitude_deg):
     air_mass_ratio = get_air_mass_ratio(altitude_deg)
     return flux * math.exp(-1 * optical_depth * air_mass_ratio)
 #end get_radiation_direct
+
+def get_radiation_diffuse(when, altitude_deg):
+    # from Masters, p. 416
+    return get_radiation_diffuse_collector(when, altitude_deg, 0)
+#end get_radiation_diffuse
+
+def get_radiation_direct_collector(when, altitude_deg, azimuth_deg, \
+    collector_azimuth_deg, tilt_angle):
+    # from Masters, p. 414
+    cos_incidence_angle = (math.cos(math.radians(altitude_deg))
+        * math.cos(math.radians(azimuth_deg - collector_azimuth_deg))
+        * math.sin(math.radians(tilt_angle))
+        + math.sin(math.radians(altitude_deg))
+        * math.cos(math.radians(tilt_angle)))
+    direct_radiation = get_radiation_direct(when, altitude_deg)
+    return direct_radiation * cos_incidence_angle
+#end get_radiation_direct_collector
+
+def get_radiation_diffuse_collector(when, altitude_deg, tilt_angle):
+    # from Masters, p. 416
+    day = when.utctimetuple().tm_yday
+    diffuse_sky_factor = get_diffuse_skyfactor(day)
+    direct_radiation = get_radiation_direct(when, altitude_deg)
+    return (diffuse_sky_factor * direct_radiation
+       * ((1 + math.cos(math.radians(tilt_angle)))/2))
+#end get_radiation_diffuse_collector
+
+def get_radiation_reflected_collector(when, altitude_deg, tilt_angle, \
+    reflectance):
+    # from Masters, p. 418
+    day = when.utctimetuple().tm_yday
+    diffuse_sky_factor = get_diffuse_skyfactor(day)
+    direct_radiation = get_radiation_direct(when, altitude_deg)
+    return (reflectance * direct_radiation
+        * (math.sin(math.radians(altitude_deg)) + diffuse_sky_factor)
+        * ((1 - math.cos(math.radians(tilt_angle)))/2))
+#end get_radiation_reflected_collector
+
+def get_radiation_total_collector(when, altitude_deg, azimuth_deg, \
+    collector_azimuth_deg, tilt_angle, reflectance):
+    # from Masters, p. 419
+    return (get_radiation_direct_collector(when, altitude_deg, azimuth_deg,
+        collector_azimuth_deg, tilt_angle)
+        + get_radiation_diffuse_collector(when, altitude_deg, tilt_angle)
+        + get_radiation_reflected_collector(when, altitude_deg, tilt_angle,
+        reflectance))
+#end get_radiation_total_collector
+
+def get_radiation_total(when,  altitude_deg):
+    return (get_radiation_direct(when, altitude_deg)
+        + get_radiation_diffuse(when, altitude_deg))
+#end get_radiation_total
