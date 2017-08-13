@@ -342,13 +342,13 @@ def get_solar_time(longitude_deg, when):
 # Topocentric functions calculate angles relative to a location on the surface of the earth.
 
 def get_topocentric_azimuth_angle(topocentric_local_hour_angle, latitude, topocentric_sun_declination):
-    """Measured eastward from north"""
+    """West is negative, East is positive, Masters p. 395"""
     tlha_rad = math.radians(topocentric_local_hour_angle)
     latitude_rad = math.radians(latitude)
     tsd_rad = math.radians(topocentric_sun_declination)
     a = math.sin(tlha_rad)
     b = math.cos(tlha_rad) * math.sin(latitude_rad) - math.tan(tsd_rad) * math.cos(latitude_rad)
-    return 180.0 + math.degrees(math.atan2(a, b)) % 360
+    return (180.0 + math.degrees(math.atan2(a, b))) % 360
 
 def get_topocentric_elevation_angle(latitude, topocentric_sun_declination, topocentric_local_hour_angle):
     latitude_rad = math.radians(latitude)
