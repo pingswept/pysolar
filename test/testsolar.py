@@ -161,13 +161,17 @@ class TestApi(unittest.TestCase):
 	test_when = datetime.datetime(2016, 12, 19, 23, 0, 0, tzinfo=datetime.timezone.utc )
 
 	def testGetPosition(self):
+		az, al = solar.get_position(59.6365662,12.5350953, TestApi.test_when)
+		self.assertAlmostEqual(az, 357.1496112)
+		self.assertAlmostEqual(al, -53.7673267)
+
 		az, al = solar.get_position(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(az, -230.4936927)
+		self.assertAlmostEqual(az, 50.4936927)
 		self.assertAlmostEqual(al, 63.0945557)
 
 		# From Greenwich
 		az, al = solar.get_position(51.4826, 0, TestApi.test_when)
-		self.assertAlmostEqual(az, -153.0476242)
+		self.assertAlmostEqual(az, 333.0476242)
 		self.assertAlmostEqual(al, -59.8384205)
 
 	def testGetAltitude(self):
@@ -176,7 +180,7 @@ class TestApi(unittest.TestCase):
 
 	def testGetAzimuth(self):
 		az = solar.get_azimuth(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(az, -230.4936927)
+		self.assertAlmostEqual(az, 50.4936927)
 
 
 if __name__ == "__main__":
