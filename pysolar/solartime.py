@@ -37,6 +37,7 @@ leap_seconds_adjustments = \
     [ # two entries per year starting from 1972, first for 23:59:59 June 30,
       # second for 23:59:59 December 31. +1 indicates that 23:59:60 follows,
       # -1 indicates that 23:59:59 does not exist, not that the latter has ever occurred.
+      # source: https://www.nist.gov/pml/time-and-frequency-division/atomic-standards/leap-second-and-ut1-utc-information
       (+1, +1), # 1972
       (0, +1), # 1973
       (0, +1), # 1974
@@ -81,7 +82,8 @@ leap_seconds_adjustments = \
       (0, 0), # 2013
       (0, 0), # 2014
       (+1, 0), # 2015
-      (+1, 0), # 2016
+      (0, +1), # 2016
+      (0, 0)  # 2017
     ]
 
 def get_leap_seconds(when) :
