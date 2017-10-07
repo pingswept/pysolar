@@ -204,11 +204,11 @@ def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
     bc = math.sin(2 * math.pi * (day - 1.0)/(365.0))
     cd = math.cos(2 * (2 * math.pi * (day - 1.0)/(365.0)))
     df = math.sin(2 * (2 * math.pi * (day - 1.0)/(365.0)))
-    decl = solar.get_declination(day)
-    ha = solar.get_hour_angle(when, longitude_deg)
-    ZA = math.sin(latitude_deg) * math.sin(decl) + math.cos(latitude_deg) * math.cos(decl) * math.cos(ha)
+    decl = math.radians(solar.get_declination(day))
+    ha = math.radians(solar.get_hour_angle(when, longitude_deg))
+    ZA = math.sin(math.radians(latitude_deg)) * math.sin(decl) + math.cos(math.radians(latitude_deg)) * math.cos(decl) * math.cos(ha)
 
-    return SC * ZA * (1.00010 + 0.034221 * ab + 0.001280 * bc + 0.000719 * cd + 0.000077 * df)
+    return SC * ZA * (1.00010 + 0.034221 * ab + 0.001280 * bc + 0.000719 * cd + 0.000077 * df) if ZA > 0 else 0.0
 
 
 def declination_degree(when, TY = TY_default ):

@@ -18,7 +18,7 @@
 """This file contains functions related to time conversion.
 """
 import warnings
-import math
+import sys
 import datetime
 import time
 from .constants import \
@@ -37,6 +37,7 @@ leap_seconds_adjustments = \
     [ # two entries per year starting from 1972, first for 23:59:59 June 30,
       # second for 23:59:59 December 31. +1 indicates that 23:59:60 follows,
       # -1 indicates that 23:59:59 does not exist, not that the latter has ever occurred.
+      # source: https://www.nist.gov/pml/time-and-frequency-division/atomic-standards/leap-second-and-ut1-utc-information
       (+1, +1), # 1972
       (0, +1), # 1973
       (0, +1), # 1974
@@ -81,7 +82,8 @@ leap_seconds_adjustments = \
       (0, 0), # 2013
       (0, 0), # 2014
       (+1, 0), # 2015
-      (+1, 0), # 2016
+      (0, +1), # 2016
+      (0, 0)  # 2017
     ]
 
 def get_leap_seconds(when) :
@@ -733,15 +735,18 @@ def timestamp(when):
     """ Return POSIX timestamp as a float.
     cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py in order to work on python 3.2
     """
-    _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-    print(when)
-    "Return POSIX timestamp as float"
-    if when.tzinfo is None:
-        return time.mktime((when.year, when.month, when.day,
-                             when.hour, when.minute, when.second,
-                             -1, -1, -1)) + when.microsecond / 1e6
+    if sys.version[0] == '3':
+        _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        #print(when)
+        "Return POSIX timestamp as float"
+        if when.tzinfo is None:
+            return time.mktime((when.year, when.month, when.day,
+                                 when.hour, when.minute, when.second,
+                                 -1, -1, -1)) + when.microsecond / 1e6
+        else:
+            return (when - _EPOCH).total_seconds()
     else:
-        return (when - _EPOCH).total_seconds()
+        return float((time.mktime(when.timetuple()) + when.microsecond/1000000.0))
 
 def get_julian_solar_day(when):
     "returns the UT Julian day number (including fraction of a day) corresponding to" \
