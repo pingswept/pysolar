@@ -27,10 +27,11 @@ from pysolar import \
 import datetime
 import unittest
 
+
 class testSolar(unittest.TestCase):
 
 	def setUp(self):
-		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo = datetime.timezone.utc)
+		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo = datetime.timezone.utc)  # only works with Python 3
 		self.d += datetime.timedelta(seconds = time.get_delta_t(self.d) - time.tt_offset - time.get_leap_seconds(self.d))
 		  # Reda & Andreas say that this time is in "Local Standard Time", which they
 		  # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
@@ -157,32 +158,32 @@ class testSolar(unittest.TestCase):
 	def testTemperatureWithElevation(self):
 		self.assertAlmostEqual(277.9600, self.temperature_with_elevation, 4)
 
+
 class TestApi(unittest.TestCase):
-	test_when = datetime.datetime(2016, 12, 19, 23, 0, 0, tzinfo=datetime.timezone.utc )
+	test_when = datetime.datetime(2016, 12, 19, 23, 0, 0, tzinfo=datetime.timezone.utc)
 
 	def testGetPosition(self):
 		az, al = solar.get_position(59.6365662,12.5350953, TestApi.test_when)
-		self.assertAlmostEqual(az, 357.1496112)
-		self.assertAlmostEqual(al, -53.7673267)
+		self.assertAlmostEqual(az, 357.1431475)
+		self.assertAlmostEqual(al, -53.7672218)
 
 		az, al = solar.get_position(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(az, 50.4936927)
-		self.assertAlmostEqual(al, 63.0945557)
+		self.assertAlmostEqual(az, 50.5003507)
+		self.assertAlmostEqual(al, 63.0922058)
 
 		# From Greenwich
 		az, al = solar.get_position(51.4826, 0, TestApi.test_when)
-		self.assertAlmostEqual(az, 333.0476242)
-		self.assertAlmostEqual(al, -59.8384205)
+		self.assertAlmostEqual(az, 333.0403866)
+		self.assertAlmostEqual(al, -59.8372445)
 
 	def testGetAltitude(self):
 		al = solar.get_altitude(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(al, 63.0945557)
+		self.assertAlmostEqual(al, 63.0922058)
 
 	def testGetAzimuth(self):
 		az = solar.get_azimuth(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(az, 50.4936927)
+		self.assertAlmostEqual(az, 50.5003507)
 
 
 if __name__ == "__main__":
 	unittest.main(verbosity=2)
-#end if
