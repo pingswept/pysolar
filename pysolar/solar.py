@@ -23,7 +23,7 @@ This module contains the most important functions for calculation of the positio
 import math
 import datetime
 from . import constants
-from . import solartime as time
+from . import solartime as stime
 from . import radiation
 
 def solar_test():
@@ -56,10 +56,10 @@ def get_topocentric_position(latitude_deg, longitude_deg, when, elevation = 0):
     projected_axial_distance = get_projected_axial_distance(elevation, latitude_deg)
 
     # time-dependent calculations
-    jd = time.get_julian_solar_day(when)
-    jde = time.get_julian_ephemeris_day(when)
-    jce = time.get_julian_ephemeris_century(jde)
-    jme = time.get_julian_ephemeris_millennium(jce)
+    jd = stime.get_julian_solar_day(when)
+    jde = stime.get_julian_ephemeris_day(when)
+    jce = stime.get_julian_ephemeris_century(jde)
+    jme = stime.get_julian_ephemeris_millennium(jce)
     geocentric_latitude = get_geocentric_latitude(jme)
     geocentric_longitude = get_geocentric_longitude(jme)
     sun_earth_distance = get_sun_earth_distance(jme)
@@ -246,7 +246,7 @@ def get_local_hour_angle(apparent_sidereal_time, longitude, geocentric_sun_right
 
 def get_mean_sidereal_time(jd):
     # This function doesn't agree with Andreas and Reda as well as it should. Works to ~5 sig figs in current unit test
-    jc = time.get_julian_century(jd)
+    jc = stime.get_julian_century(jd)
     sidereal_time =  280.46061837 + (360.98564736629 * (jd - 2451545.0)) + 0.000387933 * jc * jc * (1 - jc / 38710000)
     return sidereal_time % 360
 
