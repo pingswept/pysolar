@@ -25,6 +25,8 @@ import datetime
 from . import constants
 from . import solartime as stime
 from . import radiation
+from .tzinfo_check import check_aware_dt
+
 
 def solar_test():
     latitude_deg = 42.364908
@@ -40,15 +42,18 @@ def solar_test():
             print(timestamp, "UTC", altitude_deg, azimuth_deg, power)
         d = d + thirty_minutes
 
+
 def equation_of_time(day):
     "returns the number of minutes to add to mean solar time to get actual solar time."
     b = 2 * math.pi / 364.0 * (day - 81)
     return 9.87 * math.sin(2 * b) - 7.53 * math.cos(b) - 1.5 * math.sin(b)
 
+
 def get_aberration_correction(sun_earth_distance):     # sun-earth distance is in astronomical units
     return -20.4898/(3600.0 * sun_earth_distance)
 
 
+@check_aware_dt('when')
 def get_topocentric_position(latitude_deg, longitude_deg, when, elevation = 0):
     '''Common calculations for altitude and azimuth'''
     # location-dependent calculations
@@ -81,6 +86,7 @@ def get_topocentric_position(latitude_deg, longitude_deg, when, elevation = 0):
     return topocentric_sun_declination, topocentric_local_hour_angle
 
 
+@check_aware_dt('when')
 def get_position(latitude_deg, longitude_deg, when, elevation=0,
                  temperature = constants.standard_temperature,
                  pressure = constants.standard_pressure):
@@ -108,6 +114,7 @@ def get_position(latitude_deg, longitude_deg, when, elevation=0,
     return azimuth_deg, altitude_deg
 
 
+@check_aware_dt('when')
 def get_altitude(latitude_deg, longitude_deg, when, elevation = 0,
                  temperature = constants.standard_temperature, pressure = constants.standard_pressure):
     '''See also the faster, but less accurate, get_altitude_fast()'''
@@ -119,6 +126,7 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0,
     return topocentric_elevation_angle + refraction_correction
 
 
+@check_aware_dt('when')
 def get_altitude_fast(latitude_deg, longitude_deg, when):
 # expect 19 degrees for solar.get_altitude(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
     day = when.utctimetuple().tm_yday
@@ -129,12 +137,16 @@ def get_altitude_fast(latitude_deg, longitude_deg, when):
     second_term = math.sin(latitude_rad) * math.sin(declination_rad)
     return math.degrees(math.asin(first_term + second_term))
 
+
 def get_apparent_sidereal_time(jd, jme, nutation):
     return get_mean_sidereal_time(jd) + nutation['longitude'] * math.cos(get_true_ecliptic_obliquity(jme, nutation))
+
 
 def get_apparent_sun_longitude(geocentric_longitude, nutation, ab_correction):
     return geocentric_longitude + nutation['longitude'] + ab_correction
 
+
+@check_aware_dt('when')
 def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):
 
     topocentric_sun_declination, topocentric_local_hour_angle = \
@@ -230,6 +242,7 @@ def get_heliocentric_latitude(jme):
 def get_heliocentric_longitude(jme):
     return math.degrees(get_coeff(jme, constants.heliocentric_longitude_coeffs) / 1e8) % 360
 
+@check_aware_dt('when')
 def get_hour_angle(when, longitude_deg):
     solar_time = get_solar_time(longitude_deg, when)
     return 15.0 * (solar_time - 12.0)
@@ -326,6 +339,7 @@ def get_refraction_correction(pressure, temperature, topocentric_elevation_angle
         
     return del_e
 
+@check_aware_dt('when')
 def get_solar_time(longitude_deg, when):
     "returns solar time in hours for the specified longitude and time," \
     " accurate only to the nearest minute."
