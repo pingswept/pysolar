@@ -51,7 +51,7 @@ def check_aware_dt(*argnames):
     func_with_check : function
       decorated function, basically the same function as 'func', 
       with the check for tz-awareness performed before execution"""
-    @wraps(func, updated=WRAPPER_UPDATES + ('__doc__',))
+    @wraps(func)
     def func_with_check(*args, **kwargs):
       """Decorated function ; will be, apart from the check, 
       completely identical to the 'func' function

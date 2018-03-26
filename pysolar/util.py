@@ -432,8 +432,8 @@ def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevati
 
 @check_aware_dt('when')
 def direct_underclear(latitude_deg, longitude_deg, when,
-                      temperature = constants.standard_temperature, pressure = constants.standard_pressure, TY = TY_default,
-                      AM = AM_default, TL = TL_default,elevation = elevation_default):
+                      TY = TY_default, AM = AM_default, TL = TL_default, elevation = elevation_default, 
+                      temperature = constants.standard_temperature, pressure = constants.standard_pressure):
     """Equation calculates direct radiation under clear sky conditions.
 
     Parameters
@@ -446,10 +446,6 @@ def direct_underclear(latitude_deg, longitude_deg, when,
         Greenwich meridian.
     when : datetime.datetime
         date/time for which to do the calculation
-    temperature : float
-        atmospheric temperature
-    pressure : float
-        pressure in pascals
     TY : float
         Total number of days in a year. eg. 365 days per year,(no leap days)
     AM : float
@@ -461,6 +457,10 @@ def direct_underclear(latitude_deg, longitude_deg, when,
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean
         sea level.
+    temperature : float
+        atmospheric temperature
+    pressure : float
+        pressure in pascals
 
     Returns
     -------
@@ -486,8 +486,8 @@ def direct_underclear(latitude_deg, longitude_deg, when,
 
 @check_aware_dt('when')
 def global_irradiance_clear(latitude_deg, longitude_deg, when,
-                            temperature = constants.standard_temperature, pressure = constants.standard_pressure, TY = TY_default,
-                            AM = AM_default, TL = TL_default, elevation = elevation_default):
+                            TY = TY_default, AM = AM_default, TL = TL_default, elevation = elevation_default, 
+                            temperature = constants.standard_temperature, pressure = constants.standard_pressure):
 
     """Equation calculates global irradiance under clear sky conditions.
 
@@ -537,7 +537,8 @@ def global_irradiance_clear(latitude_deg, longitude_deg, when,
                               pressure = constants.standard_pressure)
 
     DIFFC = diffuse_underclear(latitude_deg, longitude_deg, when,
-                               elevation, temperature = constants.standard_temperature, pressure= constants.standard_pressure)
+                               elevation, temperature = constants.standard_temperature, 
+                               pressure= constants.standard_pressure)
 
     ghic = (DIRC + DIFFC)
 
@@ -644,7 +645,7 @@ def clear_index(ghi_data, latitude_deg, longitude_deg, when):
             new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    EXTR1 = extraterrestrial_irrad(when, latitude_deg, longitude_deg)
+    EXTR1 = extraterrestrial_irrad(latitude_deg, longitude_deg, when)
 
     KT = (ghi_data / EXTR1)
 

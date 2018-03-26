@@ -27,13 +27,14 @@ import datetime
 import pytz
 import unittest
 from pysolar.tzinfo_check import NoTimeZoneInfoError
+import numpy as np
 
 
 class TestErrorTimeZoneIsNone(unittest.TestCase):
   unaware = datetime.datetime(2000, 1, 1)
 
-  lat = 0.0
-  lon = 0.0
+  lat = 1.0
+  lon = 1.0
 
   def test_solar_topocentric_position_raise_error(self):
     with self.assertRaises(NoTimeZoneInfoError):
@@ -133,7 +134,7 @@ class TestErrorTimeZoneIsNone(unittest.TestCase):
 
   def test_util_clear_index_raise_error(self):
     with self.assertRaises(NoTimeZoneInfoError):
-      ghi_data = [0, 0] # Don't know what ghi_data is supposed to be
+      ghi_data = np.asarray([0, 0]) # Don't know what ghi_data is supposed to be
       util.clear_index(ghi_data, self.lat, self.lon, self.unaware)
 
 
@@ -141,8 +142,8 @@ class TestErrorTimeZoneIsNone(unittest.TestCase):
 class TestTimeZoneNotNone(unittest.TestCase):
   aware = datetime.datetime(2000, 1, 1, tzinfo=pytz.utc)
 
-  lat = 0.0
-  lon = 0.0
+  lat = 1.0
+  lon = 1.0
 
   def test_solar_topocentric_position_no_error(self):
     try:
@@ -314,7 +315,7 @@ as 'datetime' object is tz-aware.""")
 
   def test_util_clear_index(self):
     try:
-      ghi_data = [0, 0] # Don't know what ghi_data is supposed to be
+      ghi_data = np.asarray([0, 0]) # Don't know what ghi_data is supposed to be
       util.clear_index(ghi_data, self.lat, self.lon, self.aware)
     except NoTimeZoneInfoError:
       self.fail("""'NoTimeZoneInfoError' should not be raised \
