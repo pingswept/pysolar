@@ -23,6 +23,7 @@ import datetime
 import time
 from .constants import \
     seconds_per_day
+from pysolar.tzinfo_check import check_aware_dt
 
 julian_day_offset = 1721425 - 0.5 # add to datetime.datetime.toordinal() to get Julian day number
 gregorian_day_offset = 719163 # number of days to add to datetime.datetime.timestamp() / seconds_per_day to agree with datetime.datetime.toordinal()
@@ -86,6 +87,7 @@ leap_seconds_adjustments = \
       (0, 0)  # 2017
     ]
 
+@check_aware_dt('when')
 def get_leap_seconds(when) :
     "returns adjustment to be added to UTC at the specified datetime to produce TAI."
     when = when.utctimetuple()
@@ -711,6 +713,7 @@ delta_t = \
         ],
     ] # delta_t
 
+@check_aware_dt('when')
 def get_delta_t(when) :
     "returns a suitable value for delta_t for the given datetime."
     when = when.utctimetuple()
@@ -731,23 +734,7 @@ def get_delta_t(when) :
           # don't bother doing any fancy interpolation
 #end get_delta_t
 
-def timestamp(when):
-    """ Return POSIX timestamp as a float.
-    cloned from https://hg.python.org/cpython/file/3.5/Lib/datetime.py in order to work on python 3.2
-    """
-    if sys.version[0] == '3':
-        _EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-        #print(when)
-        "Return POSIX timestamp as float"
-        if when.tzinfo is None:
-            return time.mktime((when.year, when.month, when.day,
-                                 when.hour, when.minute, when.second,
-                                 -1, -1, -1)) + when.microsecond / 1e6
-        else:
-            return (when - _EPOCH).total_seconds()
-    else:
-        return float((time.mktime(when.timetuple()) + when.microsecond/1000000.0))
-
+@check_aware_dt('when')
 def get_julian_solar_day(when):
     "returns the UT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
@@ -755,7 +742,7 @@ def get_julian_solar_day(when):
     " happened over such wildly varying times in different regions."
     return \
         (
-                (timestamp(when) + get_leap_seconds(when) + tt_offset - get_delta_t(when))
+                (when.timestamp() + get_leap_seconds(when) + tt_offset - get_delta_t(when))
             /
                 seconds_per_day
         +
@@ -765,6 +752,7 @@ def get_julian_solar_day(when):
         )
 #end get_julian_solar_day
 
+@check_aware_dt('when')
 def get_julian_ephemeris_day(when) :
     "returns the TT Julian day number (including fraction of a day) corresponding to" \
     " the specified date/time. This version assumes the proleptic Gregorian calender;" \
@@ -772,7 +760,7 @@ def get_julian_ephemeris_day(when) :
     " happened over such wildly varying times in different regions."
     return \
         (
-                (timestamp(when) + get_leap_seconds(when) + tt_offset)
+                (when.timestamp() + get_leap_seconds(when) + tt_offset)
             /
                 seconds_per_day
         +

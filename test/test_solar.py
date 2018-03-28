@@ -22,17 +22,17 @@
 from pysolar import \
 	solar, \
 	constants, \
-	time, \
+	solartime as stime, \
 	elevation
 import datetime
 import unittest
 
 
-class testSolar(unittest.TestCase):
+class TestSolar(unittest.TestCase):
 
 	def setUp(self):
 		self.d = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo = datetime.timezone.utc)  # only works with Python 3
-		self.d += datetime.timedelta(seconds = time.get_delta_t(self.d) - time.tt_offset - time.get_leap_seconds(self.d))
+		self.d += datetime.timedelta(seconds = stime.get_delta_t(self.d) - stime.tt_offset - stime.get_leap_seconds(self.d))
 		  # Reda & Andreas say that this time is in "Local Standard Time", which they
 		  # define as 7 hours behind UT (not UTC). Hence the adjustment to convert UT
 		  # to UTC.
@@ -43,11 +43,11 @@ class testSolar(unittest.TestCase):
 		self.temperature = 11.0 + constants.celsius_offset # kelvin
 		self.slope = 30.0 # degrees
 		self.slope_orientation = -10.0 # degrees east from south
-		self.jd = time.get_julian_solar_day(self.d)
-		self.jc = time.get_julian_century(self.jd)
-		self.jde = time.get_julian_ephemeris_day(self.d)
-		self.jce = time.get_julian_ephemeris_century(self.jde)
-		self.jme = time.get_julian_ephemeris_millennium(self.jce)
+		self.jd = stime.get_julian_solar_day(self.d)
+		self.jc = stime.get_julian_century(self.jd)
+		self.jde = stime.get_julian_ephemeris_day(self.d)
+		self.jce = stime.get_julian_ephemeris_century(self.jde)
+		self.jme = stime.get_julian_ephemeris_millennium(self.jce)
 		self.geocentric_longitude = solar.get_geocentric_longitude(self.jme)
 		self.geocentric_latitude = solar.get_geocentric_latitude(self.jme)
 		self.nutation = solar.get_nutation(self.jce)
@@ -72,11 +72,6 @@ class testSolar(unittest.TestCase):
 		self.incidence_angle = solar.get_incidence_angle(self.topocentric_zenith_angle, self.slope, self.slope_orientation, self.topocentric_azimuth_angle)
 		self.pressure_with_elevation = elevation.get_pressure_with_elevation(1567.7)
 		self.temperature_with_elevation = elevation.get_temperature_with_elevation(1567.7)
-  
-	def test_timestamp(self):
-		no_tzinfo = datetime.datetime(2003, 10, 17, 19, 30, 30, tzinfo=None)
-		print('d', time.timestamp(self.d))
-		print('no tzinfo', time.timestamp(no_tzinfo))
 
 	def test_get_julian_solar_day(self):
 		self.assertAlmostEqual(2452930.312847, self.jd, 6) # value from Reda and Andreas (2005)
