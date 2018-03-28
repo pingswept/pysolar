@@ -7,7 +7,7 @@ import unittest
 import datetime
 from pysolar.solar import *
 import pytz
-from pysolar.time import *
+from pysolar.solartime import *
 
 
 class Test(unittest.TestCase):
