@@ -32,6 +32,7 @@ from datetime import \
     timedelta
 import math
 from . import solar, constants
+from .tzinfo_check import check_aware_dt
 
 # Some default constants
 
@@ -43,6 +44,7 @@ elevation_default = 0.0      # Default elevation is 0.0
 
 # Useful equations for analysis
 
+@check_aware_dt('when')
 def get_sunrise_sunset(latitude_deg, longitude_deg, when):
     """This function calculates the astronomical sunrise and sunset times in local time.
 
@@ -132,16 +134,19 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
     sunset_time = same_day + timedelta(hours = TON + sunn - time_adst)
     return sunrise_time, sunset_time
 
+@check_aware_dt('when')
 def get_sunrise_time(latitude_deg, longitude_deg, when):
     "Wrapper for get_sunrise_sunset that returns just the sunrise time."
     return \
         get_sunrise_sunset(latitude_deg, longitude_deg, when)[0]
 
+@check_aware_dt('when')
 def get_sunset_time(latitude_deg, longitude_deg, when):
     "Wrapper for get_sunrise_sunset that returns just the sunset time."
     return \
         get_sunrise_sunset(latitude_deg, longitude_deg, when)[1]
 
+@check_aware_dt('when')
 def mean_earth_sun_distance(when):
     """Mean Earth-Sun distance is the arithmetical mean of the maximum and minimum distances
     between a planet (Earth) and the object about which it revolves (Sun). However,
@@ -166,7 +171,8 @@ def mean_earth_sun_distance(when):
 
     return 1 - 0.0335 * math.sin(2 * math.pi * (when.utctimetuple().tm_yday - 94)) / 365
 
-def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
+@check_aware_dt('when')
+def extraterrestrial_irrad(latitude_deg, longitude_deg, when, SC=SC_default):
     """Equation calculates Extratrestrial radiation. Solar radiation incident outside the earth's
     atmosphere is called extraterrestrial radiation. On average the extraterrestrial irradiance
     is 1367 Watts/meter2 (W/m2). This value varies by + or - 3 percent as the earth orbits the sun.
@@ -211,7 +217,8 @@ def extraterrestrial_irrad(when, latitude_deg, longitude_deg,SC=SC_default):
     return SC * ZA * (1.00010 + 0.034221 * ab + 0.001280 * bc + 0.000719 * cd + 0.000077 * df) if ZA > 0 else 0.0
 
 
-def declination_degree(when, TY = TY_default ):
+@check_aware_dt('when')
+def declination_degree(when, TY = TY_default):
     """The declination of the sun is the angle between Earth's equatorial plane and a line
     between the Earth and the sun. It varies between 23.45 degrees and -23.45 degrees,
     hitting zero on the equinoxes and peaking on the solstices.
@@ -236,7 +243,8 @@ def declination_degree(when, TY = TY_default ):
     return constants.earth_axis_inclination * math.sin((2 * math.pi / (TY)) * ((when.utctimetuple().tm_yday) - 81))
 
 
-def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature = constants.standard_temperature,
+@check_aware_dt('when')
+def solarelevation_function_clear(latitude_deg, longitude_deg, when, temperature = constants.standard_temperature,
                                   pressure = constants.standard_pressure,  elevation = elevation_default):
     """Equation calculates Solar elevation function for clear sky type.
 
@@ -272,6 +280,7 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, when,temperature 
     altitude = solar.get_altitude(latitude_deg, longitude_deg,when, elevation, temperature,pressure)
     return (0.038175 + (1.5458 * (math.sin(altitude))) + ((-0.59980) * (0.5 * (1 - math.cos(2 * (altitude))))))
 
+@check_aware_dt('when')
 def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
                                      elevation = elevation_default, temperature = constants.standard_temperature,
                                      pressure = constants.standard_pressure):
@@ -339,6 +348,7 @@ def diffuse_transmittance(TL = TL_default):
     return ((-21.657) + (41.752 * (TL)) + (0.51905 * (TL) * (TL)))
 
 
+@check_aware_dt('when')
 def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_default,
                        temperature = constants.standard_temperature, pressure = constants.standard_pressure, TL=TL_default):
     """Equation calculates diffuse radiation under clear sky conditions.
@@ -378,6 +388,7 @@ def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_
 
     return mean_earth_sun_distance(when) * DT * altitude
 
+@check_aware_dt('when')
 def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevation_default,
                           temperature = constants.standard_temperature, pressure = constants.standard_pressure,TL=TL_default):
     """Function calculates the diffuse radiation under overcast conditions.
@@ -419,9 +430,10 @@ def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevati
                                         temperature, pressure)))
     return DIFOC
 
+@check_aware_dt('when')
 def direct_underclear(latitude_deg, longitude_deg, when,
-                      temperature = constants.standard_temperature, pressure = constants.standard_pressure, TY = TY_default,
-                      AM = AM_default, TL = TL_default,elevation = elevation_default):
+                      TY = TY_default, AM = AM_default, TL = TL_default, elevation = elevation_default, 
+                      temperature = constants.standard_temperature, pressure = constants.standard_pressure):
     """Equation calculates direct radiation under clear sky conditions.
 
     Parameters
@@ -434,10 +446,6 @@ def direct_underclear(latitude_deg, longitude_deg, when,
         Greenwich meridian.
     when : datetime.datetime
         date/time for which to do the calculation
-    temperature : float
-        atmospheric temperature
-    pressure : float
-        pressure in pascals
     TY : float
         Total number of days in a year. eg. 365 days per year,(no leap days)
     AM : float
@@ -449,6 +457,10 @@ def direct_underclear(latitude_deg, longitude_deg, when,
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean
         sea level.
+    temperature : float
+        atmospheric temperature
+    pressure : float
+        pressure in pascals
 
     Returns
     -------
@@ -472,19 +484,15 @@ def direct_underclear(latitude_deg, longitude_deg, when,
 
     return DIRC
 
-def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
-                            temperature = constants.standard_temperature, pressure = constants.standard_pressure, TY = TY_default,
-                            AM = AM_default, TL = TL_default, elevation = elevation_default):
+@check_aware_dt('when')
+def global_irradiance_clear(latitude_deg, longitude_deg, when,
+                            TY = TY_default, AM = AM_default, TL = TL_default, elevation = elevation_default, 
+                            temperature = constants.standard_temperature, pressure = constants.standard_pressure):
 
     """Equation calculates global irradiance under clear sky conditions.
 
     Parameters
     ----------
-    DIRC : float
-        Direct Irradiation under clear
-    DIFFC : float
-        Diffuse Irradiation under clear sky
-
     latitude_deg : float
         latitude in decimal degree. A geographical term denoting the north/south angular location of a place
         on a sphere.
@@ -529,13 +537,15 @@ def global_irradiance_clear(DIRC, DIFFC, latitude_deg, longitude_deg, when,
                               pressure = constants.standard_pressure)
 
     DIFFC = diffuse_underclear(latitude_deg, longitude_deg, when,
-                               elevation, temperature = constants.standard_temperature, pressure= constants.standard_pressure)
+                               elevation, temperature = constants.standard_temperature, 
+                               pressure= constants.standard_pressure)
 
     ghic = (DIRC + DIFFC)
 
     return ghic
 
 
+@check_aware_dt('when')
 def global_irradiance_overcast(latitude_deg, longitude_deg, when,
                                elevation = elevation_default, temperature = constants.standard_temperature,
                                pressure = constants.standard_pressure):
@@ -580,7 +590,7 @@ def global_irradiance_overcast(latitude_deg, longitude_deg, when,
     return ghioc
 
 
-def diffuse_ratio(DIFF_data,ghi_data):
+def diffuse_ratio(DIFF_data, ghi_data):
     """Function calculates the Diffuse ratio.
 
     Parameters
@@ -606,7 +616,8 @@ def diffuse_ratio(DIFF_data,ghi_data):
     return K
 
 
-def clear_index(ghi_data, when, latitude_deg, longitude_deg):
+@check_aware_dt('when')
+def clear_index(ghi_data, latitude_deg, longitude_deg, when):
 
     """This calculates the clear index ratio.
 
@@ -634,8 +645,8 @@ def clear_index(ghi_data, when, latitude_deg, longitude_deg):
             new approaches", energy 30 (2005), pp 1533 - 1549.
 
     """
-    EXTR1 = extraterrestrial_irrad(when, latitude_deg, longitude_deg)
+    EXTR1 = extraterrestrial_irrad(latitude_deg, longitude_deg, when)
 
-    KT = (ghi_data/EXTR1)
+    KT = (ghi_data / EXTR1)
 
     return KT
