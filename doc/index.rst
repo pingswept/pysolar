@@ -52,36 +52,45 @@ The reference frame for Pysolar is shown in the figure below. Altitude is reckon
 
 Then, use the solar.get_altitude() function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
 
-    host:~/pysolar$ python3
-    Python 3.4.0 (default, Apr 11 2014, 13:05:18) 
-    [GCC 4.8.2] on linux
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> from pysolar.solar import *
-    >>> import datetime
-    >>> d = datetime.datetime.now()
-    >>> get_altitude(42.206, -71.382, d)
-    24.39867440096082
-    >>> d = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320)
-    >>> get_altitude(42.206, -71.382, d)
-    20.374937135509537
+
+   from pysolar.solar import *
+   import datetime
+   date = datetime.datetime.now()
+   print(get_altitude(42.206, -71.382, date))
+   date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
+   print(get_altitude(42.206, -71.382, date))
+
+Results in :
+
+   6.963105627775295
+
+   30.91446827139096
+   
+The first number will be different, unless you by chance do the calculation at the exact same time as this was written...
 
 You can also calculate the azimuth of the sun, as shown below.::
 
-    >>> get_azimuth(42.206, -71.382, datetime.datetime(2007, 2, 18, 15, 18, 0, 0))
-    -52.418308823492794
+   date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
+   get_azimuth(42.206, -71.382, date)
+    
+Results in :
+    
+    -329.24819184280483
 
 Estimate of clear-sky radiation
 -------------------------------
 
 Once you calculate azimuth and altitude of the sun, you can predict the direct irradiation from the sun using Pysolar. ``get_radiation_direct()`` returns a value in watts per square meter. As of version 0.7, the function is *not* smart enough to return zeros at night. It does account for the scattering of light by the atmosphere, though it uses an atmospheric model based on data taken in the United States.::
 
-    >>> latitude_deg = 42.3 # positive in the northern hemisphere
-    >>> longitude_deg = -71.4 # negative reckoning west from prime meridian in Greenwich, England
-    >>> d = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320)
-    >>> altitude_deg = get_altitude(latitude_deg, longitude_deg, d)
-    >>> azimuth_deg = get_azimuth(latitude_deg, longitude_deg, d)
-    >>> radiation.get_radiation_direct(d, altitude_deg)
-    793.0379291685598
+   latitude_deg = 42.206 # positive in the northern hemisphere
+   longitude_deg = -71.382 # negative reckoning west from prime meridian in Greenwich, England
+   date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
+   altitude_deg = get_altitude(latitude_deg, longitude_deg, date)
+   radiation.get_radiation_direct(date, altitude_deg)
+
+Results in
+
+   909.582292149944
 
 Troubleshooting
 ===============
