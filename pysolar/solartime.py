@@ -737,7 +737,7 @@ def get_delta_t(when) :
 @check_aware_dt('when')
 def get_julian_solar_day(when):
     "returns the UT Julian day number (including fraction of a day) corresponding to" \
-    " the specified date/time. This version assumes the proleptic Gregorian calender;" \
+    " the specified date/time. This version assumes the proleptic Gregorian calendar;" \
     " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
     " happened over such wildly varying times in different regions."
     return \
@@ -755,7 +755,7 @@ def get_julian_solar_day(when):
 @check_aware_dt('when')
 def get_julian_ephemeris_day(when) :
     "returns the TT Julian day number (including fraction of a day) corresponding to" \
-    " the specified date/time. This version assumes the proleptic Gregorian calender;" \
+    " the specified date/time. This version assumes the proleptic Gregorian calendar;" \
     " trying to adjust for pre-Gregorian dates/times seems pointless when the changeover" \
     " happened over such wildly varying times in different regions."
     return \
