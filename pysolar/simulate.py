@@ -18,7 +18,7 @@
 """Support functions for horizon calculation
 
 """
-import math
+from . import numeric as math
 import datetime
 from . import constants
 from . import radiation
@@ -27,7 +27,6 @@ from . import solar
 def datetime_range(start_datetime, end_datetime, step_minutes):
     '''yields a sequence of datetimes evenly spaced apart by step_minutes.'''
     step = step_minutes * 60
-    time_list = []
     span = end_datetime - start_datetime
     dt = datetime.timedelta(seconds = step)
     for n in range((span.days * constants.seconds_per_day + span.seconds) // step) :

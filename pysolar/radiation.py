@@ -18,7 +18,7 @@
 """Calculate different kinds of radiation components via default values
 
 """
-import math
+from . import numeric as math
 
 def get_air_mass_ratio(altitude_deg):
     # from Masters, p. 412

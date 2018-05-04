@@ -20,7 +20,7 @@
 This module contains the most important functions for calculation of the position of the sun.
 
 """
-import math
+from . import numeric as math
 import datetime
 from . import constants
 from . import solartime as stime
@@ -34,7 +34,7 @@ def solar_test():
     longitude_deg = -71.112828
     d = datetime.datetime.now(tz=pytz.UTC)
     thirty_minutes = datetime.timedelta(hours = 0.5)
-    for i in range(48):
+    for _ in range(48):
         timestamp = d.ctime()
         altitude_deg = get_altitude(latitude_deg, longitude_deg, d)
         azimuth_deg = get_azimuth(latitude_deg, longitude_deg, d)
@@ -169,10 +169,10 @@ def get_azimuth_fast(latitude_deg, longitude_deg, when):
 
     azimuth_rad = math.asin(math.cos(declination_rad) * math.sin(hour_angle_rad) / math.cos(altitude_rad))
 
-    if(math.cos(hour_angle_rad) >= (math.tan(declination_rad) / math.tan(latitude_rad))):
-        return math.degrees(azimuth_rad)
-    else:
-        return (180 - math.degrees(azimuth_rad))
+    return math.where(math.cos(hour_angle_rad) >= (math.tan(declination_rad) / math.tan(latitude_rad)),
+                      math.degrees(azimuth_rad),
+                      (180 - math.degrees(azimuth_rad))
+                     )
 
 def get_coeff(jme, coeffs):
     "computes a polynomial with time-varying coefficients from the given constant" \
@@ -333,7 +333,7 @@ def get_refraction_correction(pressure, temperature, topocentric_elevation_angle
     # Better method could come from Auer and Standish [2000]:
     # http://iopscience.iop.org/1538-3881/119/5/2472/pdf/1538-3881_119_5_2472.pdf
     
-    if (tea >= -1.0*(sun_radius + atmos_refract)):
+    if math.all(tea >= -1.0*(sun_radius + atmos_refract)):
         a = pressure * 2.830 * 1.02
         b = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
         del_e = a / b
