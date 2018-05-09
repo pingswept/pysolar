@@ -30,7 +30,7 @@
 from datetime import \
     datetime, \
     timedelta
-import math
+from . import numeric as math
 from . import solar, constants
 from .tzinfo_check import check_aware_dt
 

@@ -19,7 +19,6 @@
 
 """
 import warnings
-import math
 from .constants import \
     standard_pressure, \
     standard_temperature, \
@@ -69,7 +68,7 @@ def get_temperature_with_elevation(h, Ts=standard_temperature, Tl=earth_temperat
 def elevation_test():
     print("Elevation(m) Pressure(Pa) Temperature(K)")
     h = 0
-    for i in range(11):
+    for _ in range(11):
         P = get_pressure_with_elevation(h)
         T = get_temperature_with_elevation(h)
         print("%i %i %i" % (h, P, T))
