@@ -26,12 +26,13 @@ from . import constants
 from . import solartime as stime
 from . import radiation
 from .tzinfo_check import check_aware_dt
+import pytz
 
 
 def solar_test():
     latitude_deg = 42.364908
     longitude_deg = -71.112828
-    d = datetime.datetime.utcnow()
+    d = datetime.datetime.now(tz=pytz.UTC)
     thirty_minutes = datetime.timedelta(hours = 0.5)
     for i in range(48):
         timestamp = d.ctime()
