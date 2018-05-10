@@ -325,18 +325,18 @@ def get_refraction_correction(pressure, temperature, topocentric_elevation_angle
     
     sun_radius = 0.26667  
     atmos_refract = 0.5667
-    del_e = 0.0   
     tea = topocentric_elevation_angle
 
     # Approximation only valid if sun is not well below horizon
     # This approximation could be improved; see history at https://github.com/pingswept/pysolar/pull/23
     # Better method could come from Auer and Standish [2000]:
     # http://iopscience.iop.org/1538-3881/119/5/2472/pdf/1538-3881_119_5_2472.pdf
+
+    a = pressure * 2.830 * 1.02
+    b = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
     
-    if math.all(tea >= -1.0*(sun_radius + atmos_refract)):
-        a = pressure * 2.830 * 1.02
-        b = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
-        del_e = a / b
+    del_e = math.where(tea >= -1.0*(sun_radius + atmos_refract),
+                       a / b, 0.)
         
     return del_e
 

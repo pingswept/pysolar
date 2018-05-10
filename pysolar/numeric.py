@@ -50,11 +50,6 @@ def where(condition, x, y):
         return y
 
 
-def all(x):
-    """ scalar version of numpy.all (does nothing) """
-    return x
-
-
 def use_numpy():
     """
     Import required functions/constants from numpy
@@ -72,7 +67,6 @@ def use_numpy():
     globals_import_from('numpy', 'exp', 'exp')
     globals_import_from('numpy', 'e', 'e')
     globals_import_from('numpy', 'where', 'where')
-    globals_import_from('numpy', 'all', 'all')
     globals()['current_mod'] = 'numpy'
 
 def use_math():
@@ -92,7 +86,6 @@ def use_math():
     globals_import_from('math', 'exp', 'exp')
     globals_import_from('math', 'e', 'e')
     globals()['where'] = where
-    globals()['all'] = all
     globals()['current_mod'] = 'math'
 
 try:
