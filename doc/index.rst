@@ -16,7 +16,7 @@ Pysolar is similar to `PyEphem <http://rhodesmill.org/pyephem/>`_, with a few ke
 Difference from Sunpy
 ---------------------
 
-Pysolar is similar to the sun position module in `Sunpy <http://sunpy.org>`_, which is a project focused on solar physics modeling. See, for example, their beautiful gallery of `sun image renderings <http://sunpy.org/gallery/index.html>`_. The Sunpy position module is based on the same algorithm originally described by Jean Meeus, but it appears to omit the later work by Reda and Andreas at NREL that Pysolar uses, or at least the code is shorter. In any case, Sunpy is aimed at solar physics; Pysolar is aimed at modeling solar radiation on the earth. 
+Pysolar is similar to the sun position module in `Sunpy <http://sunpy.org>`_, which is a project focused on solar physics modeling. See, for example, their beautiful gallery of `sun image renderings <http://docs.sunpy.org/en/stable/generated/gallery/index.html>`_. The Sunpy position module is based on the same algorithm originally described by Jean Meeus, but it appears to omit the later work by Reda and Andreas at NREL that Pysolar uses, or at least the code is shorter. In any case, Sunpy is aimed at solar physics; Pysolar is aimed at modeling solar radiation on the earth. 
 
 Prerequisites for use
 ---------------------
