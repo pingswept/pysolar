@@ -165,7 +165,7 @@ def get_azimuth_fast(latitude_deg, longitude_deg, when):
     declination_rad = math.radians(get_declination(day))
     latitude_rad = math.radians(latitude_deg)
     hour_angle_rad = math.radians(get_hour_angle(when, longitude_deg))
-    altitude_rad = math.radians(get_altitude(latitude_deg, longitude_deg, when))
+    altitude_rad = math.radians(get_altitude_fast(latitude_deg, longitude_deg, when))
 
     azimuth_rad = math.asin(math.cos(declination_rad) * math.sin(hour_angle_rad) / math.cos(altitude_rad))
 
