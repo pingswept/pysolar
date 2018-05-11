@@ -83,12 +83,13 @@ def check_aware_dt(*argnames):
           except (IndexError, ValueError):
             dt = kwargs[argname]
           # checking if dt is timezone-aware
-          if not hasattr(dt, 'tzinfo'):
-            raise ValueError(
-              "Expected a 'datetime.datetime' object \
-  for arg '%s', got %s instead" % (argname, dt))
-          if dt.tzinfo is None:
-            raise NoTimeZoneInfoError(argname, dt)
+          if not hasattr(dt, 'shape'):   # don't raise Exception if dt is an array (assumed of datetime64)
+            if not hasattr(dt, 'tzinfo'):
+              raise ValueError(
+                "Expected a 'datetime.datetime' object \
+    for arg '%s', got %s instead" % (argname, dt))
+            if dt.tzinfo is None:
+              raise NoTimeZoneInfoError(argname, dt)
       return func(*args, **kwargs)
     return func_with_check
   return checker

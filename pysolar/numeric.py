@@ -42,12 +42,50 @@ def globals_import_from(module, name, name_as):
     globals()[name_as] = getattr(module, name)
 
 
-def where(condition, x, y):
+def where_math(condition, x, y):
     """ scalar version of numpy.where """
     if condition:
         return x
     else:
         return y
+
+where = where_math
+
+
+def tm_yday_math(d):
+    return d.utctimetuple().tm_yday
+
+tm_yday = tm_yday_math
+
+
+def tm_yday_numpy(d):
+    dd = numpy.array(d, dtype='datetime64[D]')
+    dy = numpy.array(d, dtype='datetime64[Y]')
+    return (dd - dy).astype('int') + 1
+
+
+def tm_hour_math(d):
+    return d.utctimetuple().tm_hour
+
+tm_hour = tm_hour_math
+
+
+def tm_hour_numpy(d):
+    dh = numpy.array(d, dtype='datetime64[h]')
+    dd = numpy.array(d, dtype='datetime64[D]')
+    return (dh - dd).astype('int')
+
+
+def tm_min_math(d):
+    return d.utctimetuple().tm_min
+
+tm_min = tm_min_math
+
+
+def tm_min_numpy(d):
+    dm = numpy.array(d, dtype='datetime64[m]')
+    dh = numpy.array(d, dtype='datetime64[h]')
+    return (dm - dh).astype('int')
 
 
 def use_numpy():
@@ -67,7 +105,11 @@ def use_numpy():
     globals_import_from('numpy', 'exp', 'exp')
     globals_import_from('numpy', 'e', 'e')
     globals_import_from('numpy', 'where', 'where')
+    globals()['tm_yday'] = tm_yday_numpy
+    globals()['tm_hour'] = tm_hour_numpy
+    globals()['tm_min'] = tm_min_numpy
     globals()['current_mod'] = 'numpy'
+
 
 def use_math():
     """
@@ -86,7 +128,11 @@ def use_math():
     globals_import_from('math', 'exp', 'exp')
     globals_import_from('math', 'e', 'e')
     globals()['where'] = where
+    globals()['tm_yday'] = tm_yday_math
+    globals()['tm_hour'] = tm_hour_math
+    globals()['tm_min'] = tm_min_math
     globals()['current_mod'] = 'math'
+
 
 try:
     import numpy

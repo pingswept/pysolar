@@ -130,7 +130,7 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0,
 @check_aware_dt('when')
 def get_altitude_fast(latitude_deg, longitude_deg, when):
 # expect 19 degrees for solar.get_altitude(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 13, 1, 130320))
-    day = when.utctimetuple().tm_yday
+    day = math.tm_yday(when)
     declination_rad = math.radians(get_declination(day))
     latitude_rad = math.radians(latitude_deg)
     hour_angle = get_hour_angle(when, longitude_deg)
@@ -161,11 +161,11 @@ def get_azimuth(latitude_deg, longitude_deg, when, elevation = 0):
 
 def get_azimuth_fast(latitude_deg, longitude_deg, when):
 # expect -50 degrees for solar.get_azimuth(42.364908,-71.112828,datetime.datetime(2007, 2, 18, 20, 18, 0, 0))
-    day = when.utctimetuple().tm_yday
+    day = math.tm_yday(when)
     declination_rad = math.radians(get_declination(day))
     latitude_rad = math.radians(latitude_deg)
     hour_angle_rad = math.radians(get_hour_angle(when, longitude_deg))
-    altitude_rad = math.radians(get_altitude(latitude_deg, longitude_deg, when))
+    altitude_rad = math.radians(get_altitude_fast(latitude_deg, longitude_deg, when))
 
     azimuth_rad = math.asin(math.cos(declination_rad) * math.sin(hour_angle_rad) / math.cos(altitude_rad))
 
@@ -344,10 +344,9 @@ def get_refraction_correction(pressure, temperature, topocentric_elevation_angle
 def get_solar_time(longitude_deg, when):
     "returns solar time in hours for the specified longitude and time," \
     " accurate only to the nearest minute."
-    when = when.utctimetuple()
     return \
         (
-            (when.tm_hour * 60 + when.tm_min + 4 * longitude_deg + equation_of_time(when.tm_yday))
+            (math.tm_hour(when) * 60 + math.tm_min(when) + 4 * longitude_deg + equation_of_time(math.tm_yday(when)))
         /
             60
         )
