@@ -49,7 +49,7 @@ def get_aberration_coeffs():
     if aberration_coeffs == None :
         aberration_coeffs = dict \
           (
-            (name, (lambda a, b, c, d : lambda x : a + b * x + c * x ** 2 + (x ** 3) / d)(*coeffs))
+            (name, (lambda a, b, c, d: lambda x: a + b * x + c * x ** 2 + (x ** 3) / d)(*coeffs))
             for name, coeffs in
                 (
                     ('ArgumentOfLatitudeOfMoon', (93.27191, 483202.017538, -0.0036825, 327270.0)),
@@ -64,17 +64,17 @@ def get_aberration_coeffs():
         aberration_coeffs
 #end get_aberration_coeffs
 
-earth_radius = 6378140.0 # meters
-earth_axis_inclination = 23.45 # degrees
+earth_radius = 6378140.0  # meters
+earth_axis_inclination = 23.45  # degrees
 seconds_per_day = 86400
 
-standard_pressure = 101325.00 # pascals
-standard_temperature = 288.15 # kelvin
-celsius_offset = 273.15 # subtract from kelvin to get deg C, add to deg C to get kelvin
-earth_temperature_lapse_rate = -0.0065 # change in temperature with height, kelvin/metre
-air_gas_constant = 8.31432 # N*m/s^2
-earth_gravity = 9.80665 # m/s^2 or N/kg
-earth_atmosphere_molar_mass = 0.0289644 # kg/mol
+standard_pressure = 101325.00  # pascals
+standard_temperature = 288.15  # kelvin
+celsius_offset = 273.15  # subtract from kelvin to get deg C, add to deg C to get kelvin
+earth_temperature_lapse_rate = -0.0065  # change in temperature with height, kelvin/metre
+air_gas_constant = 8.31432  # N*m/s^2
+earth_gravity = 9.80665  # m/s^2 or N/kg
+earth_atmosphere_molar_mass = 0.0289644  # kg/mol
 
 aberration_sin_terms = \
     [
@@ -212,7 +212,7 @@ nutation_coefficients = \
 
 heliocentric_longitude_coeffs = \
     [
-        [ # L0
+        [  # L0
             (175347046.0,0,0),
             (3341656.0,4.6692568,6283.07585),
             (34894.0,4.6261,12566.1517),
@@ -278,7 +278,7 @@ heliocentric_longitude_coeffs = \
             (30,2.74,1349.87),
             (25,3.16,4690.48)
         ],
-        [ # L1
+        [  # L1
             (628331966747.0,0,0),
             (206059.0,2.678235,6283.07585),
             (4303.0,2.6351,12566.1517),
@@ -314,7 +314,7 @@ heliocentric_longitude_coeffs = \
             (6,2.65,9437.76),
             (6,4.67,4690.48)
         ],
-        [ # L2
+        [  # L2
             (52919.0,0,0),
             (8720.0,1.0721,6283.0758),
             (309.0,0.867,12566.152),
@@ -336,7 +336,7 @@ heliocentric_longitude_coeffs = \
             (2,4.38,5223.69),
             (2,3.75,0.98)
         ],
-        [ # L3
+        [  # L3
             (289.0,5.844,6283.076),
             (35,0,0),
             (17,5.49,12566.15),
@@ -345,26 +345,26 @@ heliocentric_longitude_coeffs = \
             (1,5.3,18849.23),
             (1,5.97,242.73)
         ],
-        [ # L4
+        [  # L4
             (114.0,3.142,0),
             (8,4.13,6283.08),
             (1,3.84,12566.15)
         ],
-        [ # L5
+        [  # L5
             (1,3.14,0)
         ],
     ]
 
 heliocentric_latitude_coeffs = \
     [
-        [ # B0
+        [  # B0
             (280.0,3.199,84334.662),
             (102.0,5.422,5507.553),
             (80,3.88,5223.69),
             (44,3.7,2352.87),
             (32,4,1577.34)
         ],
-        [ # B1
+        [  # B1
             (9,3.9,5507.55),
             (6,1.73,5223.69)
         ],
@@ -372,7 +372,7 @@ heliocentric_latitude_coeffs = \
 
 sun_earth_distance_coeffs = \
     [
-        [ # R0
+        [  # R0
             (100013989.0,0,0),
             (1670700.0,3.0984635,6283.07585),
             (13956.0,3.05525,12566.1517),
@@ -414,7 +414,7 @@ sun_earth_distance_coeffs = \
             (28,1.9,6279.55),
             (26,4.59,10447.39)
         ],
-        [ # R1
+        [  # R1
             (103019.0,1.10749,6283.07585),
             (1721.0,1.0644,12566.1517),
             (702.0,3.142,0),
@@ -426,7 +426,7 @@ sun_earth_distance_coeffs = \
             (9,1.42,6275.96),
             (9,0.27,5486.78)
         ],
-        [ # R2
+        [  # R2
             (4359.0,5.7846,6283.0758),
             (124.0,5.579,12566.152),
             (12,3.14,0),
@@ -434,11 +434,11 @@ sun_earth_distance_coeffs = \
             (6,1.87,5573.14),
             (3,5.47,18849)
         ],
-        [ # R3
+        [  # R3
             (145.0,4.273,6283.076),
             (7,3.92,12566.15),
         ],
-        [ # R4
+        [  # R4
             (4,2.56,6283.08)
         ],
     ]
