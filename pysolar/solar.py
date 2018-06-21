@@ -321,9 +321,9 @@ def get_sun_earth_distance(jme):
 
 def get_refraction_correction(pressure, temperature, topocentric_elevation_angle):
     #function and default values according to original NREL SPA C code
-    #http://www.nrel.gov/midc/spa/ 
-    
-    sun_radius = 0.26667  
+    #http://www.nrel.gov/midc/spa/
+
+    sun_radius = 0.26667
     atmos_refract = 0.5667
     tea = topocentric_elevation_angle
 
@@ -334,10 +334,10 @@ def get_refraction_correction(pressure, temperature, topocentric_elevation_angle
 
     a = pressure * 2.830 * 1.02
     b = 1010.0 * temperature * 60.0 * math.tan(math.radians(tea + (10.3/(tea + 5.11))))
-    
+
     del_e = math.where(tea >= -1.0*(sun_radius + atmos_refract),
                        a / b, 0.)
-        
+
     return del_e
 
 @check_aware_dt('when')

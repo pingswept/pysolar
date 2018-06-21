@@ -1,5 +1,5 @@
 #!/usr/bin/python3
- 
+
 # Copyright Brandon Stafford
 #
 # This file is part of Pysolar.
@@ -101,7 +101,7 @@ def ComparePysolarToUSNO(datum):
 
 def EncodeRequest(latitude, longitude, timestamp, elevation):
     """Builds a string of arguments to be passed to the Perl script at the USNO
-    
+
     Note that the degree arguments must be integers, or the USNO script chokes."""
     params = {}
     params['FFX'] = '2' # use worldwide locations script
@@ -128,12 +128,12 @@ def EncodeRequest(latitude, longitude, timestamp, elevation):
     params['xx3'] = str(sec) # seconds
 
     (deg, rem) = divmod(latitude, 1)
-    (min, sec) = divmod(rem, 1.0/60.0)  
+    (min, sec) = divmod(rem, 1.0/60.0)
     params['yy0'] = sign(deg) # latitude (1 = north, -1 = south)
     params['yy1'] = str(abs(int(deg))) # degrees
     params['yy2'] = str(int(min)) # minutes
     params['yy3'] = str(sec) # seconds
-    
+
     params['hh1'] = str(elevation) # height above sea level in meters
     params['ZZZ'] = 'END'
     data = urlencode(params)
@@ -183,7 +183,7 @@ if __name__ == '__main__':
     from scipy import stats
     import numpy as np
     import sys
-    
+
     if len(sys.argv) >= 2:
                 ephemerides = ReadEphemeridesLog(sys.argv[1])
     else:
@@ -208,7 +208,7 @@ if __name__ == '__main__':
 
     print('----------------------')
     print('Altitude stats')
-    
+
     print('Mean error: ' + str(np.mean(alt_errors)))
     print('Std dev: '+ str(np.std(alt_errors)))
     print('Min error: ' + str(stats.tmin(alt_errors, None)))

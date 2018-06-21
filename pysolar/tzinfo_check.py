@@ -8,26 +8,26 @@ class NoTimeZoneInfoError(ValueError):
     self.argname = argname
     self.dt = dt
     super().__init__(*args)
-    
+
   def __str__(self):
     return """datetime value '{dt}' given for arg '{argname}' \
 should be made timezone-aware.
 You have to specify the 'tzinfo' attribute of \
-'datetime.datetime' objects.""".format(dt=self.dt, 
+'datetime.datetime' objects.""".format(dt=self.dt,
                                        argname=self.argname)
 
 
 def check_aware_dt(*argnames):
-  """Returns a decorator that makes sure that 
+  """Returns a decorator that makes sure that
   all the arguments in 'argnames', are 'datetime.datetime' objects
   with a non-null tzinfo attribute
 
   Parameters
   ----------
   argnames : List[str]
-    list of names from the arguments of function 'func' 
+    list of names from the arguments of function 'func'
     (the decorated function) that are supposed to only accept
-    as values 'datetime.datetime' objects 
+    as values 'datetime.datetime' objects
     with a non-null tzinfo attribute
 
   Returns
@@ -49,18 +49,18 @@ def check_aware_dt(*argnames):
     Returns
     -------
     func_with_check : function
-      decorated function, basically the same function as 'func', 
+      decorated function, basically the same function as 'func',
       with the check for tz-awareness performed before execution"""
     @wraps(func)
     def func_with_check(*args, **kwargs):
-      """Decorated function ; will be, apart from the check, 
+      """Decorated function ; will be, apart from the check,
       completely identical to the 'func' function
       We search for 'argnames' values in args and kwargs
 
       Parameters
       ----------
       args : list
-        list of positional arguments that are supposedly 
+        list of positional arguments that are supposedly
         passed to the 'func' function
       kwargs : dict
         dict of keyword arguments that are supposedly passed
@@ -75,7 +75,7 @@ def check_aware_dt(*argnames):
       for argname in argnames:
         # first checking if argname is a valid arg name
         full = inspect.getfullargspec(func)
-        if (argname in full.args or 
+        if (argname in full.args or
             argname in full.kwonlyargs):
           # getting value given for argname
           try:
