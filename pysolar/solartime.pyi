@@ -1,0 +1,23 @@
+# Stubs for pysolar.time (Python 3.6)
+
+import datetime
+from typing import List, Tuple
+
+julian_day_offset: float
+gregorian_day_offset: int
+tt_offset: float
+leap_seconds_base_year: int
+leap_seconds_adjustments: List[Tuple[float,float]]
+
+def get_leap_seconds(when:datetime.datetime) -> int: ...
+
+delta_t_base_year: int
+delta_t_base_month: int
+delta_t: List[List[float]]
+
+def get_delta_t(when:datetime.datetime) -> float: ...
+def get_julian_solar_day(when:datetime.datetime) -> float: ...
+def get_julian_ephemeris_day(when:datetime.datetime) -> float: ...
+def get_julian_century(julian_day:float) -> float: ...
+def get_julian_ephemeris_century(julian_ephemeris_day:float) -> float: ...
+def get_julian_ephemeris_millennium(julian_ephemeris_century) -> float: ...
