@@ -24,6 +24,6 @@ setup(name='pysolar',
     license = 'GNU General Public License (GPL)',
     url='http://pysolar.org',
     packages=['pysolar'],
+    package_data = {"pysolar": ["*.pyi"]},  # *.py is included in any case
     requires = ['numpy', 'pytz'],
     )
-
