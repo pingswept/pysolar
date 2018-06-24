@@ -15,8 +15,8 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
-"""This test file makes sure that every function that requires 
-'datetime.datetime' objects as parameters 
+"""This test file makes sure that every function that requires
+'datetime.datetime' objects as parameters
 receives only timezone-aware ones.
 """
 
