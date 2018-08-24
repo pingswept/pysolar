@@ -179,6 +179,27 @@ class TestApi(unittest.TestCase):
 		az = solar.get_azimuth(-43, 172, TestApi.test_when)
 		self.assertAlmostEqual(az, 50.5003507)
 
+	def testGetAltitudeFast(self):
+		# location is in NZ, use relevant timezone
+		day = datetime.datetime(
+		    2016, 12, 19, 0, 0,
+		    tzinfo=datetime.timezone(datetime.timedelta(hours=12)))
+		for hour in range(7, 19):
+			when = day + datetime.timedelta(hours=hour)
+			al = solar.get_altitude_fast(-43, 172, when)
+			al_expected = solar.get_altitude(-43, 172, when)
+			self.assertAlmostEqual(al, al_expected, delta=1)
+
+	def testGetAzimuthFast(self):
+		day = datetime.datetime(
+		    2016, 12, 19, 0, 0,
+		    tzinfo=datetime.timezone(datetime.timedelta(hours=12)))
+		for hour in range(7, 19):
+			when = day + datetime.timedelta(hours=hour)
+			az = solar.get_azimuth_fast(-43, 172, when)
+			az_expected = solar.get_azimuth(-43, 172, when)
+			self.assertAlmostEqual(az, az_expected, delta=1.5)
+
 
 if __name__ == "__main__":
 	unittest.main(verbosity=2)
