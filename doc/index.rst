@@ -46,7 +46,7 @@ Location calculation
 
 You can figure out your latitude and longitude from the URL from the "Link to this page" link on Google maps. Find your location on the map, click on the "Link to this page" link, and then look at the URL in the address bar of your browser. In between ampersands, you should see something like ``ll=89.123456,-78.912345``. The first number is your latitude; the second is your longitude.
 
-The reference frame for Pysolar is shown in the figure below. Altitude is reckoned with zero at the horizon. The altitude is positive when the sun is above the horizon. Azimuth is reckoned with zero corresponding to south. Positive azimuth estimates correspond to estimates east of south; negative estimates are west of south. In the northern hemisphere, if we speak in terms of (altitude, azimuth), the sun comes up around (0, 90), reaches (70, 0) around noon, and sets around (0, -90).
+The reference frame for Pysolar is shown in the figure below. Altitude is reckoned with zero at the horizon. The altitude is positive when the sun is above the horizon. Azimuth is reckoned with zero corresponding to north. Positive azimuth estimates correspond to estimates east of north; negative estimates, or estimates larger than 180 are west of north. In the northern hemisphere, if we speak in terms of (altitude, azimuth), the sun comes up around (0, 90), reaches (70, 180) around noon, and sets around (0, 270).
 
 .. image:: img/reference_frame.png
 
@@ -75,7 +75,7 @@ You can also calculate the azimuth of the sun, as shown below.::
     
 Results in :
     
-    -329.24819184280483
+    149.24819184280483
 
 Estimate of clear-sky radiation
 -------------------------------
