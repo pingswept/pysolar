@@ -16,17 +16,17 @@ Pysolar is similar to `PyEphem <http://rhodesmill.org/pyephem/>`_, with a few ke
 Difference from Sunpy
 ---------------------
 
-Pysolar is similar to the sun position module in `Sunpy <http://sunpy.org>`_, which is a project focused on solar physics modeling. See, for example, their beautiful gallery of `sun image renderings <http://docs.sunpy.org/en/stable/generated/gallery/index.html>`_. The Sunpy position module is based on the same algorithm originally described by Jean Meeus, but it appears to omit the later work by Reda and Andreas at NREL that Pysolar uses, or at least the code is shorter. In any case, Sunpy is aimed at solar physics; Pysolar is aimed at modeling solar radiation on the earth. 
+Pysolar is similar to the sun position module in `Sunpy <http://sunpy.org>`_, which is a project focused on solar physics modeling. See, for example, their beautiful gallery of `sun image renderings <http://docs.sunpy.org/en/stable/generated/gallery/index.html>`_. The Sunpy position module is based on the same algorithm originally described by Jean Meeus, but it appears to omit the later work by Reda and Andreas at NREL that Pysolar uses, or at least the code is shorter. In any case, Sunpy is aimed at solar physics; Pysolar is aimed at modeling solar radiation on the earth.
 
 Prerequisites for use
 ---------------------
 
 Pysolar requires Python, which comes preinstalled on most Unix machines, including Apple's OS X. You can check to see if you have it installed on a Unix machine by typing python3 at a command prompt. If the result is something like::
 
-    Python 3.4.2 (default, Oct  8 2014, 14:38:51) 
+    Python 3.4.2 (default, Oct  8 2014, 14:38:51)
     [GCC 4.9.1] on linux
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> 
+    >>>
 
 you have Python 3. (You can escape from the Python prompt with Ctrl-D.)
 
@@ -46,11 +46,19 @@ Location calculation
 
 You can figure out your latitude and longitude from the URL from the "Link to this page" link on Google maps. Find your location on the map, click on the "Link to this page" link, and then look at the URL in the address bar of your browser. In between ampersands, you should see something like ``ll=89.123456,-78.912345``. The first number is your latitude; the second is your longitude.
 
-The reference frame for Pysolar is shown in the figure below. Altitude is reckoned with zero at the horizon. The altitude is positive when the sun is above the horizon. Azimuth is reckoned with zero corresponding to north. Positive azimuth estimates correspond to estimates east of north; negative estimates, or estimates larger than 180 are west of north. In the northern hemisphere, if we speak in terms of (altitude, azimuth), the sun comes up around (0, 90), reaches (70, 180) around noon, and sets around (0, 270).
+The reference frame for Pysolar is shown in the figure below.
+Altitude is reckoned with zero at the horizon. The altitude
+is positive when the sun is above the horizon. Azimuth is
+reckoned with zero corresponding to north. Positive azimuth
+estimates correspond to estimates east of north; negative
+estimates, or estimates larger than 180 are west of north.
+In the northern hemisphere, if we speak in terms of (altitude, azimuth),
+the sun comes up around (0, 90), reaches (70, 180) around noon,
+and sets around (0, 270).
 
 .. image:: img/reference_frame.png
 
-Then, use the solar.get_altitude() function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
+Then, use the `solar.get_altitude()` function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
 
 
    from pysolar.solar import *
@@ -65,16 +73,16 @@ Results in :
    6.963105627775295
 
    30.91446827139096
-   
+
 The first number will be different, unless you by chance do the calculation at the exact same time as this was written...
 
 You can also calculate the azimuth of the sun, as shown below.::
 
    date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
    get_azimuth(42.206, -71.382, date)
-    
+
 Results in :
-    
+
     149.24819184280483
 
 Estimate of clear-sky radiation
@@ -97,7 +105,16 @@ Troubleshooting
 
 If you find yourself getting errors like `AttributeError: 'datetime.datetime' object has no attribute 'timestamp'`, this probably means that you are using Python 2 instead of Python 3.
 
-Pysolar no longer supports Python 2. So far, nobody has volunteered to do the work to backport the code to Python 2. If you're stuck on Python 2 because of some other dependency, you should use Pysolar 0.6, which is the last version that works with Python 2.
+Pysolar no longer supports Python 2. If you're stuck on Python 2
+because of some other dependency, you should use Pysolar 0.6,
+which is the last version that works with Python 2.
+
+Note that there have been major changes in naming between versions.
+In version 7 the function names were changed from CamelCase to
+lower case with underscores.  For example, `GetAzimuth` became
+`get_azimuth`.  In version 8, the package name lost its upper-case
+first letter, so `from Pysolar import solar` became
+`from pysolar import solar`.
 
 Validation
 ==========
@@ -181,10 +198,12 @@ References
 `Abstract <http://pubs.giss.nasa.gov/abs/bi03000u.html>`_ `4.6 MB PDF <http://pubs.giss.nasa.gov/docs/1997/1997_Bishop_etal_1.pdf>`_ J. K. B.
 Bishop, W. B. Rossow, and E. G. Dutton, "Surface solar irradiance from the International Satellite Cloud Climatology Project 1983-1991," Journal of Geophysical Research, vol. 102, no. D6, March 27, 1997, pp. 6883-6910.
 
-Hosting history
-===============
+Source Code Repository
+======================
 
-Pysolar was initially hosted on Sourceforge with Subversion, but we switched to git and Github in 2008. Earlier releases are still on `the Sourceforge site <http://pysolar.sf.net>`_ for now, but you're probably wrong if you think you want to download them.
+Pysolar was initially hosted on Sourceforge with Subversion,
+but we switched to git and Github in 2008:
+`https://github.com/pingswept/pysolar <https://github.com/pingswept/pysolar>`_
 
 Contributors
 ============
@@ -195,19 +214,6 @@ Thanks to Holger Zebner, Pietro Zambelli, Sean Taylor, Simeon Obinna Nwaogaidu, 
 
 Pysolar has been used at several universities, including the University of Oldenburg in Germany, the University of Trento in Italy, and the University of Texas at Austin. It is also deployed in at least one commercial solar tracking system.
 
-Old download statistics
-=======================
-
-* version 0.1.0: 22 downloads, 2007-04-18 - 2007-07-01
-* version 0.2.0: 97 downloads, 2007-07-01 - 2008-03-10
-
 .. toctree::
    :maxdepth: 2
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
