@@ -68,7 +68,7 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
 
     References
     ----------
-    .. [1] http://www.skypowerinternational.com/pdf/Radiation/7.1415.01.121_cm121_bed-anleitung_engl.pdf
+    .. [1] http://www.skypowerinternational.com/uploads/documents/7.1415.01.121_cm121_bed-anleitung_engl.pdf
     .. [2] http://pysolar.org/
 
     Examples
