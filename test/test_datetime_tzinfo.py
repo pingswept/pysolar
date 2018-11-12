@@ -96,6 +96,10 @@ class TestErrorTimeZoneIsNone(unittest.TestCase):
     with self.assertRaises(NoTimeZoneInfoError):
       util.get_sunset_time(self.lat, self.lon, self.unaware)
 
+  def test_util_get_transit_time_raise_error(self):
+    with self.assertRaises(NoTimeZoneInfoError):
+      util.get_transit_time(self.lat, self.lon, self.unaware)
+
   def test_util_mean_earth_sun_distance_raise_error(self):
     with self.assertRaises(NoTimeZoneInfoError):
       util.mean_earth_sun_distance(self.unaware)

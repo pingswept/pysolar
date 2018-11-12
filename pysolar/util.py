@@ -45,8 +45,8 @@ elevation_default = 0.0      # Default elevation is 0.0
 # Useful equations for analysis
 
 @check_aware_dt('when')
-def get_sunrise_sunset(latitude_deg, longitude_deg, when):
-    """This function calculates the astronomical sunrise and sunset times in local time.
+def get_sunrise_sunset_transit(latitude_deg, longitude_deg, when):
+    """This function calculates the astronomical sunrise, sunset and sun transit times in local time.
 
     Parameters
     ----------
@@ -65,11 +65,16 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
         Sunrise time in local time.
     sunset_time_dt : datetime.datetime
         Sunset time in local time.
+    transit_time_dt:
+        Sun transit time in local time.
 
     References
     ----------
-    .. [1] http://www.skypowerinternational.com/pdf/Radiation/7.1415.01.121_cm121_bed-anleitung_engl.pdf
+    .. [1] http://www.skypowerinternational.com/uploads/documents/7.1415.01.121_cm121_bed-anleitung_engl.pdf
     .. [2] http://pysolar.org/
+    .. [3] https://www.esrl.noaa.gov/gmd/grad/solcalc/solareqns.PDF
+    .. [4] https://www.sciencedirect.com/science/article/pii/S0038092X11004592
+    .. [5] https://iris.unipa.it/retrieve/handle/10447/55143/28818/Articolo.pdf
 
     Examples
     --------
@@ -77,9 +82,10 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
     >>> lon = 8.680506
     >>> timezone_local = pytz.timezone('Europe/Berlin')
     >>> now = datetime.now(timezone_local)
-    >>> sr, ss = sb.get_sunrise_sunset(lat, lon, now)
+    >>> sr, ss, tr = sb.get_sunrise_sunset(lat, lon, now)
     >>> print('sunrise: ', sr)
     >>> print('sunset:', ss)
+    >>> print('transit:', tr)
 
     """
 
@@ -91,6 +97,23 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
     #end if
     day = when.utctimetuple().tm_yday # Day of the year
     SHA = utc_offset / 3600 * 15.0 - longitude_deg # Solar hour angle
+    TT = 2 * math.pi * day / 366
+    decl = \
+        (
+            0.322003
+        -
+            22.971 * math.cos(TT)
+        -
+            0.357898 * math.cos(2 * TT)
+        -
+            0.14398 * math.cos(3 * TT)
+        +
+            3.94638 * math.sin(TT)
+        +
+            0.019334 * math.sin(2 * TT)
+        +
+            0.05928 * math.sin(3 * TT)
+        ) # solar declination in degrees
     TT = math.radians(279.134 + 0.985647 * day) # Time adjustment angle
     time_adst = \
         (
@@ -115,36 +138,53 @@ def get_sunrise_sunset(latitude_deg, longitude_deg, when):
                 3600
         ) # Time adjustment in hours
     TON = 12 + SHA / 15.0 - time_adst # Time of noon
-    sunn = \
+    ha = \
         (
-            (
-                math.pi / 2
+            math.acos(
+                math.cos(math.radians(90.833))
+            /
+                (
+                    math.cos(math.radians(latitude_deg))
+                *
+                    math.cos(math.radians(decl))
+                )
             -
-                    math.radians(constants.earth_axis_inclination)
-                *
-                    math.tan(math.radians(latitude_deg))
-                *
-                    math.cos(2 * math.pi * day / 365.25)
+                math.tan(math.radians(latitude_deg))
+            *
+                math.tan(math.radians(decl))
             )
         *
             (12 / math.pi)
         )
     same_day = datetime(year = when.year, month = when.month, day = when.day, tzinfo = when.tzinfo)
-    sunrise_time = same_day + timedelta(hours = TON - sunn + time_adst)
-    sunset_time = same_day + timedelta(hours = TON + sunn - time_adst)
-    return sunrise_time, sunset_time
+    sunrise_time = same_day + timedelta(hours = TON - ha)
+    sunset_time = same_day + timedelta(hours = TON + ha)
+    transit_time = same_day + timedelta(hours = TON)
+    return sunrise_time, sunset_time, transit_time
+
+@check_aware_dt('when')
+def get_sunrise_sunset(latitude_deg, longitude_deg, when):
+    "Wrapper for get_sunrise_sunset_transit that returns just the sunrise and the sunset time."
+    return \
+        get_sunrise_sunset_transit(latitude_deg, longitude_deg, when)[0:2]
 
 @check_aware_dt('when')
 def get_sunrise_time(latitude_deg, longitude_deg, when):
-    "Wrapper for get_sunrise_sunset that returns just the sunrise time."
+    "Wrapper for get_sunrise_sunset_transit that returns just the sunrise time."
     return \
-        get_sunrise_sunset(latitude_deg, longitude_deg, when)[0]
+        get_sunrise_sunset_transit(latitude_deg, longitude_deg, when)[0]
 
 @check_aware_dt('when')
 def get_sunset_time(latitude_deg, longitude_deg, when):
-    "Wrapper for get_sunrise_sunset that returns just the sunset time."
+    "Wrapper for get_sunrise_sunset_transit that returns just the sunset time."
     return \
-        get_sunrise_sunset(latitude_deg, longitude_deg, when)[1]
+        get_sunrise_sunset_transit(latitude_deg, longitude_deg, when)[1]
+
+@check_aware_dt('when')
+def get_transit_time(latitude_deg, longitude_deg, when):
+    "Wrapper for get_sunrise_sunset_transit that returns just the transit time."
+    return \
+        get_sunrise_sunset_transit(latitude_deg, longitude_deg, when)[2]
 
 @check_aware_dt('when')
 def mean_earth_sun_distance(when):
