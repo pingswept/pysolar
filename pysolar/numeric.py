@@ -137,6 +137,5 @@ def use_math():
 try:
     import numpy
     use_numpy()
-except ModuleNotFoundError:
+except ImportError:
     pass
-
