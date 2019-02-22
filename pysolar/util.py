@@ -686,10 +686,7 @@ def clear_index(ghi_data, latitude_deg, longitude_deg, when):
 
     """
     EXTR1 = extraterrestrial_irrad(latitude_deg, longitude_deg, when)
-    try:
-        KT = (ghi_data / EXTR1)
-        if KT > 1:
-            KT = 1
-    except ZeroDivisionError:
-        return 0
+
+    KT = (ghi_data / EXTR1)
+
     return KT
