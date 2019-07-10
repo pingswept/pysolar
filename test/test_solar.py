@@ -98,13 +98,13 @@ class TestSolar(unittest.TestCase):
 		self.assertAlmostEqual(-0.00399840, self.nutation['longitude'], 8) # value from Reda and Andreas (2005)
 
 	def test_get_sun_earth_distance(self):
-		self.assertAlmostEqual(0.9965421031, self.sun_earth_distance, 7) # value from Reda and Andreas (2005)
+		self.assertAlmostEqual(0.9965421031, self.sun_earth_distance, 6) # value from Reda and Andreas (2005)
 
 	def test_get_true_ecliptic_obliquity(self):
 		self.assertAlmostEqual(23.440465, self.true_ecliptic_obliquity, 6) # value from Reda and Andreas (2005)
 
 	def test_get_aberration_correction(self):
-		self.assertAlmostEqual(-0.0057113603, self.aberration_correction, 9) # value not validated
+		self.assertAlmostEqual(-0.005711359, self.aberration_correction, 9) # value not validated
 
 	def test_get_apparent_sun_longitude(self):
 		# self.assertAlmostEqual(204.0085537528, self.apparent_sun_longitude, 10) # value from Reda and Andreas (2005)
@@ -129,7 +129,7 @@ class TestSolar(unittest.TestCase):
 		self.assertAlmostEqual(202.22741, self.topocentric_sun_right_ascension, 3) # value from Reda and Andreas (2005)
 
 	def test_get_parallax_sun_right_ascension(self):
-		self.assertAlmostEqual(-0.0003659911495454668, self.parallax_sun_right_ascension, 12) # value not validated
+		self.assertAlmostEqual(-0.0003659912761437859, self.parallax_sun_right_ascension, 12) # value not validated
 		
 	def test_get_topocentric_sun_declination(self):
 		self.assertAlmostEqual(-9.316179, self.topocentric_sun_declination, 3) # value from Reda and Andreas (2005)
@@ -159,25 +159,25 @@ class TestApi(unittest.TestCase):
 
 	def testGetPosition(self):
 		az, al = solar.get_position(59.6365662,12.5350953, TestApi.test_when)
-		self.assertAlmostEqual(az, 357.1431475)
-		self.assertAlmostEqual(al, -53.7672218)
+		self.assertAlmostEqual(az, 357.1431414)
+		self.assertAlmostEqual(al, -53.7672217)
 
 		az, al = solar.get_position(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(az, 50.5003507)
-		self.assertAlmostEqual(al, 63.0922058)
+		self.assertAlmostEqual(az, 50.50035708)
+		self.assertAlmostEqual(al, 63.0922036)
 
 		# From Greenwich
 		az, al = solar.get_position(51.4826, 0, TestApi.test_when)
-		self.assertAlmostEqual(az, 333.0403866)
-		self.assertAlmostEqual(al, -59.8372445)
+		self.assertAlmostEqual(az, 333.04037976)
+		self.assertAlmostEqual(al, -59.83724345)
 
 	def testGetAltitude(self):
 		al = solar.get_altitude(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(al, 63.0922058)
+		self.assertAlmostEqual(al, 63.0922036)
 
 	def testGetAzimuth(self):
 		az = solar.get_azimuth(-43, 172, TestApi.test_when)
-		self.assertAlmostEqual(az, 50.5003507)
+		self.assertAlmostEqual(az, 50.50035708)
 
 	def testGetAltitudeFast(self):
 		# location is in NZ, use relevant timezone
