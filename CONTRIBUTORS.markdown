@@ -5,6 +5,7 @@ Many people have contributed to Pysolar since its inception.
 
 Thanks to:
 
+* Elliot Lee (elliotclee)
 * Lawrence d'Oliveiro (ldo)
 * Naz Gassiep (mrnaz)
 * Sean T. Hammond (seanth)
