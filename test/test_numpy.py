@@ -1,5 +1,5 @@
 import pysolar
-from pysolar import solar
+from pysolar import radiation, solar
 from pysolar import numeric as math
 from datetime import datetime
 import pytz
@@ -93,3 +93,24 @@ def test_numpy():
 
     print(solar.get_altitude_fast(lat, lon, time))
     print(solar.get_azimuth_fast(lat, lon, time))
+
+
+def test_numpy_radiation():
+    """
+    get_radiation_direct with lat, lon, and date as arrays
+    """
+    pysolar.use_numpy()
+
+    lat = np.array([45., 40., 40.])
+    lon = np.array([3., 4., 3.])
+
+    time = np.array([
+        '2018-05-08T12:15:00',
+        '2018-05-08T15:00:00',
+        '2018-05-08T03:00:00',
+    ], dtype='datetime64')
+
+    altitude = solar.get_altitude_fast(lat, lon, time)
+    rad_results = radiation.get_radiation_direct(time, altitude)
+    assert rad_results[2] == 0
+    print(rad_results)
