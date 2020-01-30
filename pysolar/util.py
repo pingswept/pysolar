@@ -82,7 +82,7 @@ def get_sunrise_sunset_transit(latitude_deg, longitude_deg, when):
     >>> lon = 8.680506
     >>> timezone_local = pytz.timezone('Europe/Berlin')
     >>> now = datetime.now(timezone_local)
-    >>> sr, ss, tr = sb.get_sunrise_sunset(lat, lon, now)
+    >>> sr, ss, tr = sb.get_sunrise_sunset_transit(lat, lon, now)
     >>> print('sunrise: ', sr)
     >>> print('sunset:', ss)
     >>> print('transit:', tr)
