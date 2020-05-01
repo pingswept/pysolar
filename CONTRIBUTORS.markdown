@@ -27,7 +27,6 @@ Thanks to:
 * Robin Wilson
 * Pietro Zambelli
 * Holger Zebner
-* Mike Borsetti
 
 for their contributions of code, bugfixes, documentation, and general encouragement.
 
