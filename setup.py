@@ -17,7 +17,7 @@ classifiers = ['Development Status :: 5 - Production/Stable',
 
 
 setup(name='pysolar',
-    version='0.8.1',
+    version='0.8',
     description='Collection of Python libraries for simulating the irradiation of any point on earth by the sun',
     author='Brandon Stafford',
     author_email='brandon@pingswept.org',
@@ -25,5 +25,5 @@ setup(name='pysolar',
     url='http://pysolar.org',
     packages=['pysolar'],
     package_data = {"pysolar": ["*.pyi"]},  # *.py is included in any case
-    requires = ['numpy'],
+    requires = ['numpy', 'pytz'],
     )
