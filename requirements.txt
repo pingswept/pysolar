@@ -1,2 +1,3 @@
 pytz
 numpy
+nose
