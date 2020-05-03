@@ -15,6 +15,9 @@
 #    You should have received a copy of the GNU General Public License along
 #    with Pysolar. If not, see <http://www.gnu.org/licenses/>.
 
+# Disable linting as this is a work in progress
+# flake8: noqa
+
 from . import numeric as math
 from .constants import standard_pressure
 
