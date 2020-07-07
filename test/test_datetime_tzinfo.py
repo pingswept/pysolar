@@ -24,7 +24,6 @@ from pysolar import solar
 from pysolar import solartime
 from pysolar import util
 import datetime
-import pytz
 import unittest
 from pysolar.tzinfo_check import NoTimeZoneInfoError
 import numpy as np
@@ -144,7 +143,7 @@ class TestErrorTimeZoneIsNone(unittest.TestCase):
 
 
 class TestTimeZoneNotNone(unittest.TestCase):
-  aware = datetime.datetime(2000, 1, 1, tzinfo=pytz.utc)
+  aware = datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc)
 
   lat = 1.0
   lon = 1.0
