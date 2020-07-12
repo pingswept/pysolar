@@ -6,7 +6,6 @@ Created on Aug 13, 2015
 import unittest
 import datetime
 from pysolar.solar import *
-import pytz
 from pysolar.solartime import *
 
 
@@ -26,13 +25,8 @@ class Test(unittest.TestCase):
         hour angle should be -22.5. (-22.5 % 360.0 = 337.5)
         '''
 
-        tz = pytz.timezone('US/Central')
-        when = tz.localize(datetime.datetime(
-            2008,
-            2,
-            13,
-            10,
-            42))
+        tz = datetime.timezone(datetime.timedelta(hours=-6))
+        when = datetime.datetime(2008, 2, 13, 10, 42, tzinfo=tz)
 
         latitude_deg = 43.076342
         longitude_deg = -89.384448

@@ -1,8 +1,7 @@
 import pysolar
 from pysolar import radiation, solar
 from pysolar import numeric as math
-from datetime import datetime
-import pytz
+import datetime
 import numpy as np
 from nose.tools import raises, assert_equal
 
@@ -12,7 +11,7 @@ def test_fail_with_math():
     pysolar.use_math()
     lat = np.array([45., 40.])
     lon = np.array([3., 4.])
-    time = datetime(2018, 5, 8, 12, 0, 0, tzinfo=pytz.UTC)
+    time = datetime.datetime(2018, 5, 8, 12, 0, 0, tzinfo=datetime.timezone.utc)
 
     solar.get_altitude(lat, lon, time)
 
@@ -22,7 +21,7 @@ def test_scalar_with_math():
 
     lat = 45.
     lon = 3.
-    time = datetime(2018, 5, 8, 12, 0, 0, tzinfo=pytz.UTC)
+    time = datetime.datetime(2018, 5, 8, 12, 0, 0, tzinfo=datetime.timezone.utc)
 
     print(solar.get_altitude(lat, lon, time))
     print(solar.get_azimuth(lat, lon, time))
@@ -33,7 +32,7 @@ def test_scalar_with_numpy():
 
     lat = 50.63
     lon = 3.05
-    time = datetime(2018, 5, 8, 12, 0, 0, tzinfo=pytz.UTC)
+    time = datetime.datetime(2018, 5, 8, 12, 0, 0, tzinfo=datetime.timezone.utc)
     print(solar.get_altitude(lat, lon, time))
     print(solar.get_azimuth(lat, lon, time))
 
@@ -45,7 +44,7 @@ def test_with_fixed_time():
     lat = np.array([45., 40.])
     lon = np.array([3., 4.])
 
-    time = datetime(2018, 5, 8, 12, 0, 0, tzinfo=pytz.UTC)
+    time = datetime.datetime(2018, 5, 8, 12, 0, 0, tzinfo=datetime.timezone.utc)
 
     print(solar.get_altitude(lat, lon, time))
     print(solar.get_azimuth(lat, lon, time))
@@ -68,7 +67,7 @@ def test_with_fixed_position():
 
 def test_datetime_operations():
 
-    d0 = datetime(2018,5,8,12,0,0)
+    d0 = datetime.datetime(2018,5,8,12,0,0)
     d1 = np.array(d0)
 
     assert_equal(math.tm_yday_math(d0),

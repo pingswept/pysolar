@@ -20,15 +20,15 @@
 """Tool for requesting data from US Naval Observatory
 
 """
-import datetime, random
+import datetime
+import random
 from time import strptime
-import pytz
 
 try:
-  from urllib.request import Request,urlopen
+  from urllib.request import Request, urlopen
   from urllib.parse import urlencode
 except:
-  from urllib2 import Request,urlopen
+  from urllib2 import Request, urlopen
   from urllib import urlencode
 
 from pysolar.solar import *
@@ -161,7 +161,7 @@ def ReadEphemeridesLog(logname):
     for line in lines:
         args = line.split(' ')
         unaware = datetime.datetime(*(strptime(args[0] + ' ' + args[1], '%Y-%m-%d %H:%M:%S')[0:6]))
-        d = unaware.replace(tzinfo=pytz.UTC)
+        d = unaware.replace(tzinfo=datetime.timezone.utc)
         e = Ephemeris(d, args[2], args[3], args[4], args[5], args[6])
         data.append(e)
     return data
