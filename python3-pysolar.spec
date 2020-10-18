@@ -25,9 +25,7 @@ BuildRequires:  make
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-sphinx
-BuildRequires:  python3-nose
 BuildRequires:  python3-numpy
-BuildRequires:  python3-pytz
 
 Provides:       python3-%{srcname} = %{version}-%{release}
 %{?python_provide:%python_provide python3-%{pkgname}}
@@ -64,7 +62,7 @@ popd
 %changelog
 * Fri Jun 19 2020 Johan Heikkila <johan.heikkila@gmail.com> - 0.8-2
 - Removed python2
-- Added BuildRequires python3-nose, python3-numpy
+- Added BuildRequires python3-numpy
 
 * Mon Sep 16 2019 Elliot Lee <sopwith@gmail.com> - 0.8-1
 - Initial version
