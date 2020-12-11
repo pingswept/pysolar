@@ -95,7 +95,7 @@ def get_sunrise_sunset_transit(latitude_deg, longitude_deg, when):
     else :
         utc_offset = 0
     #end if
-    day = when.utctimetuple().tm_yday # Day of the year
+    day = when.timetuple().tm_yday # Day of the year
     SHA = utc_offset / 3600 * 15.0 - longitude_deg # Solar hour angle
     TT = 2 * math.pi * day / 366
     decl = \
