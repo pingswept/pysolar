@@ -88,6 +88,7 @@ leap_seconds_adjustments = \
       (0, 0),  # 2018
       (0, 0),  # 2019
       (0, 0),  # 2020
+      (0, 0),  # 2021
     ]
 
 @check_aware_dt('when')
