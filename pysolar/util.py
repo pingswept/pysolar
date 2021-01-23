@@ -299,7 +299,7 @@ def solarelevation_function_clear(latitude_deg, longitude_deg, when, temperature
     when : datetime.datetime
         date/time for which to do the calculation
     temperature : float
-        atmospheric temperature
+        atmospheric temperature in kelvin
    pressure : float
         pressure in pascals
     elevation : float
@@ -343,7 +343,7 @@ def solarelevation_function_overcast(latitude_deg, longitude_deg, when,
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature : float
-        atmospheric temperature
+        atmospheric temperature in kelvin
     pressure : float
         pressure in pascals
 
@@ -406,7 +406,7 @@ def diffuse_underclear(latitude_deg, longitude_deg, when, elevation = elevation_
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature : float
-        atmospheric temperature
+        atmospheric temperature in kelvin
     pressure : float
         pressure in pascals
     TL : float
@@ -446,7 +446,7 @@ def diffuse_underovercast(latitude_deg, longitude_deg, when, elevation = elevati
     elevation : float
         The elevation of a geographic location is its height above a fixed reference point, often the mean sea level.
     temperature : float
-        atmospheric temperature
+        atmospheric temperature in kelvin
     pressure : float
         pressure in pascals
     TL : float
@@ -498,7 +498,7 @@ def direct_underclear(latitude_deg, longitude_deg, when,
         The elevation of a geographic location is its height above a fixed reference point, often the mean
         sea level.
     temperature : float
-        atmospheric temperature
+        atmospheric temperature in kelvin
     pressure : float
         pressure in pascals
 
@@ -542,7 +542,7 @@ def global_irradiance_clear(latitude_deg, longitude_deg, when,
     when : datetime.datetime
         date/time for which to do the calculation
     temperature : float
-        atmospheric temperature
+        atmospheric temperature in kelvin
     pressure : float
         pressure in pascals
     elevation : float
@@ -607,7 +607,7 @@ def global_irradiance_overcast(latitude_deg, longitude_deg, when,
         The elevation of a geographic location is its height above a fixed reference point, often the
         mean sea level.
     temperature : float
-        atmospheric temperature
+        atmospheric temperature in kelvin
     pressure : float
         pressure in pascals
 
