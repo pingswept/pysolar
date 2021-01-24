@@ -91,6 +91,8 @@ def get_position(latitude_deg, longitude_deg, when, elevation=0,
                  temperature = constants.standard_temperature,
                  pressure = constants.standard_pressure):
     ''' Given location, time and atmospheric conditions
+    temperature in Kelvin and pressure in Pascal
+    
     returns (azimuth, altitude) of sun in degrees.
 
     Same as a combination of get_azimuth and get_altitude
@@ -117,7 +119,9 @@ def get_position(latitude_deg, longitude_deg, when, elevation=0,
 @check_aware_dt('when')
 def get_altitude(latitude_deg, longitude_deg, when, elevation = 0,
                  temperature = constants.standard_temperature, pressure = constants.standard_pressure):
-    '''See also the faster, but less accurate, get_altitude_fast()'''
+    '''See also the faster, but less accurate, get_altitude_fast()
+    temperature in Kelvin and pressure in Pascal
+    '''
     topocentric_sun_declination, topocentric_local_hour_angle = \
         get_topocentric_position(latitude_deg, longitude_deg, when)
 

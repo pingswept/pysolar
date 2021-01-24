@@ -36,6 +36,8 @@ def datetime_range(start_datetime, end_datetime, step_minutes):
 
 def simulate_span(latitude_deg, longitude_deg, horizon, start_datetime, end_datetime, step_minutes, elevation = 0, temperature = constants.standard_temperature, pressure = constants.standard_pressure):
     '''simulates the motion of the sun over a time span and location of your choosing.
+    
+    temperature in Kelvin and pressure in Pascal
 
     The start and end points are set by datetime objects, which can be created with
     the standard Python datetime module like this:
