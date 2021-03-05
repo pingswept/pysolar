@@ -63,7 +63,8 @@ Then, use the `solar.get_altitude()` function to calculate the angle between the
 
    from pysolar.solar import *
    import datetime
-   date = datetime.datetime.now()
+   
+   date = datetime.datetime.now(datetime.timezone.utc)
    print(get_altitude(42.206, -71.382, date))
    date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
    print(get_altitude(42.206, -71.382, date))
