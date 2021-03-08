@@ -73,7 +73,7 @@ Results in :
 
    30.91446827139096
 
-Similarly, you could calculate the altitude of the sun right now using
+Similarly, you could calculate the altitude of the sun right now like this.::
 
    latitude = YOUR_LATITUDE_GOES_HERE
    longitude = YOUR_LONGITUDE_GOES_HERE
