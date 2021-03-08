@@ -87,7 +87,7 @@ You can also calculate the azimuth of the sun, as shown below.::
    longitude = -71.382
    
    date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
-   get_azimuth(latitude, longitude, date)
+   print(get_azimuth(latitude, longitude, date))
 
 Results in :
 
