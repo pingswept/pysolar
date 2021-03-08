@@ -60,27 +60,34 @@ and sets around (0, 270).
 
 Then, use the `solar.get_altitude()` function to calculate the angle between the sun and a plane tangent to the earth where you are. The result is returned in degrees.::
 
-
    from pysolar.solar import *
    import datetime
    
-   date = datetime.datetime.now(datetime.timezone.utc)
-   print(get_altitude(42.206, -71.382, date))
+   latitude = 42.206
+   longitude = -71.382
+   
    date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
-   print(get_altitude(42.206, -71.382, date))
+   print(get_altitude(latitude, longitude, date))
 
 Results in :
 
-   6.963105627775295
-
    30.91446827139096
 
-The first number will be different, unless you by chance do the calculation at the exact same time as this was written...
+Similarly, you could calculate the altitude of the sun right now using
+
+   latitude = YOUR_LATITUDE_GOES_HERE
+   longitude = YOUR_LONGITUDE_GOES_HERE
+   
+   date = datetime.datetime.now(datetime.timezone.utc)
+   print(get_altitude(latitude, longitude, date))
 
 You can also calculate the azimuth of the sun, as shown below.::
 
+   latitude = 42.206
+   longitude = -71.382
+   
    date = datetime.datetime(2007, 2, 18, 15, 13, 1, 130320, tzinfo=datetime.timezone.utc)
-   get_azimuth(42.206, -71.382, date)
+   get_azimuth(latitude, longitude, date)
 
 Results in :
 
