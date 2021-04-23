@@ -95,7 +95,14 @@ def get_sunrise_sunset_transit(latitude_deg, longitude_deg, when):
     else :
         utc_offset = 0
     #end if
-    day = when.timetuple().tm_yday # Day of the year
+
+    # hours (ignore DST) time diff between UTC and the standard meridian for the input longitude 
+    time_diff = int(round(longitude_deg / 15., 0) - utc_offset / 3600)
+    # the day, and therefore sunrise and sunset, may be different at the input longitude than at the input "when" 
+    local_time = when - timedelta(seconds = utc_offset) + timedelta(hours = time_diff)
+
+    day = local_time.timetuple().tm_yday # Day of the year
+
     SHA = utc_offset / 3600 * 15.0 - longitude_deg # Solar hour angle
     TT = 2 * math.pi * day / 366
     decl = \
@@ -156,10 +163,15 @@ def get_sunrise_sunset_transit(latitude_deg, longitude_deg, when):
         *
             (12 / math.pi)
         )
-    same_day = datetime(year = when.year, month = when.month, day = when.day, tzinfo = when.tzinfo)
-    sunrise_time = same_day + timedelta(hours = TON - ha)
-    sunset_time = same_day + timedelta(hours = TON + ha)
-    transit_time = same_day + timedelta(hours = TON)
+
+    # tzinfo doesn't matter
+    local_day = datetime(year = local_time.year, month = local_time.month, day = local_time.day, tzinfo = local_time.tzinfo)
+
+    transit_time = local_day + timedelta(hours = time_diff + TON)
+    transit_time = (transit_time + timedelta(seconds = utc_offset) - timedelta(hours = time_diff)).replace(tzinfo=when.tzinfo)
+    sunrise_time = transit_time - timedelta(hours = ha)
+    sunset_time = transit_time + timedelta(hours = ha)
+
     return sunrise_time, sunset_time, transit_time
 
 @check_aware_dt('when')
