@@ -12,5 +12,9 @@ I'm happy to receive patches to Pysolar. Please make sure that your patch does n
 4. Update the version number in setup.py.
 5. Update contributors.markdown if needed.
 6. Add a release on Github that matches the new version number: https://github.com/pingswept/pysolar/releases
-7. Test PyPI credentials with `python setup.py register`
-8. Run `python setup.py sdist upload`
+7. Put PyPI credentials in `~/.pypirc`.
+8. Install Twine.
+9. `sudo python3 setup.py bdist_wheel`
+10. `sudo python3 setup.py sdist`?
+11. Check that the right stuff exists in `dist`. There should be just a `tar.gz` and a `.whl`.
+12. `twine upload dist/*`
