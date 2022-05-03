@@ -1,6 +1,6 @@
 ## Pysolar ##
 
-[![Build Status](https://travis-ci.org/pingswept/pysolar.svg?branch=master)](https://travis-ci.org/pingswept/pysolar)
+[![Test Python package](https://github.com/pingswept/pysolar/actions/workflows/testpackage.yml/badge.svg)](https://github.com/pingswept/pysolar/actions/workflows/testpackage.yml)
 
 Pysolar is a collection of Python libraries for simulating the irradiation of any point on earth by the sun. It includes code for extremely precise ephemeris calculations, and more.
 
