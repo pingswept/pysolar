@@ -123,7 +123,7 @@ def get_altitude(latitude_deg, longitude_deg, when, elevation = 0,
     temperature in Kelvin and pressure in Pascal
     '''
     topocentric_sun_declination, topocentric_local_hour_angle = \
-        get_topocentric_position(latitude_deg, longitude_deg, when)
+        get_topocentric_position(latitude_deg, longitude_deg, when, elevation)
 
     topocentric_elevation_angle = get_topocentric_elevation_angle(latitude_deg, topocentric_sun_declination, topocentric_local_hour_angle)
     refraction_correction = get_refraction_correction(pressure, temperature, topocentric_elevation_angle)
