@@ -90,7 +90,7 @@ leap_seconds_adjustments = \
       (0, 0),  # 2020
       (0, 0),  # 2021
       (0, 0),  # 2022
-      (0, 0), # 2023 (second zero not officially valid as of 2023-04-23)
+      (0, 0), # 2023
     ]
 
 @check_aware_dt('when')
