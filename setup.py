@@ -25,5 +25,5 @@ setup(name='pysolar',
     url='http://pysolar.org',
     packages=['pysolar'],
     package_data = {"pysolar": ["*.pyi"]},  # *.py is included in any case
-    requires = ['numpy'],
+    install_requires = ['numpy'],
     )
