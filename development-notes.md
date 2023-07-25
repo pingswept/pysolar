@@ -14,8 +14,9 @@ I'm happy to receive patches to Pysolar. Please make sure that your patch does n
 6. Update contributors.markdown if needed.
 7. Add a release on Github that matches the new version number: https://github.com/pingswept/pysolar/releases
 8. Put PyPI credentials in `~/.pypirc`.
-9. Install Twine.
+9. Install Twine and Wheel.
 10. `sudo python3 setup.py bdist_wheel`
 11. `sudo python3 setup.py sdist`?
 12. Check that the right stuff exists in `dist`. There should be just a `tar.gz` and a `.whl`.
 13. `twine upload dist/*`
+14. Figure out how to get a DOI from Zenodo.
