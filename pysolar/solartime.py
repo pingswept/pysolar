@@ -112,7 +112,7 @@ def get_leap_seconds(when) :
             ) :
                 warnings.warn \
                   (
-                        "I don't know about leap seconds after %d"
+                        "Leap seconds for year %d are not available for the installed version of pysolar"
                     %
                         (leap_seconds_base_year + len(leap_seconds_adjustments) - 1)
                   )
