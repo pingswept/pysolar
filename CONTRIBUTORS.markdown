@@ -6,9 +6,11 @@ Many people have contributed to Pysolar since its inception.
 Alphabetically by last name, thanks to:
 
 * Mike Borsetti (mborsetti)
+* Roberto Díaz Pérez (RoberTnf)
 * Lawrence d'Oliveiro (ldo)
 * Naz Gassiep (mrnaz)
 * J Gehman (rm-minus-r-star)
+* Simo Hakim (Herbrax)
 * Sean T. Hammond (seanth)
 * Will Hardy
 * Jessica Haskins (jhaskinsPhD)

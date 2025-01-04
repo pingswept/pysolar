@@ -17,7 +17,7 @@ classifiers = ['Development Status :: 5 - Production/Stable',
 
 
 setup(name='pysolar',
-    version='0.11',
+    version='0.12',
     description='Collection of Python libraries for simulating the irradiation of any point on earth by the sun',
     author='Brandon Stafford',
     author_email='brandon@pingswept.org',
