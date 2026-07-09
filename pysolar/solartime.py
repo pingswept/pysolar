@@ -93,6 +93,7 @@ leap_seconds_adjustments = \
       (0, 0), # 2023
       (0, 0), # 2024
       (0, 0), # 2025    
+      (0, 0), # 2026
     ]
 
 @check_aware_dt('when')
