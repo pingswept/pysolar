@@ -3,9 +3,31 @@ from pysolar import radiation, solar
 from pysolar import numeric as math
 import datetime
 import json
-import pytest
 import numpy as np
+import pytest
 from nose.tools import raises, assert_equal
+
+
+@pytest.mark.parametrize("latitude,longitude,elevation", [(40., -105., 45.), (-43., 172., -20.)])
+def test_math_backend_restores_scalar_azimuth(latitude, longitude, elevation):
+    previous = math.current_mod
+    when = datetime.datetime(2020, 6, 20, 16, tzinfo=datetime.timezone.utc)
+    try:
+        for _ in range(2):
+            pysolar.use_numpy()
+            expected = float(solar.get_azimuth_fast(
+                latitude, longitude, np.datetime64(when.replace(tzinfo=None))))
+            pysolar.use_math()
+            azimuth = solar.get_azimuth_fast(latitude, longitude, when)
+            assert isinstance(azimuth, float)
+            assert azimuth == pytest.approx(expected, abs=1e-10)
+            assert round(azimuth, 6) == round(expected, 6)
+            correction = solar.get_refraction_correction(101325., 288.15, elevation)
+            assert isinstance(correction, float)
+            values = {"azimuth": azimuth, "refraction": correction}
+            assert json.loads(json.dumps(values)) == values
+    finally:
+        getattr(pysolar, "use_" + previous)()
 
 
 @raises(TypeError)
@@ -115,25 +137,3 @@ def test_numpy_radiation():
     rad_results = radiation.get_radiation_direct(time, altitude)
     assert rad_results[2] == 0
     print(rad_results)
-
-
-@pytest.mark.parametrize("latitude,longitude,elevation", [(40., -105., 45.), (-43., 172., -20.)])
-def test_math_backend_restores_scalar_azimuth(latitude, longitude, elevation):
-    previous = math.current_mod
-    when = datetime.datetime(2020, 6, 20, 16, tzinfo=datetime.timezone.utc)
-    try:
-        for _ in range(2):
-            pysolar.use_numpy()
-            expected = float(solar.get_azimuth_fast(
-                latitude, longitude, np.datetime64(when.replace(tzinfo=None))))
-            pysolar.use_math()
-            azimuth = solar.get_azimuth_fast(latitude, longitude, when)
-            assert isinstance(azimuth, float)
-            assert azimuth == pytest.approx(expected, abs=1e-10)
-            assert round(azimuth, 6) == round(expected, 6)
-            correction = solar.get_refraction_correction(101325., 288.15, elevation)
-            assert isinstance(correction, float)
-            values = {"azimuth": azimuth, "refraction": correction}
-            assert json.loads(json.dumps(values)) == values
-    finally:
-        getattr(pysolar, "use_" + previous)()
