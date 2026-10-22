@@ -127,7 +127,7 @@ def use_math():
     globals_import_from('math', 'atan2', 'atan2')
     globals_import_from('math', 'exp', 'exp')
     globals_import_from('math', 'e', 'e')
-    globals()['where'] = where
+    globals()['where'] = where_math
     globals()['tm_yday'] = tm_yday_math
     globals()['tm_hour'] = tm_hour_math
     globals()['tm_min'] = tm_min_math
