@@ -686,6 +686,8 @@ def clear_index(ghi_data, latitude_deg, longitude_deg, when):
 
     """
     EXTR1 = extraterrestrial_irrad(latitude_deg, longitude_deg, when)
+    if EXTR1 <= 0:
+        return 0.0 * ghi_data
 
     KT = (ghi_data / EXTR1)
 
