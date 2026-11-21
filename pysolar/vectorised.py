@@ -31,6 +31,8 @@ maintaining accuracy within 0.1° for angles and 0.5 W/m² for radiation.
 
 import numpy as np
 
+from .numeric import to_utc_datetime64
+
 
 def get_solar_angles_vector(latitudes_deg, longitudes_deg, whens):
     """
@@ -66,7 +68,7 @@ def get_solar_angles_vector(latitudes_deg, longitudes_deg, whens):
     Accuracy: Typical error ~0.01°, max error ~0.6° compared to full NREL SPA
     Speed: ~2000x faster than full NREL SPA, ~500x faster than get_*_fast()
     """
-    whens = np.asarray(whens)
+    whens = to_utc_datetime64(whens)
     latitudes_deg = np.asarray(latitudes_deg)
     longitudes_deg = np.asarray(longitudes_deg)
 
@@ -154,7 +156,7 @@ def get_radiation_direct_vector(altitudes_deg, whens):
         radiation = get_radiation_direct_vector(altitudes, whens)
     """
     altitudes_deg = np.asarray(altitudes_deg)
-    whens = np.asarray(whens)
+    whens = to_utc_datetime64(whens)
 
     # Get day of year from datetime64
     # Extract year-start and current date to compute day-of-year

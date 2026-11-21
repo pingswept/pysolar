@@ -28,6 +28,7 @@ To force builtins math module usage when numpy is available:
     pysolar.use_math()
 """
 
+import datetime
 from math import degrees, cos, sin, radians, tan, pi
 from math import acos, atan, asin, atan2, exp, e
 
@@ -58,9 +59,35 @@ def tm_yday_math(d):
 tm_yday = tm_yday_math
 
 
+def _strip_tz_to_utc_naive(value):
+    if isinstance(value, datetime.datetime) and value.tzinfo is not None:
+        return value.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+    return value
+
+
+def to_utc_datetime64(d, unit=None):
+    """Convert scalar or array-like datetime/datetime64 inputs to UTC datetime64 without timezone warnings."""
+    dtype = 'datetime64' if unit is None else f'datetime64[{unit}]'
+    if isinstance(d, datetime.datetime):
+        return numpy.array(_strip_tz_to_utc_naive(d), dtype=dtype)
+    if hasattr(d, "tz_convert") and getattr(d, "tz", None) is not None:
+        d = d.tz_convert("UTC").tz_localize(None)
+    elif hasattr(d, "dt") and getattr(d.dt, "tz", None) is not None:
+        d = d.dt.tz_convert("UTC").dt.tz_localize(None)
+    arr = numpy.asarray(d)
+    if numpy.issubdtype(arr.dtype, numpy.datetime64):
+        return arr if unit is None else arr.astype(dtype)
+    if arr.dtype == object:
+        if arr.ndim == 0:
+            return numpy.array(_strip_tz_to_utc_naive(arr.item()), dtype=dtype)
+        flat = [_strip_tz_to_utc_naive(x) for x in arr.flat]
+        return numpy.array(flat, dtype=dtype).reshape(arr.shape)
+    return numpy.array(d, dtype=dtype)
+
+
 def tm_yday_numpy(d):
-    dd = numpy.array(d, dtype='datetime64[D]')
-    dy = numpy.array(d, dtype='datetime64[Y]')
+    dd = to_utc_datetime64(d, 'D')
+    dy = to_utc_datetime64(d, 'Y')
     return (dd - dy).astype('int') + 1
 
 
@@ -71,8 +98,8 @@ tm_hour = tm_hour_math
 
 
 def tm_hour_numpy(d):
-    dh = numpy.array(d, dtype='datetime64[h]')
-    dd = numpy.array(d, dtype='datetime64[D]')
+    dh = to_utc_datetime64(d, 'h')
+    dd = to_utc_datetime64(d, 'D')
     return (dh - dd).astype('int')
 
 
@@ -83,8 +110,8 @@ tm_min = tm_min_math
 
 
 def tm_min_numpy(d):
-    dm = numpy.array(d, dtype='datetime64[m]')
-    dh = numpy.array(d, dtype='datetime64[h]')
+    dm = to_utc_datetime64(d, 'm')
+    dh = to_utc_datetime64(d, 'h')
     return (dm - dh).astype('int')
 
 
