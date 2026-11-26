@@ -47,5 +47,7 @@ def get_radiation_direct(when, altitude_deg):
     flux = get_apparent_extraterrestrial_flux(day)
     optical_depth = get_optical_depth(day)
     air_mass_ratio = get_air_mass_ratio(altitude_deg)
+    # Mask nighttime air masses before the exponential can overflow.
+    air_mass_ratio = math.where(altitude_deg <= 0, float("inf"), air_mass_ratio)
     return flux * math.exp(-1 * optical_depth * air_mass_ratio) * is_daytime
 #end get_radiation_direct
